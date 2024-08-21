@@ -97,11 +97,12 @@ MatchesTask data::getMatchesData(){
 
                 currMatch.dateUnix = std::stoll(values[r][2]);
 
+                /*
                 std::stringstream time;
                 time << std::chrono::sys_seconds{std::chrono::seconds(currMatch.dateUnix)};
                 auto dateStringArr = splitStr(splitStr(time.str(), " ")[0], "-");
                 currMatch.date = fmt::format("{}/{}/{}", dateStringArr[1], dateStringArr[2], dateStringArr[0]);
-
+*/
                 currMatch.teams = splitStr(values[r][3], ",");
                 auto splittedLevels = splitStr(values[r][4], ";");
                 

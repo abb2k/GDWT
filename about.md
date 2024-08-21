@@ -4,6 +4,6 @@ The Geometry Dash World Tournament mod consists of information from all internat
 
 
 ## credits
-this mod uses the thumbnails form the <cy>level thumbnails</c> mod
+this mod uses the thumbnails from the <cy>level thumbnails</c> mod
 
 and the country flags were taken from <cy>GDUtils</c>
