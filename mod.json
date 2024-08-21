@@ -1,0 +1,45 @@
+{
+	"geode": "3.3.0",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206",
+		"ios": "2.206"
+	},
+	"id": "abb2k.gdwt",
+	"name": "GD World Tournament",
+	"version": "v1.0.0",
+	"developer": "abb2k",
+	"description": "",
+	"links": {
+		"community": "https://discord.gg/gdworldtournament"
+	},
+	"tags": ["interface"],
+	"resources": {
+		"files": [
+			"resources/*.png",
+			"resources/*.jpg",
+			"resources/*.plist"
+		],
+        "spritesheets": {
+            "countries": ["resources/countries/*.png"]
+        }
+	},
+	"dependencies": [
+        {
+            "id": "jouca.badgesapi",
+            "version": ">=v1.0.6",
+            "importance": "required"
+        },
+		{
+            "id": "geode.node-ids",
+            "version": "v1.10.0",
+            "importance": "required"
+        },
+		{
+            "id": "cdc.level_thumbnails",
+            "version": "v1.0.6",
+            "importance": "suggested"
+        }
+    ]
+}
