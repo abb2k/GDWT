@@ -16,10 +16,8 @@
 	},
 	"tags": ["interface"],
 	"resources": {
-		"files": [
-			"resources/*.png",
-			"resources/*.jpg",
-			"resources/*.plist"
+		"sprites": [
+			"resources/*.png"
 		],
         "spritesheets": {
             "countries": ["resources/countries/*.png"]
