@@ -345,7 +345,7 @@ void GDWTMatchLevelCell::setImage(CCImage* image){
     texture->initWithImage(image);
     auto sprite = CCSprite::createWithTexture(texture);
     sprite->setPosition(bg->getContentSize() / 2);
-    sprite->setScale(0.55f / (winSize.width / 875.38461f));
+    sprite->setScale(0.65f);
     sprite->setZOrder(-2);
     sprite->setColor({185, 185, 185});
     c->addChild(sprite);
