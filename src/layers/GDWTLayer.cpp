@@ -23,9 +23,12 @@ bool GDWTLayer::init(){
 
     */
 
+//569 : 320 winSize
+
     auto bg = CCSprite::create("bg.png"_spr);
     bg->setPosition(winSize / 2);
-    bg->setScale(1.2f);
+    bg->setScaleX(winSize.width / (569 / 1.2f));
+    bg->setScaleY(winSize.height / (320 / 1.2f));
     this->addChild(bg);
 
     auto sideArt = CCNode::create();
@@ -131,7 +134,7 @@ bool GDWTLayer::init(){
     //-- teams --
 
     auto teamsCont = CCNode::create();
-    teamsCont->setPosition({84, winSize.height / 2});
+    teamsCont->setPosition({winSize.width / 6.7738f, winSize.height / 2});
     teamsCont->setScale(0.825f);
     this->addChild(teamsCont);
 
@@ -218,7 +221,7 @@ bool GDWTLayer::init(){
     //-- macth groups --
 
     auto matchGroupsCont = CCNode::create();
-    matchGroupsCont->setPosition({winSize.width - 84, winSize.height / 2});
+    matchGroupsCont->setPosition({winSize.width / 1.17319f, winSize.height / 2});
     matchGroupsCont->setScale(0.825f);
     this->addChild(matchGroupsCont);
 
