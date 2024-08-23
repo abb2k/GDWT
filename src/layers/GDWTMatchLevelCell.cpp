@@ -338,12 +338,14 @@ void GDWTMatchLevelCell::onLevelClicked(CCObject*){
 }
 
 void GDWTMatchLevelCell::setImage(CCImage* image){
+    auto winSize = CCDirector::get()->getWinSize();
+
     CCTexture2D* texture = new CCTexture2D();
     texture->autorelease();
     texture->initWithImage(image);
     auto sprite = CCSprite::createWithTexture(texture);
     sprite->setPosition(bg->getContentSize() / 2);
-    sprite->setScale(0.65f);
+    sprite->setScale(winSize.width / 875.38461f);
     sprite->setZOrder(-2);
     sprite->setColor({185, 185, 185});
     c->addChild(sprite);
