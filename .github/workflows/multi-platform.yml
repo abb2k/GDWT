@@ -2,12 +2,12 @@ name: Build Geode Mod
 
 on:
   workflow_dispatch:
-  inputs:
-    apiKey:
-      description: "api key for the data"
-      required: true
-      default: "NA"
-      type: string
+    inputs:
+      apiKey:
+        description: "api key for the data"
+        required: true
+        default: "NA"
+        type: string
   push:
     branches:
       - "**"
