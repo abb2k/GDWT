@@ -173,6 +173,8 @@ class data {
 
         static std::vector<std::string> splitStr(std::string str, std::string delim);
         static std::vector<int> splitStrInt(std::string str, std::string delim);
+        static std::vector<std::string> eraseEmptys(std::vector<std::string> array);
+        static std::vector<std::vector<std::string>> convertRawData(std::string data, bool rows);
 
         static void loadMatches(std::vector<Match> match);
         static void loadUserInfo(UserInfo user);
@@ -183,8 +185,6 @@ class data {
         static void addImage(CCImage* image, std::string ID);
 
         static scoreCalcTask calculateScores(std::vector<Level> levels, std::vector<std::string> expectedTeams, ScoreSystemType type);
-
-        static std::string apiKey;
 
         static CCNode* createCircleGlow(ccColor3B color, float opacity);
 

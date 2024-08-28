@@ -17,6 +17,8 @@ bool GDWTTeamLayer::setup(Team _team){
 
     team = _team;
 
+    this->setID("gdwt-team-layer");
+
     auto alignmentNode = CCNode::create();
     alignmentNode->setPosition(m_buttonMenu->getPosition());
     alignmentNode->setID("aligment-node");

@@ -3,8 +3,6 @@
 
 // == static members ==
 
-std::string data::apiKey = "AIzaSyAnUtlLdyZEXQILqY-ye75SVzAu_s8PXag";
-
 std::string data::SheetID = "1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE";
 
 std::string data::matchesPageID = "Match%20Raw%20Data";
@@ -41,26 +39,19 @@ MatchesTask data::getMatchesData(){
 
     web::WebRequest req = web::WebRequest();
 
-    req.param("key", apiKey);
+    //req.param("key", apiKey);
 
-    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}!A2:DD", SheetID, matchesPageID)).map(
+    return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, matchesPageID)).map(
     [] (web::WebResponse* res) -> std::vector<Match> {
-
-        auto jsonRes = res->json();
-
-
-        if (jsonRes.isOk()){
-            auto json = jsonRes.value();
+        if (res->string().isOk()){
             auto matches = std::vector<Match>{};
 
-            if (json.contains("error")){
-                auto err = json.get<sheetError>("error");
-                log::warn("SHEET ERROR!\ncode: {}\nmessage: {}\nstatus: {}", err.code, err.message, err.status);
+            if (res->string().unwrapOr("").empty()){
                 return std::vector<Match>{};
             }
 
-            auto values = json.get<std::vector<std::vector<std::string>>>("values");
-            
+            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
+                        
             for (int r = 0; r < values.size(); r++)
             {
                 if (values[r].size() - 1 != 9) continue;
@@ -184,27 +175,20 @@ TeamsTask data::getTeamsData(){
 
     web::WebRequest req = web::WebRequest();
 
-    req.param("key", apiKey);
+    //req.param("key", apiKey);
     req.param("majorDimension", "COLUMNS");
 
-    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}!A1:DD", SheetID, teamsPageID)).map(
+    return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, teamsPageID)).map(
     [] (web::WebResponse* res) -> std::vector<Team> {
-
-        auto jsonRes = res->json();
-
-
-        if (jsonRes.isOk()){
-            auto json = jsonRes.value();
+        if (res->string().isOk()){
             auto teams = std::vector<Team>{};
 
-            if (json.contains("error")){
-                auto err = json.get<sheetError>("error");
-                log::warn("SHEET ERROR!\ncode: {}\nmessage: {}\nstatus: {}", err.code, err.message, err.status);
+            if (res->string().unwrapOr("").empty()){
                 return std::vector<Team>{};
             }
 
-            auto values = json.get<std::vector<std::vector<std::string>>>("values");
-            
+            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), false);
+
             for (int r = 0; r < values.size(); r++)
             {
                 Team currTeam;
@@ -263,12 +247,36 @@ std::vector<std::string> data::splitStr(std::string str, std::string delim) {
     while ((posEnd = str.find(delim, posStart)) != std::string::npos) {
         std::string token = str.substr(posStart, posEnd - posStart);
         posStart = posEnd + delimLen;
-        if (token != "")
+        if (token != ""){
+            if (token[0] == '\"' && token[token.length() - 1] == '\"' && token.length() > 1){
+                token = token.erase(0, 1);
+                token = token.erase(token.length() - 1, 1);
+            }  
+
             res.push_back(token);
+        }
     }
 
-    res.push_back(str.substr(posStart));
+    auto ps = str.substr(posStart);
+
+    if (ps[0] == '\"' && ps[ps.length() - 1] == '\"' && ps.length() > 1){
+        ps = ps.erase(0, 1);
+        ps = ps.erase(ps.length() - 1, 1);
+    } 
+
+    res.push_back(ps);
     return res;
+}
+
+std::vector<std::string> data::eraseEmptys(std::vector<std::string> array){
+    for (int i = 0; i < array.size(); i++)
+    {
+        if (array[i] == ""){
+            array.erase(std::next(array.begin(), i));
+            i--;
+        }
+    }
+    return array;
 }
 
 std::vector<int> data::splitStrInt(std::string str, std::string delim) {
@@ -287,6 +295,56 @@ std::vector<int> data::splitStrInt(std::string str, std::string delim) {
 
     res.push_back(std::stoi(str.substr(posStart)));
     return res;
+}
+
+std::vector<std::vector<std::string>> data::convertRawData(std::string data, bool rows){
+    std::vector<std::vector<std::string>> values{};
+
+    auto lines = splitStr(data, "\n");
+    
+    for (int i = rows; i < lines.size(); i++)
+    {
+        auto vals = splitStr(lines[i], "\",");
+
+        if (rows){
+            for (int b = 0; b < vals.size(); b++)
+            {   
+                if (vals[b] != "")
+                    if (vals[b][0] == '\"'){
+                        vals[b].erase(0, 1);
+                    }
+            }
+                    
+            vals = eraseEmptys(vals);
+
+            values.push_back(vals);
+        }
+        else{
+            for (int v = 0; v < vals.size(); v++)
+            {
+                if (i == 0){
+                    values.push_back(std::vector<std::string>{vals[v]});
+                }
+                else{
+                    values[v].push_back(vals[v]);
+                }
+            }
+            for (int v1 = 0; v1 < values.size(); v1++)
+            {
+                for (int v2 = 0; v2 < values[v1].size(); v2++)
+                {   
+                    if (values[v1][v2] != "")
+                        if (values[v1][v2][0] == '\"'){
+                            values[v1][v2].erase(0, 1);
+                        }
+                }
+                    
+                values[v1] = eraseEmptys(values[v1]);
+            }
+        }
+    }
+
+    return values;         
 }
 
 UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
@@ -513,25 +571,18 @@ PlayerDataTask data::getPlayersData(){
 
     web::WebRequest req = web::WebRequest();
 
-    req.param("key", apiKey);
+    //req.param("key", apiKey);
 
-    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}!A2:DD", SheetID, playersPageID)).map(
+    return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, playersPageID)).map(
     [] (web::WebResponse* res) -> std::vector<PlayerData> {
-
-        auto jsonRes = res->json();
-
-
-        if (jsonRes.isOk()){
-            auto json = jsonRes.value();
+        if (res->string().isOk()){
             auto players = std::vector<PlayerData>{};
 
-            if (json.contains("error")){
-                auto err = json.get<sheetError>("error");
-                log::warn("SHEET ERROR!\ncode: {}\nmessage: {}\nstatus: {}", err.code, err.message, err.status);
+            if (res->string().unwrapOr("").empty()){
                 return std::vector<PlayerData>{};
             }
 
-            auto values = json.get<std::vector<std::vector<std::string>>>("values");
+            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
             
             for (int r = 0; r < values.size(); r++)
             {
@@ -815,24 +866,18 @@ MatchGroupsDataTask data::getMatchGroupsData(){
 
     web::WebRequest req = web::WebRequest();
 
-    req.param("key", apiKey);
+    //req.param("key", apiKey);
 
-    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}!A2:DD", SheetID, matchGroupsPageID)).map(
+    return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, matchGroupsPageID)).map(
     [] (web::WebResponse* res) -> std::vector<MatchGroup> {
-
-        auto jsonRes = res->json();
-
-        if (jsonRes.isOk()){
-            auto json = jsonRes.value();
+        if (res->string().isOk()){
             auto groups = std::vector<MatchGroup>{};
 
-            if (json.contains("error")){
-                auto err = json.get<sheetError>("error");
-                log::warn("SHEET ERROR!\ncode: {}\nmessage: {}\nstatus: {}", err.code, err.message, err.status);
+            if (res->string().unwrapOr("").empty()){
                 return std::vector<MatchGroup>{};
             }
 
-            auto values = json.get<std::vector<std::vector<std::string>>>("values");
+            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
             
             for (int r = 0; r < values.size(); r++)
             {
@@ -876,3 +921,5 @@ Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
         return Err(-1);
     }
 }
+
+

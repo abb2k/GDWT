@@ -18,6 +18,8 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
 
     group = _group;
 
+    this->setID("gdwt-match-group-layer");
+
     auto alignmentNode = CCNode::create();
     alignmentNode->setPosition(m_buttonMenu->getPosition());
     alignmentNode->setID("aligment-node");

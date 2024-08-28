@@ -27,7 +27,7 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
 
 void GDWTProfilePage::addManagmentBadge(CCMenu* m){
     auto yourBadge = CCSprite::create("GDTW-Button.png"_spr);
-    yourBadge->setScale(0.175f);
+    yourBadge->setScale(0.55f);
     auto bButton = CCMenuItemSpriteExtra::create(
         yourBadge,
         nullptr,

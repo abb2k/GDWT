@@ -530,6 +530,8 @@ void GDWTLayer::MatchGroupsListArrowRight(CCObject*){
 }
 
 void GDWTLayer::update(float delta){
+    auto scene = CCDirector::get()->getRunningScene();
+    if (scene->getChildByID("gdwt-match-layer") || scene->getChildByID("gdwt-team-layer") || scene->getChildByID("gdwt-match-group-layer")) return;
 
     CCRect LevelsListRect = {matchesScrollLayer->getPositionX(), matchesScrollLayer->getPositionY(), matchesScrollLayer->getScaledContentSize().width, matchesScrollLayer->getScaledContentSize().height};
 
