@@ -7,7 +7,7 @@ using namespace geode::prelude;
 typedef struct {
     int levelID;
     int playTime;
-    std::vector<std::pair<int, int>> accountIDs;
+    std::vector<std::tuple<int, int, std::string>> accountIDs;
     std::vector<std::tuple<std::string, std::string, int>> displayNames;
 } Level;
 

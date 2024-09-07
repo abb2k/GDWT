@@ -113,10 +113,13 @@ MatchesTask data::getMatchesData(){
                         {
                             auto pdata = splitStr(splittedLevel[d], "-");
                             try{
-                                auto toAdd = std::pair<int, int>{std::stoi(pdata[0]), 0};
+                                auto toAdd = std::tuple<int, int, std::string>{std::stoi(pdata[0]), 0, "default"};
 
                                 if (pdata.size() > 1){
-                                    toAdd.second = std::stoi(pdata[1]);
+                                    std::get<1>(toAdd) = std::stoi(pdata[1]);
+                                }
+                                if (pdata.size() > 2){
+                                    std::get<2>(toAdd) = pdata[2];
                                 }
                                 level.accountIDs.push_back(toAdd);
                             }
@@ -643,16 +646,21 @@ scoreCalcTask data::calculateScores(std::vector<Level> levels, std::vector<std::
             {
                 std::string cc = "NA";
                 for (int t = 0; t < teams.size(); t++){
-                    bool hasFound = false;
+                    if (teams[t].countryCode == std::get<2>(levels[i].accountIDs[p])){
+                        cc = teams[t].countryCode;
+                        std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
+                        break;
+                    }
+                    
                     for (int ac = 0; ac < teams[t].accounts.size(); ac++){
-                        if (teams[t].accounts[ac].accountID == levels[i].accountIDs[p].first){
+                        if (teams[t].accounts[ac].accountID == std::get<0>(levels[i].accountIDs[p])){
                             cc = teams[t].countryCode;
                             std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
                         }
                     }
                 }
 
-                int currScore = levels[i].accountIDs[p].second;
+                int currScore = std::get<1>(levels[i].accountIDs[p]);
 
                 players.push_back(std::tuple<std::string, int>{cc, currScore});
             }
@@ -667,7 +675,7 @@ scoreCalcTask data::calculateScores(std::vector<Level> levels, std::vector<std::
                 for (int t = 0; t < teams.size(); t++){
                     bool hasFound = false;
                     for (int ac = 0; ac < teams[t].accounts.size(); ac++){
-                        if (teams[t].accounts[ac].accountID == levels[i].accountIDs[p].first){
+                        if (teams[t].accounts[ac].accountID == std::get<0>(levels[i].accountIDs[p])){
                             cc = teams[t].countryCode;
                             std::transform(cc.begin(), cc.end(), cc.begin(), ::tolower);
                         }

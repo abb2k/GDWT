@@ -38,7 +38,7 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
 
     for (int i = 0; i < level.accountIDs.size(); i++)
     {
-        levelPlayers.push_back(std::tuple<UserDisplay*, std::string, int>{UserDisplay::create(level.accountIDs[i].first), std::to_string(level.accountIDs[i].first), level.accountIDs[i].second});
+        levelPlayers.push_back(std::tuple<UserDisplay*, std::string, int>{UserDisplay::create(std::get<0>(level.accountIDs[i])), std::to_string(std::get<0>(level.accountIDs[i])), std::get<1>(level.accountIDs[i])});
     }
 
     for (int i = 0; i < level.displayNames.size(); i++)
@@ -47,7 +47,7 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         p.accountID = -1;
         p.displayName = std::get<0>(level.displayNames[i]);
 
-        levelPlayers.push_back(std::tuple<UserDisplay*, std::string, int>{UserDisplay::create(p), std::get<1>(level.displayNames[i]), level.accountIDs[i].second});
+        levelPlayers.push_back(std::tuple<UserDisplay*, std::string, int>{UserDisplay::create(p), std::get<1>(level.displayNames[i]), std::get<1>(level.accountIDs[i])});
     }
 
     if (levelPlayers.size() == 2){
