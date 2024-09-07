@@ -10,4 +10,8 @@ class $modify(GDWTProfilePage, ProfilePage) {
         void managmentBadgeClicked(CCObject*);
 
         void addManagmentBadge(CCMenu* m);
+
+        void addTourneyWinners2024Badge(CCMenu* m);
+
+        void tourneyWinners2024BadgeClicked(CCObject*);
 };

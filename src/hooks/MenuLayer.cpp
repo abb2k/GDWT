@@ -16,7 +16,6 @@ bool GDWTMenuLayer::init() {
 	auto BMenu = this->getChildByID("bottom-menu");
 
     auto GDWTButtonSprite = CCSprite::create("GDTW-Button.png"_spr);
-    GDWTButtonSprite->setScale(1.1f);
 	auto GDWTButton = CCMenuItemSpriteExtra::create(
 		GDWTButtonSprite,
 		this,

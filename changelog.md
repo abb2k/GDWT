@@ -1,3 +1,6 @@
+# 1.1.2
+- added the "2024 GD World Champion" badge!!!!!!
+
 # 1.1.1
 - fixed an issue where players that switched teams would mess up match scores
 
