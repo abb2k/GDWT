@@ -10,8 +10,6 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
         11684904,
         9074168,
         9975327,
-        5292934,
-        7194979,
         1380770
     };
 

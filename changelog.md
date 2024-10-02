@@ -1,3 +1,6 @@
+# 1.1.3
+- removed the "GDWT Managment" badge from <cy>TreblePKGD</c> and <cy>Foxdemix</c>.
+
 # 1.1.2
 - added the "2024 GD World Champion" badge!!!!!!
 
