@@ -1001,7 +1001,7 @@ void data::leaveMatch(){
     DiscordMessage message{};
 
     DiscordEmbed e = embedWithPlayerColor();
-    e.title = GJAccountManager::get()->m_username + " Disconnected.";
+    e.title = fmt::format("{} Disconnected.", GJAccountManager::get()->m_username);
     e.description = fmt::format("AccountID: {}", std::to_string(GJAccountManager::get()->m_accountID));
 
     message.embeds.push_back(e);
@@ -1029,7 +1029,7 @@ Task<Result<>> data::joinMatch(std::string joinCode){
     DiscordMessage message{};
 
     DiscordEmbed e = embedWithPlayerColor();
-    e.title = GJAccountManager::get()->m_username + " Successfully connected!";
+    e.title = fmt::format("{} Successfully connected!", GJAccountManager::get()->m_username);
     e.description = fmt::format("AccountID: {}", std::to_string(GJAccountManager::get()->m_accountID));
 
     message.embeds.push_back(e);
