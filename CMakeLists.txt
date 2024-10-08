@@ -21,25 +21,6 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
 
-if(ANDROID)
-    # Android specific settings
-    set(OPENSSL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/android/include")
-    set(OPENSSL_LIB_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/android/lib")
-elseif(APPLE)
-    # macOS specific settings
-    set(OPENSSL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/macos/include")
-    set(OPENSSL_LIB_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/macos/lib")
-else()
-    # Default (assuming Windows)
-    set(OPENSSL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/current/include")
-    set(OPENSSL_LIB_DIR "${PROJECT_SOURCE_DIR}/lib/openssl/current/lib/VC/x64/MD")
-endif()
-
+find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
-if(ANDROID)
-    target_link_libraries(${PROJECT_NAME} "${OPENSSL_LIB_DIR}/libcrypto.so" "${OPENSSL_LIB_DIR}/libssl.so")
-elseif(APPLE)
-    target_link_libraries(${PROJECT_NAME} "${OPENSSL_LIB_DIR}/libcrypto.dylib" "${OPENSSL_LIB_DIR}/libssl.dylib")
-else()
-    target_link_libraries(${PROJECT_NAME} "${OPENSSL_LIB_DIR}/libcrypto.lib" "${OPENSSL_LIB_DIR}/libssl.lib")
-endif()
+target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
