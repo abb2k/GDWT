@@ -15,6 +15,9 @@ jobs:
         - name: Windows
           os: windows-latest
 
+        - name: macOS
+          os: macos-latest
+
         - name: Android32
           os: ubuntu-latest
           target: Android32
@@ -29,13 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y openssl libssl-dev
 
-        
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
@@ -43,7 +44,7 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-  
+
   package:
     name: Package builds
     runs-on: ubuntu-latest
