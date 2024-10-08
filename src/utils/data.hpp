@@ -298,7 +298,7 @@ class data {
 
         static bool getIsInMatch();
 
-        static Result<std::string> encrypt(const std::string &plaintext, const std::string &key);
+        static Result<std::string> encrypt(const std::string& plaintext, const std::string& key);
 
         static DiscordEmbed embedWithPlayerColor();
 

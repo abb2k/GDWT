@@ -1052,6 +1052,7 @@ Result<std::string> data::decrypt(const std::string& ciphertext_b64, const std::
 
     return Ok(std::string(reinterpret_cast<char*>(plaintext.data()), plaintext_len));
 }
+
 bool data::getIsInMatch() { return isInMatch; }
 
 void data::leaveMatch(){
