@@ -1,69 +1,59 @@
 name: Build Geode Mod
 
-on: [push, pull_request]
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "**"
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        target: [Win64, MacOS, Android32, Android64]
-        include:
-          - os: ubuntu-latest
-            target: Android32
-          - os: ubuntu-latest
-            target: Android64
-          - os: macos-latest
-            target: MacOS
-          - os: windows-latest
-            target: Win64
+        config:
+        - name: Windows
+          os: windows-latest
+
+        - name: Android32
+          os: ubuntu-latest
+          target: Android32
+
+        - name: Android64
+          os: ubuntu-latest
+          target: Android64
+
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    - name: Install dependencies (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y openssl libssl-dev
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl libssl-dev
 
-    - name: Install dependencies (macOS)
-      if: matrix.os == 'macos-latest'
-      run: |
-        brew install openssl
-
-    - name: Install dependencies (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        choco install openssl
-
-    - name: Set up CMake
-      uses: lukka/get-cmake@v3
-
-    - name: Configure and Build
-      run: |
-        cmake -S . -B build -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
-        cmake --build build
-
-    - name: Build Geode Mod
-      uses: geode-sdk/build-geode-mod@main
-      with:
-        path: build
-        configure-args: -DOPENSSL_ROOT_DIR=/usr/local/opt/openssl
-        target: ${{ matrix.target }}
-        combine: true
-
-  combine:
-    needs: build
+        
+      - name: Build the mod
+        uses: geode-sdk/build-geode-mod@main
+        with:
+          bindings: geode-sdk/bindings
+          bindings-ref: main
+          combine: true
+          target: ${{ matrix.config.target }}
+  
+  package:
+    name: Package builds
     runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    needs: ['build']
 
-    - name: Combine builds
-      uses: geode-sdk/build-geode-mod@main
-      with:
-        combine: true
-        path: build
+    steps:
+      - uses: geode-sdk/build-geode-mod/combine@main
+        id: build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Build Output
+          path: ${{ steps.build.outputs.build-output }}
