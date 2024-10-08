@@ -294,11 +294,9 @@ class data {
         static Result<std::tuple<int, int, int>, int> splitDate(std::string date);
 
         static void leaveMatch();
-        static Result<Task<Result<>>> joinMatch(std::string joinCode);
+        static Task<Result<>> joinMatch(std::string joinCode);
 
         static bool getIsInMatch();
-
-        static Result<std::string> encrypt(const std::string& plaintext, const std::string& key);
 
         static DiscordEmbed embedWithPlayerColor();
 
@@ -333,12 +331,7 @@ class data {
         static std::string discordWebhookSecret;
 
         static std::tuple<int, int, int> lastLevelProgress;
-    
-        static std::string base64_encode(const unsigned char* buffer, size_t length);
 
-        static std::vector<unsigned char> base64_decode(const std::string& encoded);
-
-        static Result<std::string> decrypt(const std::string& ciphertext_b64, const std::string& key);
-
-        
+        static std::vector<unsigned char> base64Decode(const std::string& input);
+        static std::string decryptString(const std::string& encryptedInput);
 };

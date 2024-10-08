@@ -1,10 +1,5 @@
 #include "../utils/data.hpp"
 #include <Geode/utils/web.hpp>
-#include <openssl/aes.h>
-#include <openssl/rand.h>
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
 
 // == static members ==
 
@@ -943,109 +938,69 @@ Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
     }
 }
 
-std::string data::base64_encode(const unsigned char* buffer, size_t length) {
-    BIO* b64 = BIO_new(BIO_f_base64());
-    BIO* bio = BIO_new(BIO_s_mem());
-    BIO_push(b64, bio);
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    BIO_write(b64, buffer, length);
-    BIO_flush(b64);
-
-    BUF_MEM* bufferPtr;
-    BIO_get_mem_ptr(b64, &bufferPtr);
-    std::string result(bufferPtr->data, bufferPtr->length);
-    
-    BIO_free_all(b64);
-    return result;
+int getKey() {
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    long long a = time_point_cast<seconds>(now).time_since_epoch().count();
+    a = a / 100;
+    return a;
 }
 
-Result<std::string> data::encrypt(const std::string& plaintext, const std::string& key) {
-    unsigned char keyBytes[32] = {0};
-    std::memcpy(keyBytes, key.data(), std::min(key.size(), sizeof(keyBytes)));
+// Function to decode a Base64 string to a byte array
+std::vector<unsigned char> data::base64Decode(const std::string& input) {
+    static const char decodeLookup[] = {
+        62, -1, -1, -1, 63, // +, -, ., /
+        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // 0-9
+        -1, -1, -1, 0, -1, -1, -1, // :, ;, <, =, >, ?, @
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // A-Z
+        -1, -1, -1, -1, -1, -1, // [, \, ], ^, _, `
+        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 // a-z
+    };
 
-    unsigned char iv[16] = {0};
+    std::vector<unsigned char> decodedBytes;
+    decodedBytes.reserve((input.length() / 4) * 3);
+    uint32_t temp = 0;
+    auto it = input.begin();
 
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        return Err("Failed to create context");
+    while (it < input.end()) {
+        for (size_t i = 0; i < 4; ++i) {
+            temp <<= 6;
+            if (*it >= 'A' && *it <= 'Z') temp |= *it - 'A';
+            else if (*it >= 'a' && *it <= 'z') temp |= *it - 'a' + 26;
+            else if (*it >= '0' && *it <= '9') temp |= *it - '0' + 52;
+            else if (*it == '+') temp |= 62;
+            else if (*it == '/') temp |= 63;
+            else if (*it == '=') {
+                switch (input.end() - it) {
+                    case 1:
+                        decodedBytes.push_back((temp >> 16) & 0x000000FF);
+                        decodedBytes.push_back((temp >> 8 ) & 0x000000FF);
+                        return decodedBytes;
+                    case 2:
+                        decodedBytes.push_back((temp >> 10) & 0x000000FF);
+                        return decodedBytes;
+                }
+            }
+            ++it;
+        }
+        decodedBytes.push_back((temp >> 16) & 0x000000FF);
+        decodedBytes.push_back((temp >> 8 ) & 0x000000FF);
+        decodedBytes.push_back((temp      ) & 0x000000FF);
     }
 
-    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, keyBytes, iv)) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to initialize encryption");
-    }
-
-    std::vector<unsigned char> ciphertext(plaintext.size() + AES_BLOCK_SIZE);
-    int len;
-    if (1 != EVP_EncryptUpdate(ctx, ciphertext.data(), &len, reinterpret_cast<const unsigned char*>(plaintext.data()), plaintext.size())) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to encrypt data");
-    }
-
-    int ciphertext_len = len;
-
-    if (1 != EVP_EncryptFinal_ex(ctx, ciphertext.data() + len, &len)) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to finalize encryption");
-    }
-    ciphertext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    return Ok(base64_encode(ciphertext.data(), ciphertext_len));
+    return decodedBytes;
 }
 
-std::vector<unsigned char> data::base64_decode(const std::string& encoded) {
-    BIO* bio = BIO_new_mem_buf(encoded.data(), encoded.size());
-    BIO* b64 = BIO_new(BIO_f_base64());
-    BIO_push(b64, bio);
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+// Function to decrypt a string
+std::string data::decryptString(const std::string& encryptedInput) {
+    int key = getKey();
+    std::vector<unsigned char> encryptedBytes = base64Decode(encryptedInput);
 
-    std::vector<unsigned char> buffer(encoded.size());
-    int decoded_length = BIO_read(b64, buffer.data(), buffer.size());
-    buffer.resize(decoded_length);
-
-    BIO_free_all(b64);
-    return buffer;
-}
-
-// Function to decrypt ciphertext
-Result<std::string> data::decrypt(const std::string& ciphertext_b64, const std::string& key) {
-    std::vector<unsigned char> ciphertext = base64_decode(ciphertext_b64);
-
-    unsigned char keyBytes[32] = {0};
-    std::memcpy(keyBytes, key.data(), std::min(key.size(), sizeof(keyBytes)));
-
-    unsigned char iv[16] = {0};
-
-    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
-    if (!ctx) {
-        return Err("Failed to create context");
+    for (size_t i = 0; i < encryptedBytes.size(); ++i) {
+        encryptedBytes[i] ^= static_cast<unsigned char>(key);
     }
 
-    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, keyBytes, iv)) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to initialize decryption");
-    }
-
-    std::vector<unsigned char> plaintext(ciphertext.size());
-    int len;
-    if (1 != EVP_DecryptUpdate(ctx, plaintext.data(), &len, ciphertext.data(), ciphertext.size())) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to decrypt data");
-    }
-
-    int plaintext_len = len;
-
-    if (1 != EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len)) {
-        EVP_CIPHER_CTX_free(ctx);
-        return Err("Failed to finalize decryption");
-    }
-    plaintext_len += len;
-
-    EVP_CIPHER_CTX_free(ctx);
-
-    return Ok(std::string(reinterpret_cast<char*>(plaintext.data()), plaintext_len));
+    return std::string(encryptedBytes.begin(), encryptedBytes.end());
 }
 
 bool data::getIsInMatch() { return isInMatch; }
@@ -1070,56 +1025,47 @@ void data::leaveMatch(){
     discordWebhookSecret = "";
 }
 
-Result<Task<Result<>>> data::joinMatch(std::string joinCode){
+Task<Result<>> data::joinMatch(std::string joinCode){
     using namespace std::chrono;
     auto now = system_clock::now();
     long long a = time_point_cast<seconds>(now).time_since_epoch().count();
     a = a / 100;
 
-    auto v = decrypt(joinCode, std::to_string(a));
-    if (v.isErr()){
-        isInMatch = false;
-        discordWebhookSecret = "";
-        return Err(v.err().value());
-    }
-    else{
+    auto val = decryptString(joinCode);
 
-        web::WebRequest req = web::WebRequest();
+    web::WebRequest req = web::WebRequest();
 
-        DiscordMessage message{};
+    DiscordMessage message{};
 
-        DiscordEmbed e = embedWithPlayerColor();
-        e.title = GJAccountManager::get()->m_username + " Successfully connected!";
-        e.description = fmt::format("AccountID: {}", std::to_string(GJAccountManager::get()->m_accountID));
+    DiscordEmbed e = embedWithPlayerColor();
+    e.title = GJAccountManager::get()->m_username + " Successfully connected!";
+    e.description = fmt::format("AccountID: {}", std::to_string(GJAccountManager::get()->m_accountID));
 
-        message.embeds.push_back(e);
+    message.embeds.push_back(e);
 
-        auto j = matjson::Value(message);
+    auto j = matjson::Value(message);
 
-        req.bodyJSON(j);
+    req.bodyJSON(j);
 
-        auto val = v.value();
+    return req.post(discordWebhookLink + val).map(
+    [val] (web::WebResponse* res) -> Result<> {
+        if (!res->ok()){
+            return Err("Connection Failed!");
+        }
 
-        return Ok(req.post(discordWebhookLink + val).map(
-        [val] (web::WebResponse* res) -> Result<> {
-            if (!res->ok()){
-                return Err("Connection Failed!");
-            }
+        auto json = res->json();
 
-            auto json = res->json();
+        if (json.isOk()){
+            return Err("Incorrect code! (might be expired)");
+        }
 
-            if (json.isOk()){
-                return Err("Incorrect code! (might be expired)");
-            }
-
-            isInMatch = true;
-            discordWebhookSecret = val;
-            return Ok();
-        },
-        [](auto) -> std::monostate {
-            return std::monostate();
-        }));
-    }
+        isInMatch = true;
+        discordWebhookSecret = val;
+        return Ok();
+    },
+    [](auto) -> std::monostate {
+        return std::monostate();
+    });
 }
 
 DiscordEmbed data::embedWithPlayerColor(){

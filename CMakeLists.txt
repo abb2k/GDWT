@@ -20,17 +20,3 @@ endif()
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
-
-if (NOT DEFINED ENV{OPENSSL_ROOT_DIR})
-    message(FATAL_ERROR "Unable to find Openssl!")
-else()
-    message(STATUS "Found Geode: $ENV{OPENSSL_ROOT_DIR}")
-endif()
-
-#set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
-#set(OPENSSL_INCLUDE_DIR $ENV{OPENSSL_INCLUDE_DIR})
-#set(OPENSSL_LIB_DIR $ENV{OPENSSL_LIB_DIR})
-
-find_package(OpenSSL REQUIRED)
-include_directories($ENV{OPENSSL_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)

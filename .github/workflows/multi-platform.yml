@@ -32,56 +32,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install OpenSSL on Windows
-        if: matrix.config.name == 'Windows'
-        run: |
-          choco install openssl
-        env:
-          OPENSSL_CONF: C:\Program Files\OpenSSL-Win64\bin\openssl.cnf
-          OPENSSL_INCLUDE_DIR: C:\Program Files\OpenSSL-Win64\include
-          OPENSSL_LIB_DIR: C:\Program Files\OpenSSL-Win64\lib
-          OPENSSL_MODULES: C:\Program Files\OpenSSL-Win64\modules
-          OPENSSL_ROOT_DIR: C:\Program Files\OpenSSL-Win64
-
-      - name: Install OpenSSL on macOS
-        if: matrix.config.name == 'macOS'
-        run: |
-          brew install openssl
-        env:
-          OPENSSL_CONF: /usr/local/etc/openssl@1.1/openssl.cnf
-          OPENSSL_INCLUDE_DIR: /usr/local/opt/openssl@1.1/include
-          OPENSSL_LIB_DIR: /usr/local/opt/openssl@1.1/lib
-          OPENSSL_MODULES: /usr/local/opt/openssl@1.1/lib/engines-1.1
-          OPENSSL_ROOT_DIR: /usr/local/opt/openssl@1.1
-
-      - name: Install OpenSSL on Ubuntu (for Android)
-        if: startsWith(matrix.config.name, 'Android')
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y openssl
-        env:
-          OPENSSL_CONF: /etc/ssl/openssl.cnf
-          OPENSSL_INCLUDE_DIR: /usr/include/openssl
-          OPENSSL_LIB_DIR: /usr/lib/ssl
-          OPENSSL_MODULES: /usr/lib/ssl/modules
-          OPENSSL_ROOT_DIR: /usr/lib/ssl
-
-      - name: Set OpenSSL Environment Variables
-        run: |
-          echo "OPENSSL_CONF=${{ matrix.config.openssl_conf }}" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=${{ matrix.config.openssl_include_dir }}" >> $GITHUB_ENV
-          echo "OPENSSL_LIB_DIR=${{ matrix.config.openssl_lib_dir }}" >> $GITHUB_ENV
-          echo "OPENSSL_MODULES=${{ matrix.config.openssl_modules }}" >> $GITHUB_ENV
-          echo "OPENSSL_ROOT_DIR=${{ matrix.config.openssl_root_dir }}" >> $GITHUB_ENV
-
-      - name: Print OpenSSL Environment Variables
-        run: |
-          echo "OPENSSL_CONF=$OPENSSL_CONF"
-          echo "OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR"
-          echo "OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR"
-          echo "OPENSSL_MODULES=$OPENSSL_MODULES"
-          echo "OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR"
-
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
@@ -89,12 +39,6 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
-        env:
-          OPENSSL_CONF: ${{ env.OPENSSL_CONF }}
-          OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
-          OPENSSL_LIB_DIR: ${{ env.OPENSSL_LIB_DIR }}
-          OPENSSL_MODULES: ${{ env.OPENSSL_MODULES }}
-          OPENSSL_ROOT_DIR: ${{ env.OPENSSL_ROOT_DIR }}
 
   package:
     name: Package builds

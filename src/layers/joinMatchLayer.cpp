@@ -49,15 +49,6 @@ bool joinMatchLayer::setup(){
     leaveButton->addChild(leaveSpriteDisabled);
     this->m_buttonMenu->addChild(leaveButton);
 
-    using namespace std::chrono;
-    auto now = system_clock::now();
-    long long a = time_point_cast<seconds>(now).time_since_epoch().count();
-    a = a / 100;
-
-    log::info("val: {} | key: {}", "8JeBdWSQQ-uW-5NDMxdK8SZZBbQU0mqsk7N7G7GgOLnueEWedNcWV___ytGwxck7SO88", std::to_string(a));
-
-    log::info("{}", data::encrypt("8JeBdWSQQ-uW-5NDMxdK8SZZBbQU0mqsk7N7G7GgOLnueEWedNcWV___ytGwxck7SO88", std::to_string(a)).value());
-
     updateButtonsState();
 
     return true;
@@ -89,29 +80,22 @@ void joinMatchLayer::leaveMatch(){
 
 void joinMatchLayer::joinMatch(){
     connecting = true;
-    auto res = data::joinMatch(codeInput->getString());
+    auto task = data::joinMatch(codeInput->getString());
 
-    if (res.isErr()){
-        FLAlertLayer::create("Error!", res.err().value(), "OK")->show();
-        connecting = false;
-    }
-    else{
-        auto task = res.value();
-        discordMessageListener.bind([this](Task<Result<>>::Event* e){
-            if (auto* res2 = e->getValue()){
-                if (res2->isOk()){
-                    FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
-                }
-                else{
-                    FLAlertLayer::create("Error!", res2->err().value(), "OK")->show();
-                }
-                updateButtonsState();
-                connecting = false;
+    discordMessageListener.bind([this](Task<Result<>>::Event* e){
+        if (auto* res2 = e->getValue()){
+            if (res2->isOk()){
+                FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
             }
-        });
+            else{
+                FLAlertLayer::create("Error!", res2->err().value(), "OK")->show();
+            }
+            updateButtonsState();
+            connecting = false;
+        }
+    });
 
-        discordMessageListener.setFilter(task);
-    }
+    discordMessageListener.setFilter(task);
 }
 
 void joinMatchLayer::updateButtonsState(){
