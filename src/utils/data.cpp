@@ -1,16 +1,10 @@
 #include "../utils/data.hpp"
 #include <Geode/utils/web.hpp>
-/*
-#include <openssl/evp.h>
-#include <openssl/bio.h>
-#include <openssl/buffer.h>
 #include <openssl/aes.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
 #include <openssl/bio.h>
-#include <openssl/buffer.h>*/
-#include <sodium.h>
-#include <sodium/utils.h>
+#include <openssl/buffer.h>
 
 // == static members ==
 
@@ -949,9 +943,7 @@ Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
     }
 }
 
-
 std::string data::base64_encode(const unsigned char* buffer, size_t length) {
-    /*
     BIO* b64 = BIO_new(BIO_f_base64());
     BIO* bio = BIO_new(BIO_s_mem());
     BIO_push(b64, bio);
@@ -963,12 +955,11 @@ std::string data::base64_encode(const unsigned char* buffer, size_t length) {
     BIO_get_mem_ptr(b64, &bufferPtr);
     std::string result(bufferPtr->data, bufferPtr->length);
     
-    BIO_free_all(b64);*/
-    return "result";
+    BIO_free_all(b64);
+    return result;
 }
 
 Result<std::string> data::encrypt(const std::string& plaintext, const std::string& key) {
-    /*
     unsigned char keyBytes[32] = {0};
     std::memcpy(keyBytes, key.data(), std::min(key.size(), sizeof(keyBytes)));
 
@@ -999,11 +990,11 @@ Result<std::string> data::encrypt(const std::string& plaintext, const std::strin
     }
     ciphertext_len += len;
 
-    EVP_CIPHER_CTX_free(ctx);*/
+    EVP_CIPHER_CTX_free(ctx);
 
-    return Ok("base64_encode(ciphertext.data(), ciphertext_len)");
+    return Ok(base64_encode(ciphertext.data(), ciphertext_len));
 }
-/*
+
 std::vector<unsigned char> data::base64_decode(const std::string& encoded) {
     BIO* bio = BIO_new_mem_buf(encoded.data(), encoded.size());
     BIO* b64 = BIO_new(BIO_f_base64());
@@ -1055,52 +1046,6 @@ Result<std::string> data::decrypt(const std::string& ciphertext_b64, const std::
     EVP_CIPHER_CTX_free(ctx);
 
     return Ok(std::string(reinterpret_cast<char*>(plaintext.data()), plaintext_len));
-}*/
-
-std::vector<unsigned char> data::base64_decode(const std::string& encoded) {
-    std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                                "abcdefghijklmnopqrstuvwxyz"
-                                "0123456789+/";
-    std::vector<unsigned char> bytes;
-    int val = 0, valb = -8;
-    for (unsigned char c : encoded) {
-        if (base64_chars.find(c) == std::string::npos) break;
-        val = (val << 6) + base64_chars.find(c);
-        valb += 6;
-        if (valb >= 0) {
-            bytes.push_back((val >> valb) & 0xFF);
-        }
-    }
-    return bytes;
-}
-
-Result<std::string> data::decrypt(const std::string& ciphertextBase64, const std::string& key) {
-    unsigned char keyBytes[crypto_secretbox_KEYBYTES];
-    if (key.size() < crypto_secretbox_KEYBYTES) {
-        std::fill(keyBytes, keyBytes + crypto_secretbox_KEYBYTES, 0);
-        std::copy(key.begin(), key.end(), keyBytes);
-    } else {
-        std::copy(key.begin(), key.begin() + crypto_secretbox_KEYBYTES, keyBytes);
-    }
-
-    // Decode the base64 encoded ciphertext
-    std::vector<unsigned char> ciphertext = base64_decode(ciphertextBase64);
-
-    // Prepare to decrypt
-    std::vector<unsigned char> decrypted(ciphertext.size() - crypto_secretbox_MACBYTES);
-
-    // Zero nonce (IV)
-    unsigned char nonce[crypto_secretbox_NONCEBYTES];
-    std::fill(nonce, nonce + crypto_secretbox_NONCEBYTES, 0); // Zero nonce
-
-    // Decrypt
-    if (crypto_secretbox_open(decrypted.data(), ciphertext.data(), ciphertext.size(), nonce, keyBytes) != 0) {
-        return Err("Decryption failed");
-    }
-
-    std::string res(decrypted.begin(), decrypted.end());
-
-    return Ok(res);
 }
 
 bool data::getIsInMatch() { return isInMatch; }

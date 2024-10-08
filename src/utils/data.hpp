@@ -333,10 +333,12 @@ class data {
         static std::string discordWebhookSecret;
 
         static std::tuple<int, int, int> lastLevelProgress;
-
+    
         static std::string base64_encode(const unsigned char* buffer, size_t length);
 
         static std::vector<unsigned char> base64_decode(const std::string& encoded);
 
         static Result<std::string> decrypt(const std::string& ciphertext_b64, const std::string& key);
+
+        
 };
