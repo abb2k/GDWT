@@ -36,9 +36,9 @@ jobs:
         if: matrix.config.name == 'Windows'
         run: |
           choco install openssl
-          echo "OPENSSL_ROOT_DIR=C:\\Program Files\\OpenSSL-Win64" >> $GITHUB_ENV
-          echo "OPENSSL_LIBRARIES=C:\\Program Files\\OpenSSL-Win64\\lib" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=C:\\Program Files\\OpenSSL-Win64\\include" >> $GITHUB_ENV
+          echo "OPENSSL_ROOT_DIR=C:\\Users\\runneradmin\\AppData\Local\\Temp\\chocolatey\\openssl\\3.3.2" >> $GITHUB_ENV
+          echo "OPENSSL_LIBRARIES=C:\\Users\\runneradmin\\AppData\Local\\Temp\\chocolatey\\openssl\\3.3.2\\lib" >> $GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=C:\\Users\\runneradmin\\AppData\Local\\Temp\\chocolatey\\openssl\\3.3.2\\include" >> $GITHUB_ENV
 
       - name: Install OpenSSL on macOS
         if: matrix.config.name == 'macOS'
