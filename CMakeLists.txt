@@ -21,6 +21,11 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
 
+# Use the environment variable for OpenSSL root directory
+if (DEFINED ENV{OPENSSL_ROOT_DIR})
+    set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
+endif()
+
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
