@@ -21,5 +21,8 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
 
-include_directories(${PROJECT_SOURCE_DIR}/lib/openssl/current/include)
-target_link_libraries(${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/lib/openssl/current/lib/VC/x64/MD/libcrypto.lib" "${PROJECT_SOURCE_DIR}/lib/openssl/current/lib/VC/x64/MD/openssl.lib")
+include_directories(${PROJECT_SOURCE_DIR}/lib/libsodium/include)
+target_link_libraries(${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/lib/libsodium/x64/Release/v143/Dynamic/libsodium.lib")
+
+#include_directories(${PROJECT_SOURCE_DIR}/lib/openssl/current/include)
+#target_link_libraries(${PROJECT_NAME} "${PROJECT_SOURCE_DIR}/lib/openssl/current/lib/VC/x64/MD/libcrypto.lib" "${PROJECT_SOURCE_DIR}/lib/openssl/current/lib/VC/x64/MD/openssl.lib")
