@@ -73,6 +73,14 @@ jobs:
           OPENSSL_MODULES: /usr/lib/ssl/modules
           OPENSSL_ROOT_DIR: /usr/lib/ssl
 
+      - name: Print OpenSSL Environment Variables
+        run: |
+          echo "OPENSSL_CONF=$OPENSSL_CONF"
+          echo "OPENSSL_INCLUDE_DIR=$OPENSSL_INCLUDE_DIR"
+          echo "OPENSSL_LIB_DIR=$OPENSSL_LIB_DIR"
+          echo "OPENSSL_MODULES=$OPENSSL_MODULES"
+          echo "OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR"
+
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:

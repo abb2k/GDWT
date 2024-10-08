@@ -27,6 +27,10 @@ else()
     message(STATUS "Found Geode: $ENV{OPENSSL_ROOT_DIR}")
 endif()
 
+set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
+set(OPENSSL_INCLUDE_DIR $ENV{OPENSSL_INCLUDE_DIR})
+set(OPENSSL_LIB_DIR $ENV{OPENSSL_LIB_DIR})
+
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
