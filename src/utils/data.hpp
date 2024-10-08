@@ -294,7 +294,7 @@ class data {
         static Result<std::tuple<int, int, int>, int> splitDate(std::string date);
 
         static void leaveMatch();
-        static Task<Result<>> joinMatch(std::string joinCode);
+        static Result<Task<Result<>>> joinMatch(std::string joinCode);
 
         static bool getIsInMatch();
 

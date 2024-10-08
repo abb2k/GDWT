@@ -64,6 +64,8 @@ void joinMatchLayer::show(){
 void joinMatchLayer::onJoinBtnClicked(CCObject*){
     if (!connecting)
         joinMatch();
+    
+    codeInput->setString("");
 }
 
 void joinMatchLayer::onLeaveBtnClicked(CCObject*){
@@ -80,22 +82,29 @@ void joinMatchLayer::leaveMatch(){
 
 void joinMatchLayer::joinMatch(){
     connecting = true;
-    auto task = data::joinMatch(codeInput->getString());
+    auto res = data::joinMatch(codeInput->getString());
 
-    discordMessageListener.bind([this](Task<Result<>>::Event* e){
-        if (auto* res2 = e->getValue()){
-            if (res2->isOk()){
-                FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
+    if (res.isErr()){
+        FLAlertLayer::create("Error!", res.err().value(), "OK")->show();
+        connecting = false;
+    }
+    else{
+        auto task = res.value();
+        discordMessageListener.bind([this](Task<Result<>>::Event* e){
+            if (auto* res2 = e->getValue()){
+                if (res2->isOk()){
+                    FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
+                }
+                else{
+                    FLAlertLayer::create("Error!", res2->err().value(), "OK")->show();
+                }
+                updateButtonsState();
+                connecting = false;
             }
-            else{
-                FLAlertLayer::create("Error!", res2->err().value(), "OK")->show();
-            }
-            updateButtonsState();
-            connecting = false;
-        }
-    });
+        });
 
-    discordMessageListener.setFilter(task);
+        discordMessageListener.setFilter(task);
+    }
 }
 
 void joinMatchLayer::updateButtonsState(){

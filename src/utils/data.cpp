@@ -31,7 +31,7 @@ std::tuple<int, int, int> data::lastLevelProgress{};
 
 bool data::isInMatch = false;
 
-std::string data::discordWebhookLink = "https://discord.com/api/webhooks/1292885543914573936/";
+std::string data::discordWebhookLink = "https://discord.com/api/webhooks/";
 
 std::string data::discordWebhookSecret = "";
 
@@ -1016,13 +1016,20 @@ void data::leaveMatch(){
     discordWebhookSecret = "";
 }
 
-Task<Result<>> data::joinMatch(std::string joinCode){
+Result<Task<Result<>>> data::joinMatch(std::string joinCode){
     using namespace std::chrono;
     auto now = system_clock::now();
     long long a = time_point_cast<seconds>(now).time_since_epoch().count();
     a = a / 100;
 
-    auto val = decryptString(joinCode);
+    auto decrypt = decryptString(joinCode);
+
+    auto secrets = splitStr(decrypt, "|");
+
+    if (secrets.size() != 2)
+        return Err("Invalid code!");
+
+    std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
 
     web::WebRequest req = web::WebRequest();
 
@@ -1038,7 +1045,7 @@ Task<Result<>> data::joinMatch(std::string joinCode){
 
     req.bodyJSON(j);
 
-    return req.post(discordWebhookLink + val).map(
+    return Ok(req.post(discordWebhookLink + val).map(
     [val] (web::WebResponse* res) -> Result<> {
         if (!res->ok()){
             return Err("Connection Failed!");
@@ -1056,7 +1063,7 @@ Task<Result<>> data::joinMatch(std::string joinCode){
     },
     [](auto) -> std::monostate {
         return std::monostate();
-    });
+    }));
 }
 
 DiscordEmbed data::embedWithPlayerColor(){
