@@ -22,7 +22,7 @@ add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 setup_geode_mod(${PROJECT_NAME})
 
 find_package(OpenSSL REQUIRED)
-message("${PROJECT_SOURCE_DIR}/lib/current/bin")
-include_directories("${PROJECT_SOURCE_DIR}/lib/current/bin")
+message("${PROJECT_SOURCE_DIR}/lib/current/include")
+include_directories(${PROJECT_SOURCE_DIR}/lib/current/include)
 link_libraries(OpenSSL::Crypto OpenSSL::SSL)
 
