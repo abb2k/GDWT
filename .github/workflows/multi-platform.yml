@@ -89,6 +89,12 @@ jobs:
           bindings-ref: main
           combine: true
           target: ${{ matrix.config.target }}
+        env:
+          OPENSSL_CONF: ${{ env.OPENSSL_CONF }}
+          OPENSSL_INCLUDE_DIR: ${{ env.OPENSSL_INCLUDE_DIR }}
+          OPENSSL_LIB_DIR: ${{ env.OPENSSL_LIB_DIR }}
+          OPENSSL_MODULES: ${{ env.OPENSSL_MODULES }}
+          OPENSSL_ROOT_DIR: ${{ env.OPENSSL_ROOT_DIR }}
 
   package:
     name: Package builds
