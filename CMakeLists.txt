@@ -24,6 +24,8 @@ setup_geode_mod(${PROJECT_NAME})
 # Use the environment variable for OpenSSL root directory
 if (DEFINED ENV{OPENSSL_ROOT_DIR})
     set(OPENSSL_ROOT_DIR $ENV{OPENSSL_ROOT_DIR})
+    set(OPENSSL_INCLUDE_DIR ${OPENSSL_ROOT_DIR}/include)
+    set(OPENSSL_LIBRARIES ${OPENSSL_ROOT_DIR}/lib)
 endif()
 
 find_package(OpenSSL REQUIRED)

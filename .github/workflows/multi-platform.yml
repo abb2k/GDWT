@@ -37,16 +37,12 @@ jobs:
         run: |
           choco install openssl
           echo "OPENSSL_ROOT_DIR=C:\\Program Files\\OpenSSL-Win64" >> $GITHUB_ENV
-          echo "OPENSSL_LIBRARIES=C:\\Program Files\\OpenSSL-Win64\\lib" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=C:\\Program Files\\OpenSSL-Win64\\include" >> $GITHUB_ENV
 
       - name: Install OpenSSL on macOS
         if: matrix.config.name == 'macOS'
         run: |
           brew install openssl
           echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl)" >> $GITHUB_ENV
-          echo "OPENSSL_LIBRARIES=$(brew --prefix openssl)/lib" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=$(brew --prefix openssl)/include" >> $GITHUB_ENV
 
       - name: Install OpenSSL on Ubuntu (for Android)
         if: startsWith(matrix.config.name, 'Android')
@@ -54,8 +50,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y openssl
           echo "OPENSSL_ROOT_DIR=/usr" >> $GITHUB_ENV
-          echo "OPENSSL_LIBRARIES=/usr/lib" >> $GITHUB_ENV
-          echo "OPENSSL_INCLUDE_DIR=/usr/include" >> $GITHUB_ENV
+
+      - name: Configure CMake
+        run: |
+          cmake -DOPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR .
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
