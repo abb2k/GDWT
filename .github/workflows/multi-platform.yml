@@ -29,15 +29,16 @@ jobs:
     name: ${{ matrix.config.name }}
     runs-on: ${{ matrix.config.os }}
 
-    env:
-      OPENSSL_CONF: ${{ matrix.config.openssl_conf }}
-      OPENSSL_INCLUDE_DIR: ${{ matrix.config.openssl_include_dir }}
-      OPENSSL_LIB_DIR: ${{ matrix.config.openssl_lib_dir }}
-      OPENSSL_MODULES: ${{ matrix.config.openssl_modules }}
-      OPENSSL_ROOT_DIR: ${{ matrix.config.openssl_root_dir }}
-
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set OpenSSL Environment Variables
+        run: |
+          echo "OPENSSL_CONF=${{ matrix.config.openssl_conf }}" >> $GITHUB_ENV
+          echo "OPENSSL_INCLUDE_DIR=${{ matrix.config.openssl_include_dir }}" >> $GITHUB_ENV
+          echo "OPENSSL_LIB_DIR=${{ matrix.config.openssl_lib_dir }}" >> $GITHUB_ENV
+          echo "OPENSSL_MODULES=${{ matrix.config.openssl_modules }}" >> $GITHUB_ENV
+          echo "OPENSSL_ROOT_DIR=${{ matrix.config.openssl_root_dir }}" >> $GITHUB_ENV
 
       - name: Install OpenSSL on Windows
         if: matrix.config.name == 'Windows'
