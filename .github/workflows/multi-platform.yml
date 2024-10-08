@@ -32,10 +32,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Install OpenSSL on Windows
+        if: matrix.config.name == 'Windows'
+        run: |
+          choco install openssl
+
+      - name: Install OpenSSL on macOS
+        if: matrix.config.name == 'macOS'
+        run: |
+          brew install openssl
+
+      - name: Install OpenSSL on Ubuntu (for Android)
+        if: startsWith(matrix.config.name, 'Android')
         run: |
           sudo apt-get update
-          sudo apt-get install -y openssl libssl-dev
+          sudo apt-get install -y openssl
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
