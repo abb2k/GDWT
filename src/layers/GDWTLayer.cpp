@@ -17,15 +17,6 @@ GDWTLayer* GDWTLayer::create() {
 bool GDWTLayer::init(){
     auto winSize = CCDirector::get()->getWinSize();
 
-    /* oldBG
-    auto bg = createLayerBG();
-    bg->setColor({ 77, 76, 160 });
-    this->addChild(bg);
-
-    */
-
-//569 : 320 winSize
-
     auto bg = CCSprite::create("bg.png"_spr);
     bg->setPosition(winSize / 2);
     bg->setScaleX(winSize.width / (569 / 1.2f));
@@ -319,6 +310,19 @@ bool GDWTLayer::init(){
     );
     backButton->setPosition({-winSize.width / 2.15f, winSize.height / 2.25f});
     menu->addChild(backButton);
+
+    //
+
+    auto joinMatchButtonS = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
+    joinMatchButtonS->setScale(0.35f);
+    auto joinMatchButton = CCMenuItemSpriteExtra::create(
+        joinMatchButtonS,
+        nullptr,
+        this,
+        menu_selector(GDWTLayer::openJoinMatchMenu)
+    );
+    joinMatchButton->setPosition({-winSize.width / -2.15f, winSize.height / -2.25f});
+    menu->addChild(joinMatchButton);
     
     this->setTouchEnabled(true);
     this->setKeyboardEnabled(true);
@@ -411,7 +415,6 @@ void GDWTLayer::MatchesListArrowLeft(CCObject*){
 void GDWTLayer::MatchesListArrowRight(CCObject*){
     MatchesListPage++;
     refreshMatchesList(10);
-    joinMatchLayer::create()->show();
 }
 
 //
@@ -576,4 +579,8 @@ void GDWTLayer::update(float delta){
 
 void GDWTLayer::OnBackButton(CCObject*){
 	CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
+}
+
+void GDWTLayer::openJoinMatchMenu(CCObject*){
+    joinMatchLayer::create()->show();
 }

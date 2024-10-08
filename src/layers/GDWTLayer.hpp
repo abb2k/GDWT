@@ -60,4 +60,8 @@ class GDWTLayer : public CCLayer {
 
 
         bool cnext = false;
+
+        //
+
+        void openJoinMatchMenu(CCObject*);
 };
