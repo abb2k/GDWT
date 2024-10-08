@@ -161,6 +161,107 @@ using PlayerDataTask = Task<std::vector<PlayerData>>;
 using scoreCalcTask = Task<std::vector<std::tuple<std::string, int, int>>>;
 using MatchGroupsDataTask = Task<std::vector<MatchGroup>>;
 
+
+//discord stuff
+
+typedef struct {
+    std::string message;
+    int code;
+} DiscordError;
+
+template <>
+struct matjson::Serialize<DiscordError> {
+    static DiscordError from_json(const matjson::Value& value) {
+        return DiscordError {
+            .message = value["message"].as_string(),
+            .code = value["code"].as_int()
+        };
+    }
+
+    static matjson::Value to_json(const DiscordError& value) {
+        auto obj = matjson::Object();
+        obj["message"] = value.message;
+        obj["code"] = value.code;
+        return obj;
+    }
+};
+
+typedef struct {
+    std::string name;
+    std::string value;
+    bool inl;
+} DiscordEmbedField;
+
+template <>
+struct matjson::Serialize<DiscordEmbedField> {
+    static DiscordEmbedField from_json(const matjson::Value& value) {
+        return DiscordEmbedField {
+            .name = value["name"].as_string(),
+            .value = value["value"].as_string(),
+            .inl = value["inline"].as_bool()
+        };
+    }
+
+    static matjson::Value to_json(const DiscordEmbedField& value) {
+        auto obj = matjson::Object();
+        obj["name"] = value.name;
+        obj["value"] = value.value;
+        obj["inline"] = value.inl;
+        return obj;
+    }
+};
+
+
+typedef struct {
+    std::string title;
+    std::string description;
+    int color;
+    std::vector<DiscordEmbedField> fields;
+} DiscordEmbed;
+
+template <>
+struct matjson::Serialize<DiscordEmbed> {
+    static DiscordEmbed from_json(const matjson::Value& value) {
+        return DiscordEmbed {
+            .title = value["title"].as_string(),
+            .description = value["description"].as_string(),
+            .color = value["color"].as_int(),
+            .fields = value["fields"].as<std::vector<DiscordEmbedField>>()
+        };
+    }
+
+    static matjson::Value to_json(const DiscordEmbed& value) {
+        auto obj = matjson::Object();
+        obj["title"] = value.title;
+        obj["description"] = value.description;
+        obj["color"] = value.color;
+        obj["fields"] = value.fields;
+        return obj;
+    }
+};
+
+typedef struct {
+    std::string content;
+    std::vector<DiscordEmbed> embeds;
+} DiscordMessage;
+
+template <>
+struct matjson::Serialize<DiscordMessage> {
+    static DiscordMessage from_json(const matjson::Value& value) {
+        return DiscordMessage {
+            .content = value["content"].as_string(),
+            .embeds = value["embeds"].as<std::vector<DiscordEmbed>>()
+        };
+    }
+
+    static matjson::Value to_json(const DiscordMessage& value) {
+        auto obj = matjson::Object();
+        obj["content"] = value.content;
+        obj["embeds"] = value.embeds;
+        return obj;
+    }
+};
+
 class data {
     public:
         static MatchesTask getMatchesData();
@@ -191,6 +292,19 @@ class data {
         static std::string ScoreSystemTypeToString(ScoreSystemType type);
 
         static Result<std::tuple<int, int, int>, int> splitDate(std::string date);
+
+        static void leaveMatch();
+        static Result<Task<Result<>>> joinMatch(std::string joinCode);
+
+        static bool getIsInMatch();
+
+        static Result<std::string> encrypt(const std::string &plaintext, const std::string &key);
+
+        static DiscordEmbed embedWithPlayerColor();
+
+        static Task<Result<>> SendDiscordMessage(DiscordMessage message);
+
+        static int getCombo(int levelID, int precent);
     
     private:
 
@@ -213,4 +327,16 @@ class data {
         static std::vector<GJGameLevel*> loadedLevels;
 
         static Ref<CCDictionary> loadedImages;
+
+        static bool isInMatch;
+        static std::string discordWebhookLink;
+        static std::string discordWebhookSecret;
+
+        static std::tuple<int, int, int> lastLevelProgress;
+
+        static std::string base64_encode(const unsigned char* buffer, size_t length);
+
+        static std::vector<unsigned char> base64_decode(const std::string& encoded);
+
+        static Result<std::string> decrypt(const std::string& ciphertext_b64, const std::string& key);
 };

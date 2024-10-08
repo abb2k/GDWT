@@ -6,6 +6,10 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(GDWT VERSION 1.0.0)
 
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+link_libraries(OpenSSL::Crypto OpenSSL::SSL)
+
 file(GLOB_RECURSE SOURCES 
     src/*.cpp
 )
@@ -20,3 +24,6 @@ endif()
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
 setup_geode_mod(${PROJECT_NAME})
+
+
+

@@ -1,5 +1,14 @@
 #include "../utils/data.hpp"
 #include <Geode/utils/web.hpp>
+/*
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/buffer.h>*/
+#include <openssl/aes.h>
+#include <openssl/rand.h>
+#include <openssl/evp.h>
+#include <openssl/bio.h>
+#include <openssl/buffer.h>
 
 // == static members ==
 
@@ -26,6 +35,14 @@ std::vector<GJGameLevel*> data::loadedLevels{};
 std::vector<MatchGroup> data::LoadedMatchGroups{};
 
 Ref<CCDictionary> data::loadedImages = CCDictionary::create();
+
+std::tuple<int, int, int> data::lastLevelProgress{};
+
+bool data::isInMatch = false;
+
+std::string data::discordWebhookLink = "https://discord.com/api/webhooks/1292885543914573936/";
+
+std::string data::discordWebhookSecret = "";
 
 // == functions ==
 
@@ -931,3 +948,230 @@ Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
 }
 
 
+std::string data::base64_encode(const unsigned char* buffer, size_t length) {
+    BIO* b64 = BIO_new(BIO_f_base64());
+    BIO* bio = BIO_new(BIO_s_mem());
+    BIO_push(b64, bio);
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    BIO_write(b64, buffer, length);
+    BIO_flush(b64);
+
+    BUF_MEM* bufferPtr;
+    BIO_get_mem_ptr(b64, &bufferPtr);
+    std::string result(bufferPtr->data, bufferPtr->length);
+    
+    BIO_free_all(b64);
+    return result;
+}
+
+Result<std::string> data::encrypt(const std::string& plaintext, const std::string& key) {
+    unsigned char keyBytes[32] = {0};
+    std::memcpy(keyBytes, key.data(), std::min(key.size(), sizeof(keyBytes)));
+
+    unsigned char iv[16] = {0};
+
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Err("Failed to create context");
+    }
+
+    if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, keyBytes, iv)) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to initialize encryption");
+    }
+
+    std::vector<unsigned char> ciphertext(plaintext.size() + AES_BLOCK_SIZE);
+    int len;
+    if (1 != EVP_EncryptUpdate(ctx, ciphertext.data(), &len, reinterpret_cast<const unsigned char*>(plaintext.data()), plaintext.size())) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to encrypt data");
+    }
+
+    int ciphertext_len = len;
+
+    if (1 != EVP_EncryptFinal_ex(ctx, ciphertext.data() + len, &len)) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to finalize encryption");
+    }
+    ciphertext_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    return Ok(base64_encode(ciphertext.data(), ciphertext_len));
+}
+
+std::vector<unsigned char> data::base64_decode(const std::string& encoded) {
+    BIO* bio = BIO_new_mem_buf(encoded.data(), encoded.size());
+    BIO* b64 = BIO_new(BIO_f_base64());
+    BIO_push(b64, bio);
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+
+    std::vector<unsigned char> buffer(encoded.size());
+    int decoded_length = BIO_read(b64, buffer.data(), buffer.size());
+    buffer.resize(decoded_length);
+
+    BIO_free_all(b64);
+    return buffer;
+}
+
+// Function to decrypt ciphertext
+Result<std::string> data::decrypt(const std::string& ciphertext_b64, const std::string& key) {
+    std::vector<unsigned char> ciphertext = base64_decode(ciphertext_b64);
+
+    unsigned char keyBytes[32] = {0};
+    std::memcpy(keyBytes, key.data(), std::min(key.size(), sizeof(keyBytes)));
+
+    unsigned char iv[16] = {0};
+
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        return Err("Failed to create context");
+    }
+
+    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_256_cbc(), NULL, keyBytes, iv)) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to initialize decryption");
+    }
+
+    std::vector<unsigned char> plaintext(ciphertext.size());
+    int len;
+    if (1 != EVP_DecryptUpdate(ctx, plaintext.data(), &len, ciphertext.data(), ciphertext.size())) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to decrypt data");
+    }
+
+    int plaintext_len = len;
+
+    if (1 != EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len)) {
+        EVP_CIPHER_CTX_free(ctx);
+        return Err("Failed to finalize decryption");
+    }
+    plaintext_len += len;
+
+    EVP_CIPHER_CTX_free(ctx);
+
+    return Ok(std::string(reinterpret_cast<char*>(plaintext.data()), plaintext_len));
+}
+bool data::getIsInMatch() { return isInMatch; }
+
+void data::leaveMatch(){
+    web::WebRequest req = web::WebRequest();
+    DiscordMessage message{};
+
+    DiscordEmbed e = embedWithPlayerColor();
+    e.title = GJAccountManager::get()->m_username + " Disconnected.";
+    e.description = "AccountID: " + std::to_string(GJAccountManager::get()->m_accountID);
+
+    message.embeds.push_back(e);
+
+    auto j = matjson::Value(message);
+
+    req.bodyJSON(j);
+
+    req.post(discordWebhookLink + discordWebhookSecret).listen([] (web::WebResponse* res) {});
+
+    isInMatch = false;
+    discordWebhookSecret = "";
+}
+
+Result<Task<Result<>>> data::joinMatch(std::string joinCode){
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    long long a = time_point_cast<seconds>(now).time_since_epoch().count();
+    a = a / 100;
+
+    auto v = decrypt(joinCode, std::to_string(a));
+    if (v.isErr()){
+        isInMatch = false;
+        discordWebhookSecret = "";
+        return Err(v.err().value());
+    }
+    else{
+
+        web::WebRequest req = web::WebRequest();
+
+        DiscordMessage message{};
+
+        DiscordEmbed e = embedWithPlayerColor();
+        e.title = GJAccountManager::get()->m_username + " Successfully connected!";
+        e.description = "AccountID: " + std::to_string(GJAccountManager::get()->m_accountID);
+
+        message.embeds.push_back(e);
+
+        auto j = matjson::Value(message);
+
+        req.bodyJSON(j);
+
+        auto val = v.value();
+
+        return Ok(req.post(discordWebhookLink + val).map(
+        [val] (web::WebResponse* res) -> Result<> {
+            if (!res->ok()){
+                return Err("Connection Failed!");
+            }
+
+            auto json = res->json();
+
+            if (json.isOk()){
+                return Err("Incorrect code! (might be expired)");
+            }
+
+            isInMatch = true;
+            discordWebhookSecret = val;
+            return Ok();
+        },
+        [](auto) -> std::monostate {
+            return std::monostate();
+        }));
+    }
+}
+
+DiscordEmbed data::embedWithPlayerColor(){
+    DiscordEmbed toReturn;
+
+    auto RGBColor = GameManager::get()->colorForIdx(GameManager::get()->m_playerColor);
+
+    toReturn.color = (RGBColor.r << 16) | (RGBColor.g << 8) | RGBColor.b;
+    return toReturn;
+}
+
+Task<Result<>> data::SendDiscordMessage(DiscordMessage message){
+    web::WebRequest req = web::WebRequest();
+
+    req.bodyJSON(matjson::Value(message));
+
+    return req.post(discordWebhookLink + discordWebhookSecret).map(
+        [] (web::WebResponse* res) -> Result<> {
+            if (!res->ok()){
+                return Err("Connection Failed!");
+            }
+
+            auto json = res->json();
+
+            if (json.isOk()){
+                return Err("Incorrect Secret!");
+            }
+
+            return Ok();
+        },
+        [](auto) -> std::monostate {
+            return std::monostate();
+        });
+}
+
+int data::getCombo(int levelID, int precent){
+    int currentCombo = std::get<2>(lastLevelProgress);
+
+    if (levelID == std::get<0>(lastLevelProgress) && precent == std::get<1>(lastLevelProgress)){
+        currentCombo++;
+    }
+    else{
+        currentCombo = 0;
+    }
+
+    std::get<0>(lastLevelProgress) = levelID;
+    std::get<1>(lastLevelProgress) = precent;
+    std::get<2>(lastLevelProgress) = currentCombo;
+
+    return currentCombo;
+}

@@ -2,6 +2,7 @@
 #include "../layers/GDWTMatchCell.hpp"
 #include "../layers/GDWTTeamCell.hpp"
 #include "../layers/GDWTMatchGroupCell.hpp"
+#include "../layers/joinMatchLayer.hpp"
 
 GDWTLayer* GDWTLayer::create() {
     auto ret = new GDWTLayer();
@@ -379,7 +380,6 @@ void GDWTLayer::refreshMatchesList(int amountPerPage){
 
             matchesScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
 
-                //
             for (int i = 0; i < pageMatches.size(); i++)
             {   
                 GDWTMatchCell* matchCell;
@@ -411,6 +411,7 @@ void GDWTLayer::MatchesListArrowLeft(CCObject*){
 void GDWTLayer::MatchesListArrowRight(CCObject*){
     MatchesListPage++;
     refreshMatchesList(10);
+    joinMatchLayer::create()->show();
 }
 
 //
