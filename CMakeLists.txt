@@ -7,7 +7,7 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 project(GDWT VERSION 1.0.0)
 
 find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
+include_directories(${PROJECT_SOURCE_DIR})
 link_libraries(OpenSSL::Crypto OpenSSL::SSL)
 
 file(GLOB_RECURSE SOURCES 
