@@ -31,5 +31,6 @@ endif()
 #set(OPENSSL_INCLUDE_DIR $ENV{OPENSSL_INCLUDE_DIR})
 #set(OPENSSL_LIB_DIR $ENV{OPENSSL_LIB_DIR})
 
+find_package(OpenSSL REQUIRED)
 include_directories($ENV{OPENSSL_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} "$ENV{OPENSSL_INCLUDE_DIR}/lib/VC/x64/MD/openssl.lib" "$ENV{OPENSSL_INCLUDE_DIR}/lib/VC/x64/MD/libcrypto.lib")
+target_link_libraries(${PROJECT_NAME} OpenSSL::SSL OpenSSL::Crypto)
