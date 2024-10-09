@@ -1,3 +1,6 @@
+# 1.2.0
+- added an option for players to join a gdwt match with a given code, this is made for the players who are actually participating in the tournament to help us more easiely count points :D
+
 # 1.1.3
 - removed the "GDWT Managment" badge from <cy>TreblePKGD</c> and <cy>Foxdemix</c>.
 
