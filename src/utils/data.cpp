@@ -13,6 +13,8 @@ std::string data::playersPageID = "Player%20Raw%20Data";
 
 std::string data::matchGroupsPageID = "Match%20Groups%20Data";
 
+std::string data::currentMatchPageID = "CurrentMatch";
+
 std::vector<Match> data::loadedMatches{};
 
 std::vector<UserInfo> data::loadedUsersInfo{};
@@ -34,6 +36,10 @@ bool data::isInMatch = false;
 std::string data::discordWebhookLink = "https://discord.com/api/webhooks/";
 
 std::string data::discordWebhookSecret = "";
+
+std::string data::sheetsClientID = "";
+std::string data::sheetsClientSecret = "";
+std::string data::sheetsRefreshToken = "";
 
 // == functions ==
 
@@ -927,6 +933,53 @@ MatchGroupsDataTask data::getMatchGroupsData(){
     });
 }
 
+CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
+    web::WebRequest req = web::WebRequest();
+
+    req.header("Authorization", "Bearer " + accessToken);
+
+    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?majorDimension=COLUMNS", SheetID, currentMatchPageID)).map(
+    [] (web::WebResponse* res) -> Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>> {
+
+        if (res->json().isOk()){
+            auto matchPlayers = std::map<std::string, std::pair<std::string, std::vector<std::string>>>{};
+
+            auto vals = res->json().value().as<sheetValues>();
+
+            if (vals.range == "")
+                return Err("Failed to fetch sheet data!");
+
+
+            std::vector<std::vector<std::string>> values = vals.values;
+
+            for (int r = 0; r < values.size(); r++)
+            {
+                if (!values[r].size()) continue;
+
+                if (values[r][1] == "-1") continue;
+                if (matchPlayers.contains(values[r][1])) continue;
+
+                matchPlayers.insert(std::pair<std::string, std::pair<std::string, std::vector<std::string>>>{values[r][1], std::pair<std::string, std::vector<std::string>>{data::columnNumberToLetter(r), std::vector<std::string>{}}});
+
+                for (int k = 1; k < values[r].size(); k++)
+                {
+                    matchPlayers[values[r][1]].second.push_back(values[r][k]);
+                }
+            }
+
+            return Ok(matchPlayers);
+        }
+        else{ 
+            return Err("Failed to fetch data!");
+        }
+        
+            
+    },
+    [](auto) -> std::monostate {
+        return std::monostate();
+    });
+}
+
 Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
     auto splittedDate = splitStr(date, "/");
 
@@ -938,7 +991,7 @@ Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
     }
 }
 
-int getKey() {
+int data::getKey() {
     using namespace std::chrono;
     auto now = system_clock::now();
     long long a = time_point_cast<seconds>(now).time_since_epoch().count();
@@ -946,7 +999,6 @@ int getKey() {
     return a;
 }
 
-// Function to decode a Base64 string to a byte array
 std::vector<unsigned char> data::base64Decode(const std::string& input) {
     std::vector<unsigned char> decodedBytes;
     decodedBytes.reserve((input.length() / 4) * 3);
@@ -1014,6 +1066,9 @@ void data::leaveMatch(){
 
     isInMatch = false;
     discordWebhookSecret = "";
+    sheetsClientID = "";
+    sheetsClientSecret = "";
+    sheetsRefreshToken = "";
 }
 
 Result<Task<Result<>>> data::joinMatch(std::string joinCode){
@@ -1026,10 +1081,14 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
 
     auto secrets = splitStr(decrypt, "|");
 
-    if (secrets.size() != 2)
+    if (secrets.size() != 5)
         return Err("Invalid code!");
 
     std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
+
+    sheetsClientID = secrets[2];
+    sheetsClientSecret = secrets[3];
+    sheetsRefreshToken = secrets[4];
 
     web::WebRequest req = web::WebRequest();
 
@@ -1114,4 +1173,114 @@ int data::getCombo(int levelID, int precent){
     std::get<2>(lastLevelProgress) = currentCombo;
 
     return currentCombo;
+}
+
+Task<Result<std::string>> data::refreshAccessToken(std::string clientId, std::string clientSecret, std::string refreshToken) {
+    web::WebRequest req = web::WebRequest();
+
+    req.param("client_id", clientId);
+    req.param("client_secret", clientSecret);
+    req.param("refresh_token", refreshToken);
+    req.param("grant_type", "refresh_token");
+
+    return req.post("https://oauth2.googleapis.com/token").map(
+    [] (web::WebResponse* res) -> Result<std::string> {
+        
+        if (res->json().isErr())
+            return Err(res->json().error());
+        
+        sheetRefreshedToken t;
+
+        t = res->json().value().as<sheetRefreshedToken>();
+
+        if (t.access_token == "") return Err("Failed getting access token!");
+
+        return Ok(t.access_token);
+    },
+    [](auto) -> std::monostate {
+        return std::monostate();
+    });
+}
+
+Task<Result<>> data::writeToGoogleSheet(std::string spreadsheetId, std::string range, std::string value, std::string accessToken) {
+    web::WebRequest req = web::WebRequest();
+
+    sheetValues values;
+    values.range = range;
+    values.majorDimension = "ROWS";
+    values.values = std::vector<std::vector<std::string>>{std::vector<std::string>{value}};
+
+    req.header("Authorization", "Bearer " + accessToken);
+    req.header("Content-Type", "application/json");
+    req.bodyJSON(matjson::Value(values));
+
+    req.param("valueInputOption", "USER_ENTERED");
+
+    return req.put(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}", spreadsheetId, range)).map(
+    [] (web::WebResponse* res) -> Result<> {
+
+        auto json = res->json();
+        if (json.isErr())
+            return Err(json.error());
+
+        sheetWriteReport r = json.value().as<sheetWriteReport>();
+
+        if (r.spreadsheetId == "") return Err("failed writing to the sheet!");
+
+        return Ok();
+    },
+    [](auto) -> std::monostate {
+        return std::monostate();
+    });
+
+    
+}
+
+std::string data::columnNumberToLetter(int colNum) {
+    colNum += 1;
+    std::string colLetter;
+    while (colNum > 0) {
+        int rem = (colNum - 1) % 26;
+        colLetter = static_cast<char>(rem + 'A') + colLetter;
+        colNum = (colNum - 1) / 26;
+    }
+    return colLetter;
+}
+
+void data::SendSheetProgress(std::string message){
+    auto messageTask = data::refreshAccessToken(sheetsClientID, sheetsClientSecret, sheetsRefreshToken);
+
+    messageTask.listen([message](Result<std::string>* res){
+        if (res->isOk()){
+            auto accToken = res->value();
+
+            data::getCurrentMatchData(accToken).listen([accToken, message](Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>>* res2){
+                if (res2->isOk()){
+
+                    auto currMatchPlayers = res2->value();
+
+                    auto accID = std::to_string(GJAccountManager::get()->m_accountID);
+
+                    if (!currMatchPlayers.contains(accID))
+                        //You are not a part of any ongoing match!
+                        return;
+
+                    std::string rangeLetter = currMatchPlayers[accID].first;
+                    int rangeNum = currMatchPlayers[accID].second.size() + 2;
+
+                    data::writeToGoogleSheet("1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE", fmt::format("CurrentMatch!{}{}", rangeLetter, rangeNum), message, accToken).listen([rangeLetter, rangeNum](Result<>* res3){
+                        if (res3->isOk()){
+                            log::info("written!");
+                        }   
+                        else
+                            log::info("{}", res3->error());
+                    });
+                }
+                else
+                    log::info("{}", res2->error());
+            });
+        }
+        else
+            log::info("{}", res->error());
+    });
 }

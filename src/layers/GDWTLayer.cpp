@@ -321,7 +321,7 @@ bool GDWTLayer::init(){
         this,
         menu_selector(GDWTLayer::openJoinMatchMenu)
     );
-    joinMatchButton->setPosition({-winSize.width / -2.15f, winSize.height / -2.25f});
+    joinMatchButton->setPosition({0, -137.5f});
     menu->addChild(joinMatchButton);
     
     this->setTouchEnabled(true);

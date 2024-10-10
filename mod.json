@@ -8,13 +8,13 @@
 	},
 	"id": "abb2k.gdwt",
 	"name": "GD World Tournament",
-	"version": "v1.2.0",
+	"version": "v1.2.1",
 	"developer": "abb2k",
 	"description": "",
 	"links": {
-		"community": "https://discord.gg/gdworldtournament"
+		"community": "https://discord.gg/qxaBVVds6e"
 	},
-	"tags": ["interface"],
+	"tags": ["interface", "utility"],
 	"resources": {
 		"sprites": [
 			"resources/*.png"

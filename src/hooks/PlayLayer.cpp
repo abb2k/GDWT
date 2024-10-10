@@ -69,4 +69,6 @@ void GDWTPlayLayer::sendProgressMessage(int precent, GJGameLevel* level, int com
     m_fields->listener.bind(this, &GDWTPlayLayer::onDiscordMessageSent);
 
     m_fields->listener.setFilter(data::SendDiscordMessage(message));
+
+    data::SendSheetProgress(std::to_string(precent));
 }

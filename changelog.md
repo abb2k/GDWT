@@ -1,3 +1,6 @@
+# 1.2.1
+- added tracking in spreadsheets for matches :)
+
 # 1.2.0
 - added an option for players to join a gdwt match with a given code, this is made for the players who are actually participating in the tournament to help us more easily count points :D
 

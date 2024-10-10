@@ -123,6 +123,21 @@ struct matjson::Serialize<sheetValues> {
 };
 
 typedef struct{
+    int groupID;
+    std::string groupName;
+    int amountPass;
+    ScoreSystemType scoreType;
+} MatchGroup;
+
+using MatchesTask = Task<std::vector<Match>>;
+using TeamsTask = Task<std::vector<Team>>;
+using UserInfoTask = Task<std::vector<UserInfo*>>;
+using PlayerDataTask = Task<std::vector<PlayerData>>;
+using scoreCalcTask = Task<std::vector<std::tuple<std::string, int, int>>>;
+using MatchGroupsDataTask = Task<std::vector<MatchGroup>>;
+using CurrentMatchTask = Task<Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>>>;
+
+typedef struct{
     int code;
     std::string message;
     std::string status;
@@ -148,19 +163,63 @@ struct matjson::Serialize<sheetError> {
 };
 
 typedef struct{
-    int groupID;
-    std::string groupName;
-    int amountPass;
-    ScoreSystemType scoreType;
-} MatchGroup;
+    std::string access_token;
+    int expires_in;
+    std::string scope;
+    std::string token_type;
+} sheetRefreshedToken;
 
-using MatchesTask = Task<std::vector<Match>>;
-using TeamsTask = Task<std::vector<Team>>;
-using UserInfoTask = Task<std::vector<UserInfo*>>;
-using PlayerDataTask = Task<std::vector<PlayerData>>;
-using scoreCalcTask = Task<std::vector<std::tuple<std::string, int, int>>>;
-using MatchGroupsDataTask = Task<std::vector<MatchGroup>>;
+template <>
+struct matjson::Serialize<sheetRefreshedToken> {
+    static sheetRefreshedToken from_json(const matjson::Value& value) {
+        return sheetRefreshedToken {
+            .access_token = value["access_token"].as_string(),
+            .expires_in = value["expires_in"].as_int(),
+            .scope = value["scope"].as_string(),
+            .token_type = value["token_type"].as_string()
+        };
+    }
 
+    static matjson::Value to_json(const sheetRefreshedToken& value) {
+        auto obj = matjson::Object();
+        obj["access_token"] = value.access_token;
+        obj["expires_in"] = value.expires_in;
+        obj["scope"] = value.scope;
+        obj["token_type"] = value.token_type;
+        return obj;
+    }
+};
+
+typedef struct{
+    std::string spreadsheetId;
+    std::string updatedRange;
+    int updatedRows;
+    int updatedColumns;
+    int updatedCells;
+} sheetWriteReport;
+
+template <>
+struct matjson::Serialize<sheetWriteReport> {
+    static sheetWriteReport from_json(const matjson::Value& value) {
+        return sheetWriteReport {
+            .spreadsheetId = value["spreadsheetId"].as_string(),
+            .updatedRange = value["updatedRange"].as_string(),
+            .updatedRows = value["updatedRows"].as_int(),
+            .updatedColumns = value["updatedColumns"].as_int(),
+            .updatedCells = value["updatedCells"].as_int()
+        };
+    }
+
+    static matjson::Value to_json(const sheetWriteReport& value) {
+        auto obj = matjson::Object();
+        obj["spreadsheetId"] = value.spreadsheetId;
+        obj["updatedRange"] = value.updatedRange;
+        obj["updatedRows"] = value.updatedRows;
+        obj["updatedColumns"] = value.updatedColumns;
+        obj["updatedCells"] = value.updatedCells;
+        return obj;
+    }
+};
 
 //discord stuff
 
@@ -269,6 +328,7 @@ class data {
         static UserInfoTask getUsersInfo(std::vector<int> userIDs);
         static PlayerDataTask getPlayersData();
         static MatchGroupsDataTask getMatchGroupsData();
+        static CurrentMatchTask getCurrentMatchData(std::string accessToken);
 
         static UserInfo parseUserInfo(std::string infoRaw);
 
@@ -301,8 +361,14 @@ class data {
         static DiscordEmbed embedWithPlayerColor();
 
         static Task<Result<>> SendDiscordMessage(DiscordMessage message);
+        static void SendSheetProgress(std::string message);
 
         static int getCombo(int levelID, int precent);
+        
+        static std::string columnNumberToLetter(int colNum);
+
+        static Task<Result<std::string>> refreshAccessToken(std::string clientId, std::string clientSecret, std::string refreshToken);
+        static Task<Result<>> writeToGoogleSheet(std::string spreadsheetId, std::string range, std::string value, std::string accessToken);
     
     private:
 
@@ -311,6 +377,7 @@ class data {
         static std::string teamsPageID;
         static std::string playersPageID;
         static std::string matchGroupsPageID;
+        static std::string currentMatchPageID;
 
         static std::vector<Match> loadedMatches;
 
@@ -329,9 +396,13 @@ class data {
         static bool isInMatch;
         static std::string discordWebhookLink;
         static std::string discordWebhookSecret;
+        static std::string sheetsClientID;
+        static std::string sheetsClientSecret;
+        static std::string sheetsRefreshToken;
 
         static std::tuple<int, int, int> lastLevelProgress;
 
+        static int getKey();
         static std::vector<unsigned char> base64Decode(const std::string& input);
         static std::string decryptString(const std::string& encryptedInput);
 };

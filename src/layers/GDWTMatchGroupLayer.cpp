@@ -114,15 +114,11 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
                 if (auto _scores = event->getValue()){
                     auto scores = *_scores;
 
-                    log::info("ss {}", scores.size());
-
                     std::vector<std::tuple<std::string, int, bool, int>> ctd{};
 
                     for (int s = 0; s < scores.size(); s++)
                     {
                         auto matchScore = *scores[s];
-
-                        log::info("aa {}", matchScore.size());
 
                         for (int i = 0; i < matchScore.size(); i++)
                         {
