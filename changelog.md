@@ -1,3 +1,6 @@
+# 1.2.3
+- removed a try catch statement
+
 # 1.2.2
 - added CBF detection to the match auto tracking
 
