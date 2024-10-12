@@ -52,6 +52,21 @@ void GDWTPlayLayer::onDiscordMessageSent(Task<Result<>>::Event* e){
 }
 
 void GDWTPlayLayer::sendProgressMessage(int precent, GJGameLevel* level, int combo){
+    if (data::getCBF()){
+
+        try{
+            if (m_fields->notifCBF)
+                m_fields->notifCBF->hide();
+        }
+        catch (...){}
+        
+        
+        m_fields->notifCBF = geode::Notification::create("Message was not sent! you have CBF on! please disable it!", nullptr, 4);
+        m_fields->notifCBF->show();
+
+        return;
+    }
+
     auto embed = data::embedWithPlayerColor();
 
     DiscordMessage message{};

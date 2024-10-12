@@ -369,6 +369,8 @@ class data {
 
         static Task<Result<std::string>> refreshAccessToken(std::string clientId, std::string clientSecret, std::string refreshToken);
         static Task<Result<>> writeToGoogleSheet(std::string spreadsheetId, std::string range, std::string value, std::string accessToken);
+
+        static bool getCBF();
     
     private:
 

@@ -1,3 +1,6 @@
+# 1.2.2
+- added CBF detection to the match auto tracking
+
 # 1.2.1
 - added tracking in spreadsheets for matches :)
 

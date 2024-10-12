@@ -8,6 +8,7 @@ class $modify(GDWTPlayLayer, PlayLayer) {
         bool hasRespawned = false;
         EventListener<Task<Result<>>> listener;
         float currentRunStartprecent;
+        geode::Notification* notifCBF = nullptr;
     };
 
     void destroyPlayer(PlayerObject* p0, GameObject* p1);

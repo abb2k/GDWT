@@ -1118,6 +1118,10 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
 
         isInMatch = true;
         discordWebhookSecret = val;
+        if (data::getCBF()){
+            geode::Notification::create("You have CBF on! please disable it!", nullptr, 4)->show();
+        }
+
         return Ok();
     },
     [](auto) -> std::monostate {
@@ -1283,4 +1287,18 @@ void data::SendSheetProgress(std::string message){
         else
             log::info("{}", res->error());
     });
+}
+
+bool data::getCBF(){
+    if (auto cbf = Loader::get()->getLoadedMod("syzzi.click_between_frames")){
+        if (!cbf->isEnabled())
+            return false;
+
+        if (cbf->getSettingValue<bool>("soft-toggle"))
+            return false;
+
+        return true;
+    }
+
+    return false;
 }
