@@ -9,8 +9,6 @@ class joinMatchLayer : public Popup<>, public FLAlertLayerProtocol {
     protected:
         bool setup();
 
-        TextInput* codeInput;
-
         CCMenuItemSpriteExtra* joinButton;
         CCMenuItemSpriteExtra* leaveButton;
         ButtonSprite* joinSprite;

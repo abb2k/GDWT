@@ -16,10 +16,23 @@ bool joinMatchLayer::setup(){
 
     this->setTitle("Join Match");
 
-    codeInput = TextInput::create(175, "Code");
-    codeInput->setCommonFilter(CommonFilter::Base64Normal);
-    codeInput->setPasswordMode(true);
-    this->m_buttonMenu->addChild(codeInput);
+    auto instructions1 = CCLabelBMFont::create("", "chatFont.fnt");
+    instructions1->setString(
+        fmt::format("1. {}",
+        "Copy the code sent by the event organizer"
+    ).c_str());
+    instructions1->setScale(0.65f);
+    instructions1->setPositionY(16);
+    m_buttonMenu->addChild(instructions1);
+
+    auto instructions2 = CCLabelBMFont::create("", "chatFont.fnt");
+    instructions2->setString(
+        fmt::format("2. {}",
+        "Click the \"JOIN\" button to play!"
+    ).c_str());
+    instructions2->setScale(0.65f);
+    instructions2->setPositionY(-5);
+    m_buttonMenu->addChild(instructions2);
 
     joinSprite = ButtonSprite::create("JOIN");
     joinSpriteDisabled = ButtonSprite::create("JOIN", "goldFont.fnt", "GJ_button_05.png");
@@ -64,8 +77,6 @@ void joinMatchLayer::show(){
 void joinMatchLayer::onJoinBtnClicked(CCObject*){
     if (!connecting)
         joinMatch();
-    
-    codeInput->setString("");
 }
 
 void joinMatchLayer::onLeaveBtnClicked(CCObject*){
@@ -82,7 +93,8 @@ void joinMatchLayer::leaveMatch(){
 
 void joinMatchLayer::joinMatch(){
     connecting = true;
-    auto res = data::joinMatch(codeInput->getString());
+
+    auto res = data::joinMatch(clipboard::read());
 
     if (res.isErr()){
         FLAlertLayer::create("Error!", res.err().value(), "OK")->show();

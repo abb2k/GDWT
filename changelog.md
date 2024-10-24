@@ -1,3 +1,6 @@
+# 1.2.4
+- removed match code input field :D
+
 # 1.2.3
 - removed a try catch statement
 
