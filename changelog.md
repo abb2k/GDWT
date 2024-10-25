@@ -1,3 +1,6 @@
+# 1.2.5
+- added the option for the match organizer to change whether CBF is allowed this match or not
+
 # 1.2.4
 - removed match code input field :D
 

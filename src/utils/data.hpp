@@ -371,7 +371,7 @@ class data {
         static Task<Result<>> writeToGoogleSheet(std::string spreadsheetId, std::string range, std::string value, std::string accessToken);
 
         static bool getCBF();
-    
+        static bool getCBFAllowed();
     private:
 
         static std::string SheetID;
@@ -401,6 +401,7 @@ class data {
         static std::string sheetsClientID;
         static std::string sheetsClientSecret;
         static std::string sheetsRefreshToken;
+        static bool CBFAllowed;
 
         static std::tuple<int, int, int> lastLevelProgress;
 

@@ -41,6 +41,8 @@ std::string data::sheetsClientID = "";
 std::string data::sheetsClientSecret = "";
 std::string data::sheetsRefreshToken = "";
 
+bool data::CBFAllowed = false;
+
 // == functions ==
 
 MatchesTask data::getMatchesData(){
@@ -1065,6 +1067,7 @@ void data::leaveMatch(){
     req.post(discordWebhookLink + discordWebhookSecret).listen([] (web::WebResponse* res) {});
 
     isInMatch = false;
+    CBFAllowed = false;
     discordWebhookSecret = "";
     sheetsClientID = "";
     sheetsClientSecret = "";
@@ -1081,14 +1084,27 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
 
     auto secrets = splitStr(decrypt, "|");
 
-    if (secrets.size() != 5)
+    if (secrets.size() != 6)
         return Err("Invalid code!");
 
     std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
 
-    sheetsClientID = secrets[2];
-    sheetsClientSecret = secrets[3];
-    sheetsRefreshToken = secrets[4];
+    std::string stringForCBF = secrets[2];
+    auto numForCBF = utils::numFromString<int>(stringForCBF).unwrapOr(-1);
+
+    if (numForCBF == -1){
+        return Err("Invalid code!");
+    }
+    else if (numForCBF == 0){
+        CBFAllowed = false;
+    }
+    else{
+        CBFAllowed = true;
+    }
+
+    sheetsClientID = secrets[3];
+    sheetsClientSecret = secrets[4];
+    sheetsRefreshToken = secrets[5];
 
     web::WebRequest req = web::WebRequest();
 
@@ -1120,6 +1136,9 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
         discordWebhookSecret = val;
         if (data::getCBF()){
             geode::Notification::create("You have CBF on! please disable it!", nullptr, 4)->show();
+        }
+        else if (data::getCBFAllowed()){
+            geode::Notification::create("CBF is allowed this match :D", nullptr, 4)->show();
         }
 
         return Ok();
@@ -1290,6 +1309,8 @@ void data::SendSheetProgress(std::string message){
 }
 
 bool data::getCBF(){
+    if (getCBFAllowed()) return false;
+
     if (auto cbf = Loader::get()->getLoadedMod("syzzi.click_between_frames")){
         if (!cbf->isEnabled())
             return false;
@@ -1301,4 +1322,8 @@ bool data::getCBF(){
     }
 
     return false;
+}
+
+bool data::getCBFAllowed(){
+    return CBFAllowed;
 }
