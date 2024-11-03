@@ -1384,9 +1384,7 @@ void data::disable2point1Percent(GJGameLevel* level){
     // (percentage toggle level key code)
     std::string levelKey;
 	if(level->m_levelID == 0){
-		std::ostringstream s;
-		s << level->m_levelName << "_" << level->m_levelRev;
-		levelKey = s.str();
+		levelKey = fmt::format("{}_{}", level->m_levelName, level->m_levelRev);
 	}
 	else{
 		levelKey = std::to_string(level->m_levelID);
