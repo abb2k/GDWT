@@ -1172,13 +1172,14 @@ Result<> data::joinMatch(std::string joinCode){
 }
 
 void data::checkConnectionComplete(std::string errMessage){
-    if (errMessage != "ERR"){
+    if (errMessage != "OK"){
         connecting = false;
         leaveMatch();
+
         if (m_target != nullptr)
             m_target->runAction(CCCallFuncO::create(m_target, m_callback, CCString::create(errMessage)));
     }
-    
+
     if (discordConnectionCheck && sheetsConnectionCheck){
         isInMatch = true;
         connecting = false;

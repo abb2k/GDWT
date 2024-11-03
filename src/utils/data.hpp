@@ -413,7 +413,7 @@ class data {
 
         static void disable2point1Percent(GJGameLevel* level);
 
-        static void checkConnectionComplete(std::string errMessage = "ERR");
+        static void checkConnectionComplete(std::string errMessage = "OK");
         static void setConnectionCompleteCallback(SEL_CallFuncO callback, CCNode* target);
 
         static bool discordConnectionCheck;
