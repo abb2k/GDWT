@@ -321,6 +321,44 @@ struct matjson::Serialize<DiscordMessage> {
     }
 };
 
+// (percentage toggle save data struct)
+struct ZSAToggleSaveData {
+	std::string key;
+	bool toggled;
+    int saved_time;
+};
+
+template<>
+struct matjson::Serialize<std::vector<ZSAToggleSaveData>> {
+    static std::vector<ZSAToggleSaveData> from_json(matjson::Value const& value) {
+        auto vec = std::vector<ZSAToggleSaveData> {};
+        for (auto const& item : value.as_array()) {
+            vec.push_back({
+				.key = item["key"].as_string(),
+                .toggled = item["toggled"].as_bool(),
+                .saved_time = item["original_time"].as_int(),
+            });
+        }
+        return vec;
+    }
+
+    static matjson::Value to_json(std::vector<ZSAToggleSaveData> const& vec) {
+        auto arr = matjson::Array {};
+        for (auto const& item : vec) {
+            arr.push_back(matjson::Object {
+				{"key", item.key},
+                { "toggled", item.toggled },
+                { "original_time", item.saved_time },
+            });
+        }
+        return arr;
+    }
+
+    static bool is_json(matjson::Value const& value) {
+        return value.is_array();
+    }
+};
+
 class data {
     public:
         static MatchesTask getMatchesData();
@@ -354,7 +392,7 @@ class data {
         static Result<std::tuple<int, int, int>, int> splitDate(std::string date);
 
         static void leaveMatch();
-        static Result<Task<Result<>>> joinMatch(std::string joinCode);
+        static Result<> joinMatch(std::string joinCode);
 
         static bool getIsInMatch();
 
@@ -372,6 +410,15 @@ class data {
 
         static bool getCBF();
         static bool getCBFAllowed();
+
+        static void disable2point1Percent(GJGameLevel* level);
+
+        static void checkConnectionComplete(std::string errMessage = "ERR");
+        static void setConnectionCompleteCallback(SEL_CallFuncO callback, CCNode* target);
+
+        static bool discordConnectionCheck;
+        static bool sheetsConnectionCheck;
+        static bool connecting;
     private:
 
         static std::string SheetID;
@@ -402,6 +449,9 @@ class data {
         static std::string sheetsClientSecret;
         static std::string sheetsRefreshToken;
         static bool CBFAllowed;
+
+        static SEL_CallFuncO m_callback;
+        static CCNode* m_target;
 
         static std::tuple<int, int, int> lastLevelProgress;
 

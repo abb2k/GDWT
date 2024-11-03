@@ -43,6 +43,13 @@ std::string data::sheetsRefreshToken = "";
 
 bool data::CBFAllowed = false;
 
+bool data::discordConnectionCheck = false;
+bool data::sheetsConnectionCheck = false;
+bool data::connecting = false;
+
+SEL_CallFuncO data::m_callback;
+CCNode* data::m_target = nullptr;
+
 // == functions ==
 
 MatchesTask data::getMatchesData(){
@@ -1068,13 +1075,15 @@ void data::leaveMatch(){
 
     isInMatch = false;
     CBFAllowed = false;
+    sheetsConnectionCheck = false;
+    discordConnectionCheck = false;
     discordWebhookSecret = "";
     sheetsClientID = "";
     sheetsClientSecret = "";
     sheetsRefreshToken = "";
 }
 
-Result<Task<Result<>>> data::joinMatch(std::string joinCode){
+Result<> data::joinMatch(std::string joinCode){
     using namespace std::chrono;
     auto now = system_clock::now();
     long long a = time_point_cast<seconds>(now).time_since_epoch().count();
@@ -1120,20 +1129,35 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
 
     req.bodyJSON(j);
 
-    return Ok(req.post(discordWebhookLink + val).map(
-    [val] (web::WebResponse* res) -> Result<> {
+    connecting = true;
+
+    data::refreshAccessToken(sheetsClientID, sheetsClientSecret, sheetsRefreshToken).listen([](Result<std::string>* res){
+        if (res == nullptr) data::checkConnectionComplete("Incorrect code! (might be expired)");
+        if (!res->isOk()) data::checkConnectionComplete("Incorrect code! (might be expired)");
+
+        data::writeToGoogleSheet("1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE", "sheetEnterCheck!A1:A1", ":D", res->value()).listen([](Result<>* didWrite){
+            if (didWrite == nullptr) data::checkConnectionComplete("Connection Failed!");
+            if (!didWrite->isOk()) data::checkConnectionComplete("Connection Failed!");
+
+            data::sheetsConnectionCheck = true;
+            data::checkConnectionComplete();
+        });
+    });
+
+    req.post(discordWebhookLink + val).listen(
+    [val] (web::WebResponse* res){
         if (!res->ok()){
-            return Err("Connection Failed!");
+            data::checkConnectionComplete("Connection Failed!");
         }
 
         auto json = res->json();
 
         if (json.isOk()){
-            return Err("Incorrect code! (might be expired)");
+            data::checkConnectionComplete("Incorrect code! (might be expired)");
         }
 
-        isInMatch = true;
         discordWebhookSecret = val;
+        discordConnectionCheck = true;
         if (data::getCBF()){
             geode::Notification::create("You have CBF on! please disable it!", nullptr, 4)->show();
         }
@@ -1141,11 +1165,31 @@ Result<Task<Result<>>> data::joinMatch(std::string joinCode){
             geode::Notification::create("CBF is allowed this match :D", nullptr, 4)->show();
         }
 
-        return Ok();
-    },
-    [](auto) -> std::monostate {
-        return std::monostate();
-    }));
+        data::checkConnectionComplete();
+    });
+
+    return Ok();
+}
+
+void data::checkConnectionComplete(std::string errMessage){
+    if (errMessage != "ERR"){
+        connecting = false;
+        leaveMatch();
+        if (m_target != nullptr)
+            m_target->runAction(CCCallFuncO::create(m_target, m_callback, CCString::create(errMessage)));
+    }
+    
+    if (discordConnectionCheck && sheetsConnectionCheck){
+        isInMatch = true;
+        connecting = false;
+        if (m_target != nullptr)
+            m_target->runAction(CCCallFuncO::create(m_target, m_callback, CCString::create("1")));
+    }
+}
+
+void data::setConnectionCompleteCallback(SEL_CallFuncO callback, CCNode* target){
+    m_callback = callback;
+    m_target = target;
 }
 
 DiscordEmbed data::embedWithPlayerColor(){
@@ -1255,8 +1299,6 @@ Task<Result<>> data::writeToGoogleSheet(std::string spreadsheetId, std::string r
     [](auto) -> std::monostate {
         return std::monostate();
     });
-
-    
 }
 
 std::string data::columnNumberToLetter(int colNum) {
@@ -1326,4 +1368,41 @@ bool data::getCBF(){
 
 bool data::getCBFAllowed(){
     return CBFAllowed;
+}
+
+void data::disable2point1Percent(GJGameLevel* level){
+    auto pt = Loader::get()->getLoadedMod("zsa.percentage-toggle");
+
+    if (pt == nullptr) return;
+
+    if (pt->getSettingValue<bool>("force-enable")){
+        pt->setSettingValue("force-enable", false);
+        Notification::create("Disabled \"force-enable 2.1%\" as its not allowed in GDWT")->show();
+        return;
+    }
+
+    // (percentage toggle level key code)
+    std::string levelKey;
+	if(level->m_levelID == 0){
+		std::ostringstream s;
+		s << level->m_levelName << "_" << level->m_levelRev;
+		levelKey = s.str();
+	}
+	else{
+		levelKey = std::to_string(level->m_levelID);
+	}
+
+    auto toggleData = pt->getSavedValue<std::vector<ZSAToggleSaveData>>("toggle-save-data");
+	
+    for (int i = 0; i < toggleData.size(); i++)
+    {
+        if (toggleData[i].key == levelKey && toggleData[i].toggled){
+            toggleData[i].toggled = false;
+            pt->setSavedValue("toggle-save-data", toggleData);
+            Notification::create("Disabled 2.1% as its not allowed in GDWT")->show();
+            return;
+        }
+    }
+    
+
 }

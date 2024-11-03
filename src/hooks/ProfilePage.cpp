@@ -9,7 +9,6 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     std::vector<int> managmentIDs{
         11684904,
         9074168,
-        9975327,
         1380770
     };
 
@@ -36,6 +35,20 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     {
         if (tourneyWinners2024IDs[i] == user->m_accountID){
             addTourneyWinners2024Badge(username_menu);
+            break;
+        }
+    }
+
+    std::vector<int> organizerIDs{
+        11582651,
+        9074168,
+        1380770
+    };
+
+    for (int i = 0; i < organizerIDs.size(); i++)
+    {
+        if (organizerIDs[i] == user->m_accountID){
+            addOrganizerBadge(username_menu);
             break;
         }
     }
@@ -74,5 +87,22 @@ void GDWTProfilePage::addTourneyWinners2024Badge(CCMenu* m){
 
 void GDWTProfilePage::tourneyWinners2024BadgeClicked(CCObject*){
     auto alert = FLAlertLayer::create(nullptr, "2024 GD World Champion", "This player was a member of the South Korea team for the <cl>2024 GD World Tournament</c>. After battling to get out of their group in the group stage, they defeated <cr>Canada</c>, <cb>France</c>, and finally <cg>Mexico</c> to become champions of the inaugural <cl>GD World Tournament</c>.\n\nThe team consisted of <cy>Baeru</c>, <cy>Clutter</c>, <cy>Laniakea</c>, <cy>PoCle</c>, <cy>Guraud</c>, <cy>hanni</c>, <cy>IcaroX</c>, and <cy>Knicide</c>", "OK", nullptr, 400, false, 200, 1);
+    alert->show();
+}
+
+void GDWTProfilePage::addOrganizerBadge(CCMenu* m){
+    auto yourBadge = CCSprite::create("eventorganizerbadge.png"_spr);
+    auto bButton = CCMenuItemSpriteExtra::create(
+        yourBadge,
+        nullptr,
+        this,
+        menu_selector(GDWTProfilePage::organizerBadgeClicked)
+    );
+    bButton->setID("gdwtorganizer-badge");
+    m->addChild(bButton);
+}
+
+void GDWTProfilePage::organizerBadgeClicked(CCObject*){
+    auto alert = FLAlertLayer::create("GDWT Event Organizer", "This user is an <cy>Event Organizer</c> for the <cj>GD Wolrd Tournament</c>.\n\nThey are responsible for <cg>preparing and setting up</c> various GD World Tournament events.", "OK");
     alert->show();
 }

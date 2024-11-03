@@ -96,27 +96,26 @@ void joinMatchLayer::joinMatch(){
 
     auto res = data::joinMatch(clipboard::read());
 
+    data::setConnectionCompleteCallback(callfuncO_selector(joinMatchLayer::onConnectionComplete), this);
+
     if (res.isErr()){
         FLAlertLayer::create("Error!", res.err().value(), "OK")->show();
         connecting = false;
     }
-    else{
-        auto task = res.value();
-        discordMessageListener.bind([this](Task<Result<>>::Event* e){
-            if (auto* res2 = e->getValue()){
-                if (res2->isOk()){
-                    FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
-                }
-                else{
-                    FLAlertLayer::create("Error!", res2->err().value(), "OK")->show();
-                }
-                updateButtonsState();
-                connecting = false;
-            }
-        });
+}
 
-        discordMessageListener.setFilter(task);
+void joinMatchLayer::onConnectionComplete(CCObject* data){
+    std::string stringData = static_cast<CCString*>(data)->getCString();
+
+    if (stringData == "1"){
+        FLAlertLayer::create("Success!", "Joined match successfully!", "OK")->show();
     }
+    else{
+        FLAlertLayer::create("Error!", stringData, "OK")->show();
+    }
+
+    updateButtonsState();
+    connecting = false;
 }
 
 void joinMatchLayer::updateButtonsState(){

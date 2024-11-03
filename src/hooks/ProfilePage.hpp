@@ -14,4 +14,8 @@ class $modify(GDWTProfilePage, ProfilePage) {
         void addTourneyWinners2024Badge(CCMenu* m);
 
         void tourneyWinners2024BadgeClicked(CCObject*);
+
+        void addOrganizerBadge(CCMenu* m);
+
+        void organizerBadgeClicked(CCObject*);
 };

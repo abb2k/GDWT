@@ -1,3 +1,8 @@
+# 1.2.6
+- remade some code
+- removed the ability to use 2.1% within a match
+- changed the "2024 GD World Champion" badge texture, and added the new "Event Organizer" badge!
+
 # 1.2.5
 - added the option for the match organizer to change whether CBF is allowed this match or not
 

@@ -28,6 +28,7 @@ class joinMatchLayer : public Popup<>, public FLAlertLayerProtocol {
 
         void leaveMatch();
         void joinMatch();
+        void onConnectionComplete(CCObject* data);
 
         void FLAlert_Clicked(FLAlertLayer* alert, bool confirm) override;
 
