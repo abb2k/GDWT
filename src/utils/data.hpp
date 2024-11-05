@@ -449,6 +449,10 @@ class data {
         static std::string sheetsClientSecret;
         static std::string sheetsRefreshToken;
         static bool CBFAllowed;
+        static std::string matchSheetID;
+        static std::string matchSheetName;
+        static CCPoint columnsMinMax;
+        static std::string connectCheckCell;
 
         static SEL_CallFuncO m_callback;
         static CCNode* m_target;

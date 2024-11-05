@@ -46,6 +46,10 @@ bool data::CBFAllowed = false;
 bool data::discordConnectionCheck = false;
 bool data::sheetsConnectionCheck = false;
 bool data::connecting = false;
+std::string data::matchSheetID = "";
+std::string data::matchSheetName = "";
+CCPoint data::columnsMinMax = ccp(0, 0);
+std::string data::connectCheckCell = "";
 
 SEL_CallFuncO data::m_callback;
 CCNode* data::m_target = nullptr;
@@ -961,8 +965,9 @@ CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
 
             std::vector<std::vector<std::string>> values = vals.values;
 
-            for (int r = 0; r < values.size(); r++)
+            for (int r = columnsMinMax.x; r < values.size(); r++)
             {
+                if (columnsMinMax.y < r) break;
                 if (!values[r].size()) continue;
 
                 if (values[r][1] == "-1") continue;
@@ -975,6 +980,8 @@ CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
                     matchPlayers[values[r][1]].second.push_back(values[r][k]);
                 }
             }
+
+            if (!matchPlayers.size()) return Err("No match players found!");
 
             return Ok(matchPlayers);
         }
@@ -1093,7 +1100,7 @@ Result<> data::joinMatch(std::string joinCode){
 
     auto secrets = splitStr(decrypt, "|");
 
-    if (secrets.size() != 6)
+    if (secrets.size() != 11)
         return Err("Invalid code!");
 
     std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
@@ -1115,6 +1122,12 @@ Result<> data::joinMatch(std::string joinCode){
     sheetsClientSecret = secrets[4];
     sheetsRefreshToken = secrets[5];
 
+    matchSheetID = secrets[6];
+    matchSheetName = secrets[7];
+    columnsMinMax.x = utils::numFromString<int>(secrets[8]).unwrapOr(-1);
+    columnsMinMax.y = utils::numFromString<int>(secrets[9]).unwrapOr(-1);
+    connectCheckCell = secrets[10];
+
     web::WebRequest req = web::WebRequest();
 
     DiscordMessage message{};
@@ -1135,7 +1148,7 @@ Result<> data::joinMatch(std::string joinCode){
         if (res == nullptr) data::checkConnectionComplete("Incorrect code! (might be expired)");
         if (!res->isOk()) data::checkConnectionComplete("Incorrect code! (might be expired)");
 
-        data::writeToGoogleSheet("1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE", "sheetEnterCheck!A1:A1", ":D", res->value()).listen([](Result<>* didWrite){
+        data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}:{}", matchSheetName, connectCheckCell, connectCheckCell), ":D", res->value()).listen([](Result<>* didWrite){
             if (didWrite == nullptr) data::checkConnectionComplete("Connection Failed!");
             if (!didWrite->isOk()) data::checkConnectionComplete("Connection Failed!");
 
@@ -1334,7 +1347,7 @@ void data::SendSheetProgress(std::string message){
                     std::string rangeLetter = currMatchPlayers[accID].first;
                     int rangeNum = currMatchPlayers[accID].second.size() + 2;
 
-                    data::writeToGoogleSheet("1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE", fmt::format("CurrentMatch!{}{}", rangeLetter, rangeNum), message, accToken).listen([rangeLetter, rangeNum](Result<>* res3){
+                    data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}{}", matchSheetName, rangeLetter, rangeNum), message, accToken).listen([rangeLetter, rangeNum](Result<>* res3){
                         if (res3->isOk()){
                             log::info("written!");
                         }   
