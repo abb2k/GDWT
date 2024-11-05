@@ -1,3 +1,6 @@
+# 1.2.7
+- added the option for match organizers to change the sheet the match data is directed to
+
 # 1.2.6
 - remade some code
 - removed the ability to use 2.1% within a match
