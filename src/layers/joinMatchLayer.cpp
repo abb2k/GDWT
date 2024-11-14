@@ -11,7 +11,6 @@ joinMatchLayer* joinMatchLayer::create() {
     return nullptr;
 }
 
-
 bool joinMatchLayer::setup(){
 
     this->setTitle("Join Match");
