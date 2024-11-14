@@ -7,8 +7,6 @@ std::string data::SheetID = "1D-x1ABxhvJHb6rQ1T0LC0TF3MOeaEXLSDxwRhuMk9nE";
 
 std::string data::matchesPageID = "Match%20Raw%20Data";
 
-std::string data::teamsPageID = "Team%20Raw%20Data";
-
 std::string data::playersPageID = "Player%20Raw%20Data";
 
 std::string data::matchGroupsPageID = "Match%20Groups%20Data";
@@ -60,7 +58,7 @@ MatchesTask data::getMatchesData(){
     if (loadedMatches.size()){
         return MatchesTask::run(
         [] (auto progress, auto hasBeenCancelled) -> MatchesTask::Result{
-            return data::loadedMatches;
+            return Ok(data::loadedMatches);
         });
     }
 
@@ -69,126 +67,126 @@ MatchesTask data::getMatchesData(){
     //req.param("key", apiKey);
 
     return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, matchesPageID)).map(
-    [] (web::WebResponse* res) -> std::vector<Match> {
-        if (res->string().isOk()){
-            auto matches = std::vector<Match>{};
+    [] (web::WebResponse* res) -> Result<std::vector<Match>> {
 
-            if (res->string().unwrapOr("").empty()){
-                return std::vector<Match>{};
-            }
+        GEODE_UNWRAP_INTO(auto sheetString, res->string());
 
-            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
-                        
-            for (int r = 0; r < values.size(); r++)
-            {
-                if (values[r].size() - 1 != 9) continue;
-                
-                Match currMatch;
-                
-                auto hosts = splitStr(values[r][0], ";");
-                
-                for (int i = 0; i < hosts.size(); i++)
-                {
-                    if (hosts[i] == "NA")
-                        break;
-                    Host h;
-                    auto splittedHost = splitStr(hosts[i], ",");
-                    h.displayName = splittedHost[0];
-                    h.accountID = std::stoi(splittedHost[1]);
+        auto matches = std::vector<Match>{};
 
-                    currMatch.hosts.push_back(h);
-                }
-                
-                auto coHosts = splitStr(values[r][1], ";");
-                
-                for (int i = 0; i < coHosts.size(); i++)
-                {
-                    if (coHosts[i] == "NA")
-                        break;
-                    Host coh;
-                    auto splittedcoHost = splitStr(coHosts[i], ",");
-                    coh.displayName = splittedcoHost[0];
-                    coh.accountID = std::stoi(splittedcoHost[1]);
+        if (sheetString.empty()){
+            return Err("failed to get matches");
+        }
 
-                    currMatch.coHosts.push_back(coh);
-                }
-
-                currMatch.dateUnix = std::stoll(values[r][2]);
-
-                time_t time = currMatch.dateUnix;
-                auto tm = std::localtime(&time);
-                currMatch.date = fmt::format("{}/{}/{}", tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900);
-
-                currMatch.teams = splitStr(values[r][3], ",");
-                auto splittedLevels = splitStr(values[r][4], ";");
-                
-                if (values[r][4] == "NA" || values[r][4] == "")
-                    splittedLevels.clear();
-
-                for (int i = 0; i < splittedLevels.size(); i++)
-                {
-                    auto splittedLevel = splitStr(splittedLevels[i], ",");
-                    Level level;
+        std::vector<std::vector<std::string>> values = convertRawData(sheetString, true);
                     
-                    auto splittedLevelStats = splitStr(splittedLevel[0], "-");
+        for (int r = 0; r < values.size(); r++)
+        {
+            if (values[r].size() - 1 != 9) continue;
+            
+            Match currMatch;
+            
+            auto hosts = splitStr(values[r][0], ";");
+            
+            for (int i = 0; i < hosts.size(); i++)
+            {
+                if (hosts[i] == "NA")
+                    break;
+                Host h;
+                auto splittedHost = splitStr(hosts[i], ",");
+                h.displayName = splittedHost[0];
+                h.accountID = geode::utils::numFromString<int>(splittedHost[1]).unwrapOr(-1);
 
-                    level.levelID = std::stoi(splittedLevelStats[0]);
-                    if (splittedLevelStats.size() > 1)
-                        level.playTime = std::stoi(splittedLevelStats[1]);
-                    if (splittedLevel.size() > 1)
-                        for (int d = 1; d < splittedLevel.size(); d++)
-                        {
-                            auto pdata = splitStr(splittedLevel[d], "-");
-                            try{
-                                auto toAdd = std::tuple<int, int, std::string>{std::stoi(pdata[0]), 0, "default"};
+                currMatch.hosts.push_back(h);
+            }
+            
+            auto coHosts = splitStr(values[r][1], ";");
+            
+            for (int i = 0; i < coHosts.size(); i++)
+            {
+                if (coHosts[i] == "NA")
+                    break;
+                Host coh;
+                auto splittedcoHost = splitStr(coHosts[i], ",");
+                coh.displayName = splittedcoHost[0];
+                coh.accountID = geode::utils::numFromString<int>(splittedcoHost[1]).unwrapOr(-1);
 
-                                if (pdata.size() > 1){
-                                    std::get<1>(toAdd) = std::stoi(pdata[1]);
-                                }
-                                if (pdata.size() > 2){
-                                    std::get<2>(toAdd) = pdata[2];
-                                }
-                                level.accountIDs.push_back(toAdd);
-                            }
-                            catch (...){
-                                auto toAdd = std::tuple<std::string, std::string, int>{pdata[0], pdata[1], 0};
-
-                                if (pdata.size() > 2){
-                                    std::get<2>(toAdd) = std::stoi(pdata[2]);
-                                }
-                                
-                                level.displayNames.push_back(toAdd);
-                            }
-
-
-                        }
-                    currMatch.levels.push_back(level);
-                }
-
-                currMatch.liveLink = values[r][5];
-                currMatch.vodLink = values[r][6];
-                currMatch.matchName = values[r][7];
-
-                currMatch.scoreType = static_cast<ScoreSystemType>(std::stoi(values[r][8]));
-                currMatch.groupID = std::stoi(values[r][9]);
-
-                matches.push_back(currMatch);
+                currMatch.coHosts.push_back(coh);
             }
 
-            std::ranges::sort(matches, [](const Match a, const Match b) {
+            currMatch.dateUnix = geode::utils::numFromString<long long>(values[r][2]).unwrapOr(-1);
 
-                return b.dateUnix < a.dateUnix;
-            });
-            
-            loadMatches(matches);
+            time_t time = currMatch.dateUnix;
+            auto tm = std::localtime(&time);
+            currMatch.date = fmt::format("{}/{}/{}", tm->tm_mon + 1, tm->tm_mday, tm->tm_year + 1900);
 
-            return matches;
-        }
-        else{
+            currMatch.teams = splitStr(values[r][3], ",");
+            auto splittedLevels = splitStr(values[r][4], ";");
             
-            return std::vector<Match>{};
+            if (values[r][4] == "NA" || values[r][4] == "")
+                splittedLevels.clear();
+
+            for (int i = 0; i < splittedLevels.size(); i++)
+            {
+                auto splittedLevel = splitStr(splittedLevels[i], ",");
+                Level level;
+                
+                auto splittedLevelStats = splitStr(splittedLevel[0], "-");
+
+                level.levelID = geode::utils::numFromString<int>(splittedLevelStats[0]).unwrapOr(-1);
+                if (splittedLevelStats.size() > 1)
+                    level.playTime = geode::utils::numFromString<int>(splittedLevelStats[1]).unwrapOr(-1);
+                if (splittedLevel.size() > 1)
+                    for (int d = 1; d < splittedLevel.size(); d++)
+                    {
+                        auto pdata = splitStr(splittedLevel[d], "-");
+
+                        auto pdata1 = geode::utils::numFromString<int>(pdata[0]);
+                        auto pdata2 = geode::utils::numFromString<int>(pdata[1]);
+
+                        if (pdata1.isOk() && pdata2.isOk()){
+                            auto toAdd = std::tuple<int, int, std::string>{pdata1.unwrap(), 0, "default"};
+
+                            if (pdata.size() > 1){
+                                std::get<1>(toAdd) = geode::utils::numFromString<int>(pdata[1]).unwrapOr(-1);
+                            }
+                            if (pdata.size() > 2){
+                                std::get<2>(toAdd) = pdata2.unwrap();
+                            }
+                            level.accountIDs.push_back(toAdd);
+                        }
+                        else {
+                            auto toAdd = std::tuple<std::string, std::string, int>{pdata[0], pdata[1], 0};
+
+                            if (pdata.size() > 2){
+                                std::get<2>(toAdd) = geode::utils::numFromString<int>(pdata[2]).unwrapOr(-1);
+                            }
+                            
+                            level.displayNames.push_back(toAdd);
+                        }
+
+
+                    }
+                currMatch.levels.push_back(level);
+            }
+
+            currMatch.liveLink = values[r][5];
+            currMatch.vodLink = values[r][6];
+            currMatch.matchName = values[r][7];
+
+            currMatch.scoreType = static_cast<ScoreSystemType>(geode::utils::numFromString<int>(values[r][8]).unwrapOr(0));
+            currMatch.groupID = geode::utils::numFromString<int>(values[r][9]).unwrapOr(-1);
+
+            matches.push_back(currMatch);
         }
-            
+
+        std::ranges::sort(matches, [](const Match a, const Match b) {
+
+            return b.dateUnix < a.dateUnix;
+        });
+        
+        loadMatches(matches);
+
+        return Ok(matches);  
     },
     [](auto) -> std::monostate {
         return std::monostate();
@@ -199,68 +197,58 @@ TeamsTask data::getTeamsData(){
     if (loadedTeams.size()){
         return TeamsTask::run(
         [] (auto progress, auto hasBeenCancelled) -> TeamsTask::Result{
-            return data::loadedTeams;
+            return Ok(data::loadedTeams);
         });
     }
 
     web::WebRequest req = web::WebRequest();
 
-    //req.param("key", apiKey);
     req.param("majorDimension", "COLUMNS");
 
-    return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, teamsPageID)).map(
-    [] (web::WebResponse* res) -> std::vector<Team> {
-        if (res->string().isOk()){
-            auto teams = std::vector<Team>{};
+    return getPlayersData().map(
+    [] (Result<std::vector<PlayerData>>* pDataRes) -> Result<std::vector<Team>> {
+        if (pDataRes != nullptr){
+            auto players = pDataRes->unwrapOrDefault();
 
-            if (res->string().unwrapOr("").empty()){
-                return std::vector<Team>{};
+            if (!players.size()){
+                if (pDataRes->isErr())
+                    data::sendError(pDataRes->unwrapErr());
+                return Err("failed to get teams");
             }
 
-            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), false);
+            std::vector<Team> teams{};
 
-            for (int r = 0; r < values.size(); r++)
+            for (int p = 0; p < players.size(); p++)
             {
-                Team currTeam;
-                currTeam.countryCode = values[r][0];
-                if (values[r].size() > 1)
-                    for (int i = 1; i < values[r].size(); i++)
-                    {
-                        Player p;
-                        auto pInfo = splitStr(values[r][i], "-");
-                        try{
-                            p.accountID = std::stoi(pInfo[0]);
-                        }
-                        catch (...){
-                            p.displayName = pInfo[0];
-                            p.accountID = -1;
-                        }
-                        if (pInfo.size() > 1)
-                            if (pInfo[1] == "i")
-                                p.active = false;
-                            else
-                                p.active = true;
-                        else
-                            p.active = true;
-                        
-                        if (pInfo.size() > 2)
-                            p.displayName = pInfo[2];
+                bool doesnMyTeamExist = false;
 
-                        currTeam.accounts.push_back(p);
+                for (int i = 0; i < teams.size(); i++)
+                {
+                    if (teams[i].countryCode == players[p].countryCode){
+                        doesnMyTeamExist = true;
+                        teams[i].accounts.push_back(players[p]);
+                        break;
                     }
+                }
 
-                teams.push_back(currTeam);
+                if (doesnMyTeamExist){
+                    continue;
+                }
+                else{
+                    Team team;
+                    team.countryCode = players[p].countryCode;
+                    team.accounts.push_back(players[p]);
+                    teams.push_back(team);
+                }
             }
 
             loadTeams(teams);
             
-            return teams;
+            return Ok(teams);
         }
         else{
-            
-            return std::vector<Team>{};
+            return Err("failed to get teams");
         }
-            
     },
     [](auto) -> std::monostate {
         return std::monostate();
@@ -307,24 +295,6 @@ std::vector<std::string> data::eraseEmptys(std::vector<std::string> array){
         }
     }
     return array;
-}
-
-std::vector<int> data::splitStrInt(std::string str, std::string delim) {
-    size_t posStart = 0;
-    size_t posEnd;
-    size_t delimLen = delim.length();
-
-    std::vector<int> res;
-
-    while ((posEnd = str.find(delim, posStart)) != std::string::npos) {
-        std::string token = str.substr(posStart, posEnd - posStart);
-        posStart = posEnd + delimLen;
-        if (token != "")
-            res.push_back(std::stoi(token));
-    }
-
-    res.push_back(std::stoi(str.substr(posStart)));
-    return res;
 }
 
 std::vector<std::vector<std::string>> data::convertRawData(std::string data, bool rows){
@@ -416,20 +386,23 @@ UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
 
             tasks.push_back(req.post("http://www.boomlings.com/database/getGJUserInfo20.php").map(
             [] (web::WebResponse* res) -> UserInfo{
+                
+                UserInfo errUser{};
+                errUser.accountID = -1;
 
-                if (res->string().isOk()){
+                auto userInfoString = res->string().unwrapOr("-1");
 
-                    auto Info = data::parseUserInfo(res->string().unwrap());
-
-                    data::loadUserInfo(Info);
-
-                    return Info;
+                if (userInfoString == "-1"){
+                    return errUser;
                 }
-                else{
-                    UserInfo u{};
-                    u.accountID = -1;
-                    return u;
+                auto InfoRes = data::parseUserInfo(userInfoString);
+                if (!InfoRes.isOk()){
+                    return errUser;
                 }
+
+                data::loadUserInfo(InfoRes.unwrap());
+
+                return InfoRes.unwrap();
             },
             [](auto) -> std::monostate {
                 return std::monostate();
@@ -455,15 +428,15 @@ UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
     
 }
 
-UserInfo data::parseUserInfo(std::string infoRaw){
+Result<UserInfo> data::parseUserInfo(std::string infoRaw){
+    if (infoRaw == "-1")
+        return Err("invalid string!");
 
     if (infoRaw.length() >= 5){
         if (infoRaw[0] == 'e' && infoRaw[1] == 'r' && infoRaw[2] == 'r' && infoRaw[3] == 'o' && infoRaw[4] == 'r'){
-            UserInfo u{};
-            u.accountID = -1;
-            return u;
+            return Err("invalid string!");
         }
-    }
+    }    
 
     std::map<int, std::string> infoMap{};
 
@@ -482,7 +455,7 @@ UserInfo data::parseUserInfo(std::string infoRaw){
                 currThing += infoRaw[i];
             //log::info("registering (key = {})", isKey);
             if (isKey){
-                currentElement.first = std::stoi(currThing);
+                GEODE_UNWRAP_INTO(currentElement.first, geode::utils::numFromString<int>(currThing));
                 //log::info("added '{}' into the key", currThing);
             }
             else{
@@ -505,51 +478,51 @@ UserInfo data::parseUserInfo(std::string infoRaw){
     UserInfo info;
     
     info.userName = infoMap[1];
-    info.userID = std::stoi(infoMap[2]);
-    info.stars = std::stoi(infoMap[3]);
-    info.demons = std::stoi(infoMap[4]);
-    info.creatorPoints = std::stoi(infoMap[8]);
-    info.playerColor = std::stoi(infoMap[10]);
-    info.playerColor2 = std::stoi(infoMap[11]);
-    info.secretCoins = std::stoi(infoMap[13]);
-    info.accountID = std::stoi(infoMap[16]);
-    info.userCoins = std::stoi(infoMap[17]);
-    info.messageState = std::stoi(infoMap[18]);
-    info.friendState = std::stoi(infoMap[19]);
+    GEODE_UNWRAP_INTO(info.userID, geode::utils::numFromString<int>(infoMap[2]));
+    GEODE_UNWRAP_INTO(info.stars, geode::utils::numFromString<int>(infoMap[3]));
+    GEODE_UNWRAP_INTO(info.demons, geode::utils::numFromString<int>(infoMap[4]));
+    GEODE_UNWRAP_INTO(info.creatorPoints, geode::utils::numFromString<int>(infoMap[8]));
+    GEODE_UNWRAP_INTO(info.playerColor, geode::utils::numFromString<int>(infoMap[10]));
+    GEODE_UNWRAP_INTO(info.playerColor2, geode::utils::numFromString<int>(infoMap[11]));
+    GEODE_UNWRAP_INTO(info.secretCoins, geode::utils::numFromString<int>(infoMap[13]));
+    GEODE_UNWRAP_INTO(info.accountID, geode::utils::numFromString<int>(infoMap[16]));
+    GEODE_UNWRAP_INTO(info.userCoins, geode::utils::numFromString<int>(infoMap[17]));
+    GEODE_UNWRAP_INTO(info.messageState, geode::utils::numFromString<int>(infoMap[18]));
+    GEODE_UNWRAP_INTO(info.friendState, geode::utils::numFromString<int>(infoMap[19]));
     info.youtubeLink = infoMap[20];
-    info.accIcon = std::stoi(infoMap[21]);
-    info.accShip = std::stoi(infoMap[22]);
-    info.accBall = std::stoi(infoMap[23]);
-    info.accUfo = std::stoi(infoMap[24]);
-    info.accWave = std::stoi(infoMap[25]);
-    info.accRobot = std::stoi(infoMap[26]);
-    info.accGlow = std::stoi(infoMap[28]);
-    info.isRegistered = std::stoi(infoMap[29]);
-    info.globalRank = std::stoi(infoMap[30]);
-    info.friendstate = std::stoi(infoMap[31]);
-    info.accSpider = std::stoi(infoMap[43]);
+    GEODE_UNWRAP_INTO(info.accIcon, geode::utils::numFromString<int>(infoMap[21]));
+    GEODE_UNWRAP_INTO(info.accShip, geode::utils::numFromString<int>(infoMap[22]));
+    GEODE_UNWRAP_INTO(info.accBall, geode::utils::numFromString<int>(infoMap[23]));
+    GEODE_UNWRAP_INTO(info.accUfo, geode::utils::numFromString<int>(infoMap[24]));
+    GEODE_UNWRAP_INTO(info.accWave, geode::utils::numFromString<int>(infoMap[25]));
+    GEODE_UNWRAP_INTO(info.accRobot, geode::utils::numFromString<int>(infoMap[26]));
+    GEODE_UNWRAP_INTO(info.accGlow, geode::utils::numFromString<int>(infoMap[28]));
+    GEODE_UNWRAP_INTO(info.isRegistered, geode::utils::numFromString<int>(infoMap[29]));
+    GEODE_UNWRAP_INTO(info.globalRank, geode::utils::numFromString<int>(infoMap[30]));
+    GEODE_UNWRAP_INTO(info.friendstate, geode::utils::numFromString<int>(infoMap[31]));
+    GEODE_UNWRAP_INTO(info.accSpider, geode::utils::numFromString<int>(infoMap[43]));
     info.twitterLink = infoMap[44];
     info.twitch = infoMap[45];
-    info.diamonds = std::stoi(infoMap[46]);
-    info.accExplosion = std::stoi(infoMap[48]);
-    info.modLevel = std::stoi(infoMap[49]);
-    info.commentHistoryState = std::stoi(infoMap[50]);
-    info.glowColor = std::stoi(infoMap[51]);
-    info.moons = std::stoi(infoMap[52]);
+    GEODE_UNWRAP_INTO(info.diamonds, geode::utils::numFromString<int>(infoMap[46]));
+    GEODE_UNWRAP_INTO(info.accExplosion, geode::utils::numFromString<int>(infoMap[48]));
+    GEODE_UNWRAP_INTO(info.modLevel, geode::utils::numFromString<int>(infoMap[49]));
+    GEODE_UNWRAP_INTO(info.commentHistoryState, geode::utils::numFromString<int>(infoMap[50]));
+    GEODE_UNWRAP_INTO(info.glowColor, geode::utils::numFromString<int>(infoMap[51]));
+    GEODE_UNWRAP_INTO(info.moons, geode::utils::numFromString<int>(infoMap[52]));
     info.demonCategories = infoMap[55];
     info.normalLevelCategories = infoMap[56];
     info.platformerLevelCategories = infoMap[57];
 
-    return info;
+    return Ok(info);
 
 }
 
-void data::loadMatches(std::vector<Match> match){
+void data::loadMatches(const std::vector<Match>& match){
     loadedMatches.clear();
     loadedMatches = match;
 }
 
-void data::loadUserInfo(UserInfo user){
+void data::loadUserInfo(UserInfo& user){
     bool doesExist = false;
     for (int u = 0; u < loadedUsersInfo.size(); u++)
     {
@@ -562,7 +535,7 @@ void data::loadUserInfo(UserInfo user){
     loadedUsersInfo.insert(loadedUsersInfo.begin(), user);
 }
 
-void data::loadTeams(std::vector<Team> teams){
+void data::loadTeams(const std::vector<Team>& teams){
     loadedTeams.clear();
     loadedTeams = teams;
 }
@@ -595,7 +568,7 @@ PlayerDataTask data::getPlayersData(){
         if (LoadedPlayers.size()){
         return PlayerDataTask::run(
         [] (auto progress, auto hasBeenCancelled) -> PlayerDataTask::Result{
-            return data::LoadedPlayers;
+            return Ok(data::LoadedPlayers);
         });
     }
 
@@ -604,44 +577,52 @@ PlayerDataTask data::getPlayersData(){
     //req.param("key", apiKey);
 
     return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, playersPageID)).map(
-    [] (web::WebResponse* res) -> std::vector<PlayerData> {
-        if (res->string().isOk()){
-            auto players = std::vector<PlayerData>{};
+    [] (web::WebResponse* res) -> Result<std::vector<PlayerData>> {
 
-            if (res->string().unwrapOr("").empty()){
-                return std::vector<PlayerData>{};
-            }
+        GEODE_UNWRAP_INTO(auto resString, res->string());
 
-            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
+        auto players = std::vector<PlayerData>{};
+
+        log::info("getting p");
+
+        if (resString.empty()){
+            return Err("failed to get players");
+        }
+
+        log::info("lol p");
+
+        std::vector<std::vector<std::string>> values = convertRawData(resString, true);
+        
+        for (int r = 0; r < values.size(); r++)
+        {
+            if (values[r].size() - 1 != 5) continue;
+
+            PlayerData currPlayer;
+
+            currPlayer.countryCode = values[r][0];
+
+            currPlayer.accountID = geode::utils::numFromString<int>(values[r][1]).unwrapOr(-1);
+            currPlayer.displayName = values[r][2];
+
+            auto iconInfo = splitStr(values[r][3], ",");
             
-            for (int r = 0; r < values.size(); r++)
-            {
-                PlayerData currPlayer;
-                
-                currPlayer.accountID = std::stoi(values[r][0]);
-
-                auto iconInfo = splitStr(values[r][1], ",");
-                currPlayer.iconID = std::stoi(iconInfo[0]);
-                currPlayer.color1ID = std::stoi(iconInfo[1]);
-                currPlayer.color2ID = std::stoi(iconInfo[2]);
+            if (iconInfo.size() == 5){
+                currPlayer.iconID = geode::utils::numFromString<int>(iconInfo[0]).unwrapOr(-1);
+                currPlayer.color1ID = geode::utils::numFromString<int>(iconInfo[1]).unwrapOr(-1);
+                currPlayer.color2ID = geode::utils::numFromString<int>(iconInfo[2]).unwrapOr(-1);
                 currPlayer.glowEnabled = iconInfo[3] == "1";
-                currPlayer.glowColorID = std::stoi(iconInfo[4]);
-
-                currPlayer.ingameUserName = values[r][2];
-
-                players.push_back(currPlayer);
+                currPlayer.glowColorID = geode::utils::numFromString<int>(iconInfo[4]).unwrapOr(-1);
             }
             
-            LoadedPlayers.clear();
-            LoadedPlayers = players;
+            currPlayer.isActive = values[r][4] != "1";
 
-            return players;
+            players.push_back(currPlayer);
         }
-        else{
-            
-            return std::vector<PlayerData>{};
-        }
-            
+        
+        LoadedPlayers.clear();
+        LoadedPlayers = players;
+
+        return Ok(players);  
     },
     [](auto) -> std::monostate {
         return std::monostate();
@@ -658,8 +639,9 @@ CCImage* data::getImage(std::string ID){
 
 scoreCalcTask data::calculateScores(std::vector<Level> levels, std::vector<std::string> expectedTeams, ScoreSystemType type){
     return getTeamsData().map(
-        [levels, expectedTeams, type] (std::vector<Team>* _teams) -> std::vector<std::tuple<std::string, int, int>> {
-        auto teams = *_teams;
+        [levels, expectedTeams, type] (Result<std::vector<Team>>* _teams) -> Result<std::vector<std::tuple<std::string, int, int>>> {
+
+        GEODE_UNWRAP_INTO(auto teams, *_teams);
 
         std::vector<std::tuple<std::string, int, int>> toReturn{};
 
@@ -828,7 +810,7 @@ scoreCalcTask data::calculateScores(std::vector<Level> levels, std::vector<std::
             return A < B;
         });
 
-        return toReturn;
+        return Ok(toReturn);
     },
     [](auto) -> std::monostate {
         return std::monostate();
@@ -895,7 +877,7 @@ MatchGroupsDataTask data::getMatchGroupsData(){
         if (LoadedPlayers.size()){
         return MatchGroupsDataTask::run(
         [] (auto progress, auto hasBeenCancelled) -> MatchGroupsDataTask::Result{
-            return data::LoadedMatchGroups;
+            return Ok(data::LoadedMatchGroups);
         });
     }
 
@@ -904,42 +886,38 @@ MatchGroupsDataTask data::getMatchGroupsData(){
     //req.param("key", apiKey);
 
     return req.get(fmt::format("https://docs.google.com/spreadsheets/d/{}/gviz/tq?tqx=out:csv&sheet={}", SheetID, matchGroupsPageID)).map(
-    [] (web::WebResponse* res) -> std::vector<MatchGroup> {
-        if (res->string().isOk()){
-            auto groups = std::vector<MatchGroup>{};
+    [] (web::WebResponse* res) -> Result<std::vector<MatchGroup>> {
 
-            if (res->string().unwrapOr("").empty()){
-                return std::vector<MatchGroup>{};
-            }
+        GEODE_UNWRAP_INTO(auto MGString, res->string());
 
-            std::vector<std::vector<std::string>> values = convertRawData(res->string().unwrapOr(""), true);
-            
-            for (int r = 0; r < values.size(); r++)
-            {
-                if (values[r].size() - 1 != 3) continue;
+        auto groups = std::vector<MatchGroup>{};
 
-                MatchGroup currMGroups;
-                
-                currMGroups.groupID = std::stoi(values[r][0]);
-                currMGroups.groupName = values[r][1];
-
-                currMGroups.amountPass = std::stoi(values[r][2]);
-
-                currMGroups.scoreType = static_cast<ScoreSystemType>(std::stoi(values[r][3]));
-
-                groups.push_back(currMGroups);
-            }
-            
-            LoadedMatchGroups.clear();
-            LoadedMatchGroups = groups;
-
-            return groups;
+        if (MGString.empty()){
+            return Err("failed getting match groups");
         }
-        else{
+
+        std::vector<std::vector<std::string>> values = convertRawData(MGString, true);
+        
+        for (int r = 0; r < values.size(); r++)
+        {
+            if (values[r].size() - 1 != 3) continue;
+
+            MatchGroup currMGroups;
             
-            return std::vector<MatchGroup>{};
+            currMGroups.groupID = geode::utils::numFromString<int>(values[r][0]).unwrapOr(-1);
+            currMGroups.groupName = values[r][1];
+
+            currMGroups.amountPass = geode::utils::numFromString<int>(values[r][2]).unwrapOr(-1);
+
+            currMGroups.scoreType = static_cast<ScoreSystemType>(geode::utils::numFromString<int>(values[r][3]).unwrapOr(0));
+
+            groups.push_back(currMGroups);
         }
-            
+        
+        LoadedMatchGroups.clear();
+        LoadedMatchGroups = groups;
+
+        return Ok(groups);
     },
     [](auto) -> std::monostate {
         return std::monostate();
@@ -954,57 +932,52 @@ CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
     return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?majorDimension=COLUMNS", SheetID, currentMatchPageID)).map(
     [] (web::WebResponse* res) -> Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>> {
 
-        if (res->json().isOk()){
-            auto matchPlayers = std::map<std::string, std::pair<std::string, std::vector<std::string>>>{};
-
-            auto vals = res->json().value().as<sheetValues>();
-
-            if (vals.range == "")
-                return Err("Failed to fetch sheet data!");
-
-
-            std::vector<std::vector<std::string>> values = vals.values;
-
-            for (int r = columnsMinMax.x; r < values.size(); r++)
-            {
-                if (columnsMinMax.y < r) break;
-                if (!values[r].size()) continue;
-
-                if (values[r][1] == "-1") continue;
-                if (matchPlayers.contains(values[r][1])) continue;
-
-                matchPlayers.insert(std::pair<std::string, std::pair<std::string, std::vector<std::string>>>{values[r][1], std::pair<std::string, std::vector<std::string>>{data::columnNumberToLetter(r), std::vector<std::string>{}}});
-
-                for (int k = 1; k < values[r].size(); k++)
-                {
-                    matchPlayers[values[r][1]].second.push_back(values[r][k]);
-                }
-            }
-
-            if (!matchPlayers.size()) return Err("No match players found!");
-
-            return Ok(matchPlayers);
-        }
-        else{ 
-            return Err("Failed to fetch data!");
-        }
+        GEODE_UNWRAP_INTO(auto json, res->json());
         
-            
+        auto matchPlayers = std::map<std::string, std::pair<std::string, std::vector<std::string>>>{};
+
+        GEODE_UNWRAP_INTO(auto vals, json.as<sheetValues>());
+
+        if (vals.range == "")
+            return Err("Failed to fetch sheet data!");
+
+        std::vector<std::vector<std::string>> values = vals.values;
+
+        for (int r = columnsMinMax.x; r < values.size(); r++)
+        {
+            if (columnsMinMax.y < r) break;
+            if (!values[r].size()) continue;
+
+            if (values[r][1] == "-1") continue;
+            if (matchPlayers.contains(values[r][1])) continue;
+
+            matchPlayers.insert(std::pair<std::string, std::pair<std::string, std::vector<std::string>>>{values[r][1], std::pair<std::string, std::vector<std::string>>{data::columnNumberToLetter(r), std::vector<std::string>{}}});
+
+            for (int k = 1; k < values[r].size(); k++)
+            {
+                matchPlayers[values[r][1]].second.push_back(values[r][k]);
+            }
+        }
+
+        if (!matchPlayers.size()) return Err("No match players found!");
+
+        return Ok(matchPlayers);
     },
     [](auto) -> std::monostate {
         return std::monostate();
     });
 }
 
-Result<std::tuple<int, int, int>, int> data::splitDate(std::string date){
+Result<std::tuple<int, int, int>> data::splitDate(std::string date){
     auto splittedDate = splitStr(date, "/");
 
-    try{
-        return Ok(std::tuple<int, int, int>{std::stoi(splittedDate[0]), std::stoi(splittedDate[1]), std::stoi(splittedDate[2])});
-    }
-    catch (...){
-        return Err(-1);
-    }
+    GEODE_UNWRAP_INTO(auto day, geode::utils::numFromString<int>(splittedDate[0]));
+
+    GEODE_UNWRAP_INTO(auto month, geode::utils::numFromString<int>(splittedDate[1]));
+
+    GEODE_UNWRAP_INTO(auto year, geode::utils::numFromString<int>(splittedDate[2]));
+
+    return Ok(std::make_tuple(day, month, year));
 }
 
 int data::getKey() {
@@ -1106,6 +1079,7 @@ Result<> data::joinMatch(std::string joinCode){
     std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
 
     std::string stringForCBF = secrets[2];
+    
     auto numForCBF = utils::numFromString<int>(stringForCBF).unwrapOr(-1);
 
     if (numForCBF == -1){
@@ -1148,9 +1122,15 @@ Result<> data::joinMatch(std::string joinCode){
         if (res == nullptr) data::checkConnectionComplete("Incorrect code! (might be expired)");
         if (!res->isOk()) data::checkConnectionComplete("Incorrect code! (might be expired)");
 
-        data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}:{}", matchSheetName, connectCheckCell, connectCheckCell), ":D", res->value()).listen([](Result<>* didWrite){
-            if (didWrite == nullptr) data::checkConnectionComplete("Connection Failed!");
-            if (!didWrite->isOk()) data::checkConnectionComplete("Connection Failed!");
+        data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}:{}", matchSheetName, connectCheckCell, connectCheckCell), ":D", res->unwrap()).listen([](Result<>* didWrite){
+            if (didWrite == nullptr){
+                data::checkConnectionComplete("Connection Failed!");
+                return;
+            } 
+            if (!didWrite->isOk()){
+                data::checkConnectionComplete("Connection Failed!");
+                return;
+            }
 
             data::sheetsConnectionCheck = true;
             data::checkConnectionComplete();
@@ -1185,6 +1165,7 @@ Result<> data::joinMatch(std::string joinCode){
 }
 
 void data::checkConnectionComplete(std::string errMessage){
+    log::info("{} | {} - {}", discordConnectionCheck, sheetsConnectionCheck, errMessage);
     if (errMessage != "OK"){
         connecting = false;
         leaveMatch();
@@ -1267,12 +1248,9 @@ Task<Result<std::string>> data::refreshAccessToken(std::string clientId, std::st
     return req.post("https://oauth2.googleapis.com/token").map(
     [] (web::WebResponse* res) -> Result<std::string> {
         
-        if (res->json().isErr())
-            return Err(res->json().error());
+        GEODE_UNWRAP_INTO(auto json, res->json());
         
-        sheetRefreshedToken t;
-
-        t = res->json().value().as<sheetRefreshedToken>();
+        GEODE_UNWRAP_INTO(sheetRefreshedToken t, json.as<sheetRefreshedToken>());
 
         if (t.access_token == "") return Err("Failed getting access token!");
 
@@ -1299,13 +1277,11 @@ Task<Result<>> data::writeToGoogleSheet(std::string spreadsheetId, std::string r
 
     return req.put(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}", spreadsheetId, range)).map(
     [] (web::WebResponse* res) -> Result<> {
+        
+        GEODE_UNWRAP_INTO(auto json, res->json());
 
-        auto json = res->json();
-        if (json.isErr())
-            return Err(json.error());
-
-        sheetWriteReport r = json.value().as<sheetWriteReport>();
-
+        GEODE_UNWRAP_INTO(sheetWriteReport r, json.as<sheetWriteReport>());
+        
         if (r.spreadsheetId == "") return Err("failed writing to the sheet!");
 
         return Ok();
@@ -1330,37 +1306,34 @@ void data::SendSheetProgress(std::string message){
     auto messageTask = data::refreshAccessToken(sheetsClientID, sheetsClientSecret, sheetsRefreshToken);
 
     messageTask.listen([message](Result<std::string>* res){
-        if (res->isOk()){
-            auto accToken = res->value();
+        auto accToken = res->unwrapOr("-1");
 
-            data::getCurrentMatchData(accToken).listen([accToken, message](Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>>* res2){
-                if (res2->isOk()){
+        if (accToken == "-1")
+            return;
 
-                    auto currMatchPlayers = res2->value();
+        data::getCurrentMatchData(accToken).listen([accToken, message](Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>>* res2){
+            if (!res2->isOk())
+                return;
+                
+            auto currMatchPlayers = res2->unwrap();
 
-                    auto accID = std::to_string(GJAccountManager::get()->m_accountID);
+            auto accID = std::to_string(GJAccountManager::get()->m_accountID);
 
-                    if (!currMatchPlayers.contains(accID))
-                        //You are not a part of any ongoing match!
-                        return;
+            if (!currMatchPlayers.contains(accID))
+                //You are not a part of any ongoing match!
+                return;
 
-                    std::string rangeLetter = currMatchPlayers[accID].first;
-                    int rangeNum = currMatchPlayers[accID].second.size() + 2;
+            std::string rangeLetter = currMatchPlayers[accID].first;
+            int rangeNum = currMatchPlayers[accID].second.size() + 2;
 
-                    data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}{}", matchSheetName, rangeLetter, rangeNum), message, accToken).listen([rangeLetter, rangeNum](Result<>* res3){
-                        if (res3->isOk()){
-                            log::info("written!");
-                        }   
-                        else
-                            log::info("{}", res3->error());
-                    });
-                }
+            data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}{}", matchSheetName, rangeLetter, rangeNum), message, accToken).listen([rangeLetter, rangeNum](Result<>* res3){
+                if (res3->isOk()){
+                    log::info("written!");
+                }   
                 else
-                    log::info("{}", res2->error());
+                    log::info("{}", res3->unwrapErr());
             });
-        }
-        else
-            log::info("{}", res->error());
+        });
     });
 }
 
@@ -1417,4 +1390,8 @@ void data::disable2point1Percent(GJGameLevel* level){
     }
     
 
+}
+
+void data::sendError(std::string err){
+    Notification::create(err, nullptr)->show();
 }

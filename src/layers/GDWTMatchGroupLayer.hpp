@@ -5,11 +5,11 @@
 
 using namespace geode::prelude;
 
-class GDWTMatchGroupLayer : public Popup<MatchGroup> {
+class GDWTMatchGroupLayer : public Popup<const MatchGroup&> {
     protected:
-        bool setup(MatchGroup _group);
+        bool setup(const MatchGroup& _group);
     public:
-        static GDWTMatchGroupLayer* create(MatchGroup _group);
+        static GDWTMatchGroupLayer* create(const MatchGroup& _group);
 
         void show();
 
@@ -17,5 +17,5 @@ class GDWTMatchGroupLayer : public Popup<MatchGroup> {
 
         EventListener<MatchesTask> l;
 
-        EventListener<Task<std::vector<std::vector<std::tuple<std::string, int, int>> *>>> scoresL;
+        EventListener<Task<std::vector<geode::Result<std::vector<std::tuple<std::string, int, int>>> *>>> scoresL;
 };

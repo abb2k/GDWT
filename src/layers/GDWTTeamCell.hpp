@@ -7,9 +7,9 @@ using namespace geode::prelude;
 
 class GDWTTeamCell : public CCNode {
     protected:
-        bool init(Team _team, CCSize size, bool s);
+        bool init(const Team& _team, CCSize size, bool s);
     public:
-        static GDWTTeamCell* create(Team _team, CCSize size, bool s = false);
+        static GDWTTeamCell* create(const Team& _team, CCSize size, bool s = false);
 
         Team team;
 

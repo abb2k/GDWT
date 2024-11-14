@@ -3,7 +3,7 @@
 
 joinMatchLayer* joinMatchLayer::create() {
     auto ret = new joinMatchLayer();
-    if (ret && ret->init(215, 125, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
+    if (ret && ret->initAnchored(215, 125, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
         ret->autorelease();
         return ret;
     }
@@ -16,6 +16,11 @@ bool joinMatchLayer::setup(){
 
     this->setTitle("Join Match");
 
+    auto alignmentNode = CCMenu::create();
+    alignmentNode->setID("alignment-node");
+    alignmentNode->setPosition(m_size / 2);
+    m_mainLayer->addChild(alignmentNode);
+
     auto instructions1 = CCLabelBMFont::create("", "chatFont.fnt");
     instructions1->setString(
         fmt::format("1. {}",
@@ -23,7 +28,7 @@ bool joinMatchLayer::setup(){
     ).c_str());
     instructions1->setScale(0.65f);
     instructions1->setPositionY(16);
-    m_buttonMenu->addChild(instructions1);
+    alignmentNode->addChild(instructions1);
 
     auto instructions2 = CCLabelBMFont::create("", "chatFont.fnt");
     instructions2->setString(
@@ -32,7 +37,7 @@ bool joinMatchLayer::setup(){
     ).c_str());
     instructions2->setScale(0.65f);
     instructions2->setPositionY(-5);
-    m_buttonMenu->addChild(instructions2);
+    alignmentNode->addChild(instructions2);
 
     joinSprite = ButtonSprite::create("JOIN");
     joinSpriteDisabled = ButtonSprite::create("JOIN", "goldFont.fnt", "GJ_button_05.png");
@@ -46,7 +51,7 @@ bool joinMatchLayer::setup(){
     joinSpriteDisabled->setVisible(false);
     joinSpriteDisabled->setPosition(joinButton->getContentSize() / 2);
     joinButton->addChild(joinSpriteDisabled);
-    this->m_buttonMenu->addChild(joinButton);
+    alignmentNode->addChild(joinButton);
 
     leaveSprite = ButtonSprite::create("LEAVE", "goldFont.fnt", "GJ_button_06.png");
     leaveSpriteDisabled = ButtonSprite::create("LEAVE", "goldFont.fnt", "GJ_button_05.png");
@@ -60,7 +65,7 @@ bool joinMatchLayer::setup(){
     leaveSpriteDisabled->setVisible(false);
     leaveSpriteDisabled->setPosition(leaveButton->getContentSize() / 2);
     leaveButton->addChild(leaveSpriteDisabled);
-    this->m_buttonMenu->addChild(leaveButton);
+    alignmentNode->addChild(leaveButton);
 
     updateButtonsState();
 
@@ -99,7 +104,7 @@ void joinMatchLayer::joinMatch(){
     data::setConnectionCompleteCallback(callfuncO_selector(joinMatchLayer::onConnectionComplete), this);
 
     if (res.isErr()){
-        FLAlertLayer::create("Error!", res.err().value(), "OK")->show();
+        FLAlertLayer::create("Error!", res.unwrapErr(), "OK")->show();
         connecting = false;
     }
 }

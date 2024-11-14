@@ -7,9 +7,9 @@ using namespace geode::prelude;
 
 class GDWTMatchCell : public CCNode {
     protected:
-        bool init(Match _match, CCSize size, bool s);
+        bool init(const Match& _match, CCSize size, bool s);
     public:
-        static GDWTMatchCell* create(Match _match, CCSize size, bool s = false);
+        static GDWTMatchCell* create(const Match& _match, CCSize size, bool s = false);
 
         Match match;
 

@@ -2,7 +2,7 @@
 #include "../layers/flagDisplay.hpp"
 #include "../layers/GDWTTeamLayer.hpp"
 
-GDWTTeamCell* GDWTTeamCell::create(Team _team, CCSize size, bool s) {
+GDWTTeamCell* GDWTTeamCell::create(const Team& _team, CCSize size, bool s) {
     auto ret = new GDWTTeamCell();
     if (ret && ret->init(_team, size, s)) {
         ret->autorelease();
@@ -13,7 +13,7 @@ GDWTTeamCell* GDWTTeamCell::create(Team _team, CCSize size, bool s) {
 }
 
 
-bool GDWTTeamCell::init(Team _team, CCSize size, bool s){
+bool GDWTTeamCell::init(const Team& _team, CCSize size, bool s){
 
     setContentSize(size);
 
@@ -45,7 +45,7 @@ bool GDWTTeamCell::init(Team _team, CCSize size, bool s){
 
     for (int i = 0; i < team.accounts.size(); i++)
     {
-        if (team.accounts[i].active)
+        if (team.accounts[i].isActive)
             playersAmount++;
     }
     

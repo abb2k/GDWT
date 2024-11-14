@@ -2,9 +2,9 @@
 #include "../layers/flagDisplay.hpp"
 #include "../layers/UserDisplay.hpp"
 
-GDWTTeamLayer* GDWTTeamLayer::create(Team _team) {
+GDWTTeamLayer* GDWTTeamLayer::create(const Team& _team) {
     auto ret = new GDWTTeamLayer();
-    if (ret && ret->init(263, 210, _team, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
+    if (ret && ret->initAnchored(263, 210, _team, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
         ret->autorelease();
         return ret;
     }
@@ -13,7 +13,7 @@ GDWTTeamLayer* GDWTTeamLayer::create(Team _team) {
 }
 
 
-bool GDWTTeamLayer::setup(Team _team){
+bool GDWTTeamLayer::setup(const Team& _team){
 
     team = _team;
 
@@ -78,7 +78,7 @@ bool GDWTTeamLayer::setup(Team _team){
 
     for (int i = 0; i < team.accounts.size(); i++)
     {
-        if (team.accounts[i].active){
+        if (team.accounts[i].isActive){
             Host p;
             p.accountID = team.accounts[i].accountID;
             p.displayName = team.accounts[i].displayName;

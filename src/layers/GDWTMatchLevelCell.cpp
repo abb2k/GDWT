@@ -57,11 +57,13 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         std::get<0>(levelPlayers[0])->setScale(1.25f);
         c->addChild(std::get<0>(levelPlayers[0]));
 
+        auto nameRes1 = geode::utils::numFromString<int>(std::get<1>(levelPlayers[0]));
+
         flagDisplay* f1 = nullptr;
-        try{
-            f1 = flagDisplay::create(std::stoi(std::get<1>(levelPlayers[0])));
+        if (nameRes1.isOk()){
+            f1 = flagDisplay::create(nameRes1.unwrap());
         }
-        catch (...){
+        else{
             f1 = flagDisplay::create(std::get<1>(levelPlayers[0]));
         }
         f1->setScale(1.5f);
@@ -72,12 +74,13 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         std::get<0>(levelPlayers[1])->setScale(1.25f);
         c->addChild(std::get<0>(levelPlayers[1]));
 
+        auto nameRes2 = geode::utils::numFromString<int>(std::get<1>(levelPlayers[1]));
 
         flagDisplay* f2 = nullptr;
-        try{
-            f2 = flagDisplay::create(std::stoi(std::get<1>(levelPlayers[1])));
+        if (nameRes2.isOk()){
+            f2 = flagDisplay::create(nameRes2.unwrap());
         }
-        catch (...){
+        else {
             f2 = flagDisplay::create(std::get<1>(levelPlayers[1]));
         }
         f2->setScale(1.5f);
@@ -144,11 +147,12 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         levelLoadingC->setScale(0.425f);
         levelLoadingC->show();
 
-        levelName = InputNode::create(100, "levelName", "gjFont17.fnt");
+        levelName = TextInput::create(100, "levelName", "gjFont17.fnt");
         levelName->setEnabled(false);
         levelName->setString("Unknown Level");
         levelName->setPosition({size.width / 2, 36});
         levelName->setScale(0.85f);
+        levelName->getInputNode()->getPlaceholderLabel()->setOpacity(255);
         c->addChild(levelName);
     }
     else if (levelPlayers.size() > 2){
@@ -180,11 +184,13 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
             playerScoreLabel->setPosition({playerIcon->getContentWidth() / 2, -12});
             playerIcon->addChild(playerScoreLabel);
 
+            auto lPlayerNameRes = geode::utils::numFromString<int>(std::get<1>(levelPlayers[i]));
+
             flagDisplay* flag = nullptr;
-            try{
-                flag = flagDisplay::create(std::stoi(std::get<1>(levelPlayers[i])));
+            if (lPlayerNameRes.isOk()){
+                flag = flagDisplay::create(lPlayerNameRes.unwrap());
             }
-            catch (...){
+            else {
                 flag = flagDisplay::create(std::get<1>(levelPlayers[i]));
             }
             flag->setPosition({playerIcon->getContentWidth() / 2, -26});
@@ -249,11 +255,12 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         levelLoadingC->setScale(0.425f);
         levelLoadingC->show();
 
-        levelName = InputNode::create(100, "levelName", "gjFont17.fnt");
+        levelName = TextInput::create(100, "levelName", "gjFont17.fnt");
         levelName->setEnabled(false);
         levelName->setString("Unknown Level");
         levelName->setPosition({258, 28});
         levelName->setScale(0.7f);
+        levelName->getInputNode()->getPlaceholderLabel()->setOpacity(255);
         c->addChild(levelName);
     }
 
@@ -308,18 +315,18 @@ void GDWTMatchLevelCell::loadLevel(GJGameLevel* _lvl){
     levelMenu->setPosition(levelName->getPosition());
     this->addChild(levelMenu);
 
-    float oldScale = levelName->getInput()->m_placeholderLabel->getScale();
-    levelName->getInput()->m_placeholderLabel->retain();
-    levelName->getInput()->m_placeholderLabel->removeFromParent();
-    levelName->getInput()->m_placeholderLabel->setScale(oldScale * levelName->getScale());
+    float oldScale = levelName->getInputNode()->getPlaceholderLabel()->getScale();
+    levelName->getInputNode()->getPlaceholderLabel()->retain();
+    levelName->getInputNode()->getPlaceholderLabel()->removeFromParent();
+    levelName->getInputNode()->getPlaceholderLabel()->setScale(oldScale * levelName->getScale());
     auto b = CCMenuItemSpriteExtra::create(
-        levelName->getInput()->m_placeholderLabel,
+        levelName->getInputNode()->getPlaceholderLabel(),
         nullptr,
         this,
         menu_selector(GDWTMatchLevelCell::onLevelClicked)
     );
     levelMenu->addChild(b);
-    levelName->getInput()->m_placeholderLabel->release();
+    levelName->getInputNode()->getPlaceholderLabel()->release();
     
 }
 

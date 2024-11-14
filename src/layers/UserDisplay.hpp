@@ -13,7 +13,7 @@ class UserDisplay : public CCNode {
 
         static UserDisplay* create(Host host, bool withName = true);
 
-        static UserDisplay* create(Player player, bool withName = true);
+        static UserDisplay* create(PlayerData player, bool withName = true);
 
         SimplePlayer* player;
         LoadingCircle* IconLoadingC;

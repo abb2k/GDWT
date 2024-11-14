@@ -7,9 +7,9 @@ using namespace geode::prelude;
 
 class GDWTMatchGroupCell : public CCNode {
     protected:
-        bool init(MatchGroup _group, CCSize size, bool s);
+        bool init(const MatchGroup& _group, CCSize size, bool s);
     public:
-        static GDWTMatchGroupCell* create(MatchGroup _group, CCSize size, bool s = false);
+        static GDWTMatchGroupCell* create(const MatchGroup& _group, CCSize size, bool s = false);
 
         MatchGroup group;
 

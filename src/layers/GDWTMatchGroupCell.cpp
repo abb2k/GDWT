@@ -2,7 +2,7 @@
 #include "../layers/flagDisplay.hpp"
 #include "../layers/GDWTMatchGroupLayer.hpp"
 
-GDWTMatchGroupCell* GDWTMatchGroupCell::create(MatchGroup _group, CCSize size, bool s) {
+GDWTMatchGroupCell* GDWTMatchGroupCell::create(const MatchGroup& _group, CCSize size, bool s) {
     auto ret = new GDWTMatchGroupCell();
     if (ret && ret->init(_group, size, s)) {
         ret->autorelease();
@@ -13,7 +13,7 @@ GDWTMatchGroupCell* GDWTMatchGroupCell::create(MatchGroup _group, CCSize size, b
 }
 
 
-bool GDWTMatchGroupCell::init(MatchGroup _group, CCSize size, bool s){
+bool GDWTMatchGroupCell::init(const MatchGroup& _group, CCSize size, bool s){
 
     setContentSize(size);
 
@@ -45,17 +45,24 @@ bool GDWTMatchGroupCell::init(MatchGroup _group, CCSize size, bool s){
     moreButton->setPosition({90, 15});
     Menu->addChild(moreButton);
 
-    auto nameLabel = InputNode::create(160, "", "gjFont17.fnt");
+    auto nameLabel = TextInput::create(160, "", "gjFont17.fnt");
     nameLabel->setPosition({62, 44});
     nameLabel->setScale(0.8f);
-    nameLabel->getBG()->setContentWidth(305);
+    nameLabel->getBGSprite()->setContentWidth(305);
     nameLabel->setEnabled(false);
     nameLabel->setString(group.groupName);
+    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     this->addChild(nameLabel);
 
     l.bind([this] (MatchesTask::Event* event){
         if (auto _matches = event->getValue()){
-            auto matches = *_matches;
+            auto matches = _matches->unwrapOrDefault();
+
+            if (!matches.size()){
+                if (_matches->isErr())
+                    data::sendError(_matches->unwrapErr());
+                return;
+            }
 
             int matchAmount = 0;
 

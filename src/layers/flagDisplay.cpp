@@ -71,7 +71,14 @@ void flagDisplay::flagClicked(CCObject*){
 
 void flagDisplay::onTeamsInfo(TeamsTask::Event* event){
     if (auto _teams = event->getValue()){
-        auto teams = *_teams;
+        auto teams = _teams->unwrapOrDefault();
+        
+        if (!teams.size()){
+            if (_teams->isErr())
+                data::sendError(_teams->unwrapErr());
+            return;
+        }
+        
         for (int i = 0; i < teams.size(); i++){
             if (cCode != ""){
                 std::string lowerCCode = teams[i].countryCode;

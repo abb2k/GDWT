@@ -3,9 +3,9 @@
 #include "../layers/UserDisplay.hpp"
 #include <Geode/utils/web.hpp>
 
-GDWTMatchLayer* GDWTMatchLayer::create(Match _match) {
+GDWTMatchLayer* GDWTMatchLayer::create(const Match& _match) {
     auto ret = new GDWTMatchLayer();
-    if (ret && ret->init(390, 280, _match, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
+    if (ret && ret->initAnchored(390, 280, _match, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
         ret->autorelease();
         return ret;
     }
@@ -14,7 +14,7 @@ GDWTMatchLayer* GDWTMatchLayer::create(Match _match) {
 }
 
 
-bool GDWTMatchLayer::setup(Match _match){
+bool GDWTMatchLayer::setup(const Match& _match){
 
     match = _match;
 
@@ -25,10 +25,11 @@ bool GDWTMatchLayer::setup(Match _match){
     alignmentNode->setID("aligment-node");
     m_mainLayer->addChild(alignmentNode);
 
-    auto nameLabel = InputNode::create(300, "Match Name", "gjFont17.fnt");
+    auto nameLabel = TextInput::create(300, "Match Name", "gjFont17.fnt");
     nameLabel->setString(match.matchName.c_str());
     nameLabel->setEnabled(false);
     nameLabel->setPositionY(110);
+    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     alignmentNode->addChild(nameLabel);
 
     auto cText = CountyTextDisplay::create(match.teams, {300, 40}, false);
@@ -165,11 +166,12 @@ bool GDWTMatchLayer::setup(Match _match){
     dateLabel->setScale(0.55f);
     infoCont->addChild(dateLabel);
 
-    auto dateText = InputNode::create(80, "date", "gjFont17.fnt");
+    auto dateText = TextInput::create(80, "date", "gjFont17.fnt");
     dateText->setPosition({-25, -9});
     dateText->setScale(0.8f);
     dateText->setString(match.date);
     dateText->setEnabled(false);
+    dateText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     infoCont->addChild(dateText);
 
     auto LiveButtonSprite = CCSprite::createWithSpriteFrameName("gj_twitchIcon_001.png");
@@ -197,12 +199,13 @@ bool GDWTMatchLayer::setup(Match _match){
     STypeLabel->setScale(0.325f);
     infoCont->addChild(STypeLabel);
 
-    auto STypeLabelText = InputNode::create(160, "", "gjFont17.fnt");
+    auto STypeLabelText = TextInput::create(160, "", "gjFont17.fnt");
     STypeLabelText->setPosition({33, -28});
     STypeLabelText->setScale(0.325f);
-    STypeLabelText->getBG()->setOpacity(0);
+    STypeLabelText->getBGSprite()->setOpacity(0);
     STypeLabelText->setEnabled(false);
     STypeLabelText->setString(data::ScoreSystemTypeToString(match.scoreType));
+    STypeLabelText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     infoCont->addChild(STypeLabelText);
 
     //
@@ -283,7 +286,13 @@ bool GDWTMatchLayer::setup(Match _match){
 
     overallScoresListener.bind([cText, this] (scoreCalcTask::Event* e) {
         if (auto _scores = e->getValue()){
-            auto scores = *_scores;
+            auto scores = _scores->unwrapOrDefault();
+
+            if (!scores.size()){
+                if (_scores->isErr())
+                    data::sendError(_scores->unwrapErr());
+                return;
+            }
 
             for (int i = 0; i < scores.size(); i++)
             {
@@ -435,5 +444,5 @@ void GDWTMatchLayer::loadLevelsFailed(char const* p0, int p1){
 
 void GDWTMatchLayer::onClose(cocos2d::CCObject* s){
     GameLevelManager::get()->m_levelManagerDelegate = nullptr;
-    Popup<Match>::onClose(s);
+    Popup<const Match&>::onClose(s);
 }

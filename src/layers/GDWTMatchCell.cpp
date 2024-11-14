@@ -4,7 +4,7 @@
 #include "../layers/GDWTMatchLayer.hpp"
 #include "../layers/UserDisplay.hpp"
 
-GDWTMatchCell* GDWTMatchCell::create(Match _match, CCSize size, bool s) {
+GDWTMatchCell* GDWTMatchCell::create(const Match& _match, CCSize size, bool s) {
     auto ret = new GDWTMatchCell();
     if (ret && ret->init(_match, size, s)) {
         ret->autorelease();
@@ -15,7 +15,7 @@ GDWTMatchCell* GDWTMatchCell::create(Match _match, CCSize size, bool s) {
 }
 
 
-bool GDWTMatchCell::init(Match _match, CCSize size, bool s){
+bool GDWTMatchCell::init(const Match& _match, CCSize size, bool s){
 
     setContentSize(size);
 
@@ -40,11 +40,12 @@ bool GDWTMatchCell::init(Match _match, CCSize size, bool s){
     dateLabel->setPosition({22, 12});
     this->addChild(dateLabel);
 
-    auto dateText = InputNode::create(size.width / 3.5f, "NA", "chatFont.fnt");
+    auto dateText = TextInput::create(size.width / 3.5f, "NA", "chatFont.fnt");
     dateText->setString(match.date.c_str());
     dateText->setScale(0.6f);
     dateText->setPosition({dateLabel->getPositionX() + dateLabel->getScaledContentWidth() / 2 + dateText->getScaledContentWidth() / 2, dateLabel->getPositionY()});
     dateText->setEnabled(false);
+    dateText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     this->addChild(dateText);
 
     //hlabel
@@ -54,7 +55,7 @@ bool GDWTMatchCell::init(Match _match, CCSize size, bool s){
     hostLabel->setPosition({90, 12});
     this->addChild(hostLabel);
 
-    auto hostText = InputNode::create(size.width / 2.9f, "NA", "chatFont.fnt");
+    auto hostText = TextInput::create(size.width / 2.9f, "NA", "chatFont.fnt");
 
     std::string hosText = "";
 
@@ -70,6 +71,7 @@ bool GDWTMatchCell::init(Match _match, CCSize size, bool s){
     hostText->setScale(0.6f);
     hostText->setPosition({hostLabel->getPositionX() + hostLabel->getScaledContentWidth() / 2 + hostText->getScaledContentWidth() / 2, hostLabel->getPositionY()});
     hostText->setEnabled(false);
+    hostText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     this->addChild(hostText);
 
     //buttons

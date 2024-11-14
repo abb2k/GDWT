@@ -3,9 +3,9 @@
 #include "../layers/GDWTMatchCell.hpp"
 #include "../layers/CountyTextDisplay.hpp"
 
-GDWTMatchGroupLayer* GDWTMatchGroupLayer::create(MatchGroup _group) {
+GDWTMatchGroupLayer* GDWTMatchGroupLayer::create(const MatchGroup& _group) {
     auto ret = new GDWTMatchGroupLayer();
-    if (ret && ret->init(263, 210, _group, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
+    if (ret && ret->initAnchored(263, 210, _group, "square01_001.png", {0.f, 0.f, 94.f, 94.f})) {
         ret->autorelease();
         return ret;
     }
@@ -14,7 +14,7 @@ GDWTMatchGroupLayer* GDWTMatchGroupLayer::create(MatchGroup _group) {
 }
 
 
-bool GDWTMatchGroupLayer::setup(MatchGroup _group){
+bool GDWTMatchGroupLayer::setup(const MatchGroup& _group){
 
     group = _group;
 
@@ -25,13 +25,14 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
     alignmentNode->setID("aligment-node");
     m_mainLayer->addChild(alignmentNode);
 
-    auto nameLabel = InputNode::create(160, "", "gjFont17.fnt");
+    auto nameLabel = TextInput::create(160, "", "gjFont17.fnt");
     nameLabel->setPosition({0, 75});
     nameLabel->setScale(1.425f);
     nameLabel->setEnabled(false);
-    nameLabel->getBG()->setScale(0.25f);
-    nameLabel->getBG()->setContentWidth(630);
+    nameLabel->getBGSprite()->setScale(0.25f);
+    nameLabel->getBGSprite()->setContentWidth(630);
     nameLabel->setString(group.groupName);
+    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
     alignmentNode->addChild(nameLabel);
 
     auto matchesListCont = CCNode::create();
@@ -80,7 +81,13 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
 
     l.bind([this, matchesListLayer, alignmentNode] (MatchesTask::Event* event){
         if (auto _matches = event->getValue()){
-            auto matches = *_matches;
+            auto matches = _matches->unwrapOrDefault();
+
+            if (!matches.size()){
+                if (_matches->isErr())
+                    data::sendError(_matches->unwrapErr());
+                return;
+            }
 
             std::vector<Match> groupMatches;
 
@@ -110,7 +117,7 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
             matchesListLayer->m_contentLayer->updateLayout();
             matchesListLayer->moveToTop();
 
-            scoresL.bind([this, alignmentNode] (Task<std::vector<std::vector<std::tuple<std::string, int, int>> *>>::Event* event){
+            scoresL.bind([this, alignmentNode] (Task<std::vector<Result<std::vector<std::tuple<std::string, int, int>>> *>>::Event* event){
                 if (auto _scores = event->getValue()){
                     auto scores = *_scores;
 
@@ -118,7 +125,10 @@ bool GDWTMatchGroupLayer::setup(MatchGroup _group){
 
                     for (int s = 0; s < scores.size(); s++)
                     {
-                        auto matchScore = *scores[s];
+                        if (!scores[s]->isOk()){
+                            continue;
+                        }
+                        auto matchScore = scores[s]->unwrap();
 
                         for (int i = 0; i < matchScore.size(); i++)
                         {

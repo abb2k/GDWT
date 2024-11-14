@@ -21,7 +21,7 @@ UserDisplay* UserDisplay::create(Host host, bool withName) {
     return nullptr;
 }
 
-UserDisplay* UserDisplay::create(Player player, bool withName) {
+UserDisplay* UserDisplay::create(PlayerData player, bool withName) {
     auto ret = new UserDisplay();
     ret->displayName = player.displayName;
     if (ret && ret->init(player.accountID, withName)) {
@@ -114,7 +114,13 @@ void UserDisplay::userClicked(CCObject*){
 
 void UserDisplay::onPlayerInfoReceved(PlayerDataTask::Event* event){
     if (auto _players = event->getValue()){
-        auto players = *_players;
+        auto players = _players->unwrapOrDefault();
+
+        if (!players.size()){
+            if (_players->isErr())
+                data::sendError(_players->unwrapErr());
+            return;
+        }
 
         bool doesExist = false;
 
@@ -137,7 +143,7 @@ void UserDisplay::onPlayerInfoReceved(PlayerDataTask::Event* event){
 
                 player->m_outlineSprite->setColor(GameManager::get()->colorForIdx(players[i].glowColorID));
                 if (nameLabel){
-                    nameLabel->setString(players[i].ingameUserName.c_str());
+                    nameLabel->setString(players[i].displayName.c_str());
                     updateNameLength();
                 }
 
@@ -189,7 +195,13 @@ void UserDisplay::onDInfoReceved(UserInfoTask::Event* event) {
 
                 Tlistener.bind([this] (TeamsTask::Event* e){
                     if (auto _teams = e->getValue()){
-                        auto teams = *_teams;
+                        auto teams = _teams->unwrapOrDefault();
+
+                        if (!teams.size()){
+                            if (_teams->isErr())
+                                data::sendError(_teams->unwrapErr());
+                            return;
+                        }
 
                         for (int i = 0; i < teams.size(); i++)
                         {

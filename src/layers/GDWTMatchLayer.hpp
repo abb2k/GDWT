@@ -7,13 +7,13 @@
 
 using namespace geode::prelude;
 
-class GDWTMatchLayer : public Popup<Match>, public LevelManagerDelegate {
+class GDWTMatchLayer : public Popup<const Match&>, public LevelManagerDelegate {
     protected:
-        bool setup(Match _matchs);
+        bool setup(const Match& _matchs);
 
         void onClose(cocos2d::CCObject*);
     public:
-        static GDWTMatchLayer* create(Match _match);
+        static GDWTMatchLayer* create(const Match& _match);
 
         void show();
 

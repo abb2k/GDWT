@@ -13,18 +13,24 @@ typedef struct {
 
 typedef struct {
     int accountID;
-    bool active;
-    std::string displayName;
-} Player;
-
-typedef struct {
-    int accountID;
     std::string displayName;
 } Host;
 
 typedef struct {
+    int accountID;
+    int iconID;
+    int color1ID;
+    int color2ID;
+    int glowColorID;
+    bool glowEnabled;
+    std::string displayName;
     std::string countryCode;
-    std::vector<Player> accounts;
+    bool isActive;
+} PlayerData;
+
+typedef struct {
+    std::string countryCode;
+    std::vector<PlayerData> accounts;
 } Team;
 
 enum class ScoreSystemType {
@@ -35,19 +41,20 @@ enum class ScoreSystemType {
     WinDrawTimes2
 };
 
-typedef struct {
-    std::vector<Host> hosts;
-    std::vector<Host> coHosts;
+struct Match_s {
+    std::vector<Host> hosts{};
+    std::vector<Host> coHosts{};
     std::string date;
     long long dateUnix;
-    std::vector<std::string> teams;
-    std::vector<Level> levels;
+    std::vector<std::string> teams{};
+    std::vector<Level> levels{};
     std::string liveLink;
     std::string vodLink;
     std::string matchName;
     ScoreSystemType scoreType;
     int groupID;
-} Match;
+};
+typedef struct Match_s Match;
 
 typedef struct {
     std::string userName; // :1:
@@ -93,31 +100,23 @@ typedef struct{
     std::vector<std::vector<std::string>> values;
 } sheetValues;
 
-typedef struct {
-    int accountID;
-    int iconID;
-    int color1ID;
-    int color2ID;
-    int glowColorID;
-    bool glowEnabled;
-    std::string ingameUserName;
-} PlayerData;
-
 template <>
 struct matjson::Serialize<sheetValues> {
-    static sheetValues from_json(const matjson::Value& value) {
-        return sheetValues {
-            .range = value["range"].as_string(),
-            .majorDimension = value["majorDimension"].as_string(),
-            .values = value["values"].as<std::vector<std::vector<std::string>>>(),
-        };
+    static Result<sheetValues> fromJson(const matjson::Value& value) {
+        sheetValues sheetVal;
+        GEODE_UNWRAP_INTO(sheetVal.range, value["range"].asString());
+        GEODE_UNWRAP_INTO(sheetVal.majorDimension, value["majorDimension"].asString());
+        GEODE_UNWRAP_INTO(sheetVal.values, value["values"].as<std::vector<std::vector<std::string>>>());
+
+        return Ok(sheetVal);
     }
 
-    static matjson::Value to_json(const sheetValues& value) {
-        auto obj = matjson::Object();
-        obj["range"] = value.range;
-        obj["majorDimension"] = value.majorDimension;
-        obj["values"] = value.values;
+    static matjson::Value toJson(const sheetValues& value) {
+        auto obj = matjson::makeObject({
+            { "range", value.range },
+            { "majorDimension", value.majorDimension },
+            { "values", value.values },
+        });
         return obj;
     }
 };
@@ -129,12 +128,12 @@ typedef struct{
     ScoreSystemType scoreType;
 } MatchGroup;
 
-using MatchesTask = Task<std::vector<Match>>;
-using TeamsTask = Task<std::vector<Team>>;
+using MatchesTask = Task<Result<std::vector<Match>>>;
+using TeamsTask = Task<Result<std::vector<Team>>>;
 using UserInfoTask = Task<std::vector<UserInfo*>>;
-using PlayerDataTask = Task<std::vector<PlayerData>>;
-using scoreCalcTask = Task<std::vector<std::tuple<std::string, int, int>>>;
-using MatchGroupsDataTask = Task<std::vector<MatchGroup>>;
+using PlayerDataTask = Task<Result<std::vector<PlayerData>>>;
+using scoreCalcTask = Task<Result<std::vector<std::tuple<std::string, int, int>>>>;
+using MatchGroupsDataTask = Task<Result<std::vector<MatchGroup>>>;
 using CurrentMatchTask = Task<Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>>>;
 
 typedef struct{
@@ -145,19 +144,21 @@ typedef struct{
 
 template <>
 struct matjson::Serialize<sheetError> {
-    static sheetError from_json(const matjson::Value& value) {
-        return sheetError {
-            .code = value["code"].as_int(),
-            .message = value["message"].as_string(),
-            .status = value["status"].as_string(),
-        };
+    static Result<sheetError> fromJson(const matjson::Value& value) {
+        sheetError sheetErr;
+        GEODE_UNWRAP_INTO(sheetErr.code, value["code"].asInt());
+        GEODE_UNWRAP_INTO(sheetErr.message, value["message"].asString());
+        GEODE_UNWRAP_INTO(sheetErr.status, value["status"].asString());
+
+        return Ok(sheetErr);
     }
 
-    static matjson::Value to_json(const sheetError& value) {
-        auto obj = matjson::Object();
-        obj["code"] = value.code;
-        obj["message"] = value.message;
-        obj["status"] = value.status;
+    static matjson::Value toJson(const sheetError& value) {
+        auto obj = matjson::makeObject({
+            { "code", value.code },
+            { "message", value.message },
+            { "status", value.status },
+        });
         return obj;
     }
 };
@@ -171,21 +172,23 @@ typedef struct{
 
 template <>
 struct matjson::Serialize<sheetRefreshedToken> {
-    static sheetRefreshedToken from_json(const matjson::Value& value) {
-        return sheetRefreshedToken {
-            .access_token = value["access_token"].as_string(),
-            .expires_in = value["expires_in"].as_int(),
-            .scope = value["scope"].as_string(),
-            .token_type = value["token_type"].as_string()
-        };
+    static Result<sheetRefreshedToken> fromJson(const matjson::Value& value) {
+        sheetRefreshedToken refToken;
+        GEODE_UNWRAP_INTO(refToken.access_token, value["access_token"].asString());
+        GEODE_UNWRAP_INTO(refToken.expires_in, value["expires_in"].asInt());
+        GEODE_UNWRAP_INTO(refToken.scope, value["scope"].asString());
+        GEODE_UNWRAP_INTO(refToken.token_type, value["token_type"].asString());
+
+        return Ok(refToken);
     }
 
-    static matjson::Value to_json(const sheetRefreshedToken& value) {
-        auto obj = matjson::Object();
-        obj["access_token"] = value.access_token;
-        obj["expires_in"] = value.expires_in;
-        obj["scope"] = value.scope;
-        obj["token_type"] = value.token_type;
+    static matjson::Value toJson(const sheetRefreshedToken& value) {
+        auto obj = matjson::makeObject({
+            { "access_token", value.access_token },
+            { "expires_in", value.expires_in },
+            { "scope", value.scope },
+            { "token_type", value.token_type },
+        });
         return obj;
     }
 };
@@ -200,23 +203,25 @@ typedef struct{
 
 template <>
 struct matjson::Serialize<sheetWriteReport> {
-    static sheetWriteReport from_json(const matjson::Value& value) {
-        return sheetWriteReport {
-            .spreadsheetId = value["spreadsheetId"].as_string(),
-            .updatedRange = value["updatedRange"].as_string(),
-            .updatedRows = value["updatedRows"].as_int(),
-            .updatedColumns = value["updatedColumns"].as_int(),
-            .updatedCells = value["updatedCells"].as_int()
-        };
+    static Result<sheetWriteReport> fromJson(const matjson::Value& value) {
+        sheetWriteReport wreport;
+        GEODE_UNWRAP_INTO(wreport.spreadsheetId, value["spreadsheetId"].asString());
+        GEODE_UNWRAP_INTO(wreport.updatedRange, value["updatedRange"].asString());
+        GEODE_UNWRAP_INTO(wreport.updatedRows, value["updatedRows"].asInt());
+        GEODE_UNWRAP_INTO(wreport.updatedColumns, value["updatedColumns"].asInt());
+        GEODE_UNWRAP_INTO(wreport.updatedCells, value["updatedCells"].asInt());
+
+        return Ok(wreport);
     }
 
-    static matjson::Value to_json(const sheetWriteReport& value) {
-        auto obj = matjson::Object();
-        obj["spreadsheetId"] = value.spreadsheetId;
-        obj["updatedRange"] = value.updatedRange;
-        obj["updatedRows"] = value.updatedRows;
-        obj["updatedColumns"] = value.updatedColumns;
-        obj["updatedCells"] = value.updatedCells;
+    static matjson::Value toJson(const sheetWriteReport& value) {
+        auto obj = matjson::makeObject({
+            { "spreadsheetId", value.spreadsheetId },
+            { "updatedRange", value.updatedRange },
+            { "updatedRows", value.updatedRows },
+            { "updatedColumns", value.updatedColumns },
+            { "updatedCells", value.updatedCells },
+        });
         return obj;
     }
 };
@@ -230,17 +235,19 @@ typedef struct {
 
 template <>
 struct matjson::Serialize<DiscordError> {
-    static DiscordError from_json(const matjson::Value& value) {
-        return DiscordError {
-            .message = value["message"].as_string(),
-            .code = value["code"].as_int()
-        };
+    static Result<DiscordError> fromJson(const matjson::Value& value) {
+        DiscordError derr;
+        GEODE_UNWRAP_INTO(derr.message, value["message"].asString());
+        GEODE_UNWRAP_INTO(derr.code, value["code"].asInt());
+
+        return Ok(derr);
     }
 
-    static matjson::Value to_json(const DiscordError& value) {
-        auto obj = matjson::Object();
-        obj["message"] = value.message;
-        obj["code"] = value.code;
+    static matjson::Value toJson(const DiscordError& value) {
+        auto obj = matjson::makeObject({
+            { "message", value.message },
+            { "code", value.code },
+        });
         return obj;
     }
 };
@@ -253,23 +260,24 @@ typedef struct {
 
 template <>
 struct matjson::Serialize<DiscordEmbedField> {
-    static DiscordEmbedField from_json(const matjson::Value& value) {
-        return DiscordEmbedField {
-            .name = value["name"].as_string(),
-            .value = value["value"].as_string(),
-            .inl = value["inline"].as_bool()
-        };
+    static Result<DiscordEmbedField> fromJson(const matjson::Value& value) {
+        DiscordEmbedField dEmbedField;
+        GEODE_UNWRAP_INTO(dEmbedField.name, value["name"].asString());
+        GEODE_UNWRAP_INTO(dEmbedField.value, value["value"].asString());
+        GEODE_UNWRAP_INTO(dEmbedField.inl, value["inline"].asBool());
+
+        return Ok(dEmbedField);
     }
 
-    static matjson::Value to_json(const DiscordEmbedField& value) {
-        auto obj = matjson::Object();
-        obj["name"] = value.name;
-        obj["value"] = value.value;
-        obj["inline"] = value.inl;
+    static matjson::Value toJson(const DiscordEmbedField& value) {
+        auto obj = matjson::makeObject({
+            { "name", value.name },
+            { "value", value.value },
+            { "inline", value.inl },
+        });
         return obj;
     }
 };
-
 
 typedef struct {
     std::string title;
@@ -280,21 +288,23 @@ typedef struct {
 
 template <>
 struct matjson::Serialize<DiscordEmbed> {
-    static DiscordEmbed from_json(const matjson::Value& value) {
-        return DiscordEmbed {
-            .title = value["title"].as_string(),
-            .description = value["description"].as_string(),
-            .color = value["color"].as_int(),
-            .fields = value["fields"].as<std::vector<DiscordEmbedField>>()
-        };
+    static Result<DiscordEmbed> fromJson(const matjson::Value& value) {
+        DiscordEmbed dEmbed;
+        GEODE_UNWRAP_INTO(dEmbed.title, value["title"].asString());
+        GEODE_UNWRAP_INTO(dEmbed.description, value["description"].asString());
+        GEODE_UNWRAP_INTO(dEmbed.color, value["color"].asInt());
+        GEODE_UNWRAP_INTO(dEmbed.fields, value["fields"].as<std::vector<DiscordEmbedField>>());
+
+        return Ok(dEmbed);
     }
 
-    static matjson::Value to_json(const DiscordEmbed& value) {
-        auto obj = matjson::Object();
-        obj["title"] = value.title;
-        obj["description"] = value.description;
-        obj["color"] = value.color;
-        obj["fields"] = value.fields;
+    static matjson::Value toJson(const DiscordEmbed& value) {
+        auto obj = matjson::makeObject({
+            { "title", value.title },
+            { "description", value.description },
+            { "color", value.color },
+            { "fields", value.fields },
+        });
         return obj;
     }
 };
@@ -306,17 +316,19 @@ typedef struct {
 
 template <>
 struct matjson::Serialize<DiscordMessage> {
-    static DiscordMessage from_json(const matjson::Value& value) {
-        return DiscordMessage {
-            .content = value["content"].as_string(),
-            .embeds = value["embeds"].as<std::vector<DiscordEmbed>>()
-        };
+    static Result<DiscordMessage> fromJson(const matjson::Value& value) {
+        DiscordMessage dMess;
+        GEODE_UNWRAP_INTO(dMess.content, value["content"].asString());
+        GEODE_UNWRAP_INTO(dMess.embeds, value["embeds"].as<std::vector<DiscordEmbed>>());
+
+        return Ok(dMess);
     }
 
-    static matjson::Value to_json(const DiscordMessage& value) {
-        auto obj = matjson::Object();
-        obj["content"] = value.content;
-        obj["embeds"] = value.embeds;
+    static matjson::Value toJson(const DiscordMessage& value) {
+        auto obj = matjson::makeObject({
+            { "content", value.content },
+            { "embeds", value.embeds },
+        });
         return obj;
     }
 };
@@ -330,32 +342,37 @@ struct ZSAToggleSaveData {
 
 template<>
 struct matjson::Serialize<std::vector<ZSAToggleSaveData>> {
-    static std::vector<ZSAToggleSaveData> from_json(matjson::Value const& value) {
+    static Result<std::vector<ZSAToggleSaveData>> fromJson(matjson::Value const& value) {
+        GEODE_UNWRAP_INTO(auto arr, value.asArray());
+        
         auto vec = std::vector<ZSAToggleSaveData> {};
-        for (auto const& item : value.as_array()) {
-            vec.push_back({
-				.key = item["key"].as_string(),
-                .toggled = item["toggled"].as_bool(),
-                .saved_time = item["original_time"].as_int(),
-            });
+        for (auto const& item : arr) {
+            ZSAToggleSaveData togSave;
+            GEODE_UNWRAP_INTO(togSave.key, item["key"].asString());
+            GEODE_UNWRAP_INTO(togSave.toggled, item["toggled"].asBool());
+            GEODE_UNWRAP_INTO(togSave.saved_time, item["original_time"].asInt());
+
+            vec.push_back(togSave);
         }
-        return vec;
+        return Ok(vec);
     }
 
-    static matjson::Value to_json(std::vector<ZSAToggleSaveData> const& vec) {
-        auto arr = matjson::Array {};
+    static matjson::Value toJson(std::vector<ZSAToggleSaveData> const& vec) {
+        auto arr = matjson::Value {};
         for (auto const& item : vec) {
-            arr.push_back(matjson::Object {
-				{"key", item.key},
+            auto obj = matjson::makeObject({
+                { "key", item.key},
                 { "toggled", item.toggled },
                 { "original_time", item.saved_time },
             });
+
+            arr.push(obj);
         }
         return arr;
     }
 
     static bool is_json(matjson::Value const& value) {
-        return value.is_array();
+        return value.isArray();
     }
 };
 
@@ -368,16 +385,15 @@ class data {
         static MatchGroupsDataTask getMatchGroupsData();
         static CurrentMatchTask getCurrentMatchData(std::string accessToken);
 
-        static UserInfo parseUserInfo(std::string infoRaw);
+        static Result<UserInfo> parseUserInfo(std::string infoRaw);
 
         static std::vector<std::string> splitStr(std::string str, std::string delim);
-        static std::vector<int> splitStrInt(std::string str, std::string delim);
         static std::vector<std::string> eraseEmptys(std::vector<std::string> array);
         static std::vector<std::vector<std::string>> convertRawData(std::string data, bool rows);
 
-        static void loadMatches(std::vector<Match> match);
-        static void loadUserInfo(UserInfo user);
-        static void loadTeams(std::vector<Team> teams);
+        static void loadMatches(const std::vector<Match>& match);
+        static void loadUserInfo(UserInfo& user);
+        static void loadTeams(const std::vector<Team>& teams);
         static GJGameLevel* getLoadedLevelByID(int level);
         static void loadLevel(GJGameLevel* level);
         static CCImage* getImage(std::string ID);
@@ -389,7 +405,7 @@ class data {
 
         static std::string ScoreSystemTypeToString(ScoreSystemType type);
 
-        static Result<std::tuple<int, int, int>, int> splitDate(std::string date);
+        static Result<std::tuple<int, int, int>> splitDate(std::string date);
 
         static void leaveMatch();
         static Result<> joinMatch(std::string joinCode);
@@ -416,6 +432,8 @@ class data {
         static void checkConnectionComplete(std::string errMessage = "OK");
         static void setConnectionCompleteCallback(SEL_CallFuncO callback, CCNode* target);
 
+        static void sendError(std::string err);
+
         static bool discordConnectionCheck;
         static bool sheetsConnectionCheck;
         static bool connecting;
@@ -423,7 +441,6 @@ class data {
 
         static std::string SheetID;
         static std::string matchesPageID;
-        static std::string teamsPageID;
         static std::string playersPageID;
         static std::string matchGroupsPageID;
         static std::string currentMatchPageID;

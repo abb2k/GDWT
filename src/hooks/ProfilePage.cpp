@@ -6,7 +6,7 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
         
     CCMenu* username_menu = typeinfo_cast<CCMenu*>(layer->getChildByIDRecursive("username-menu"));
 
-    std::vector<int> managmentIDs{
+    std::array<int, 3> managmentIDs{
         11684904,
         9074168,
         1380770
@@ -20,7 +20,7 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
         }
     }
 
-    std::vector<int> tourneyWinners2024IDs{
+    std::array<int, 8> tourneyWinners2024IDs{
         8303773,
         6801276,
         11860237,
@@ -39,7 +39,7 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
         }
     }
 
-    std::vector<int> organizerIDs{
+    std::array<int, 3> organizerIDs{
         11582651,
         9074168,
         1380770

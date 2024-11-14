@@ -23,7 +23,7 @@ class GDWTMatchLevelCell : public CCNode {
 
         CCLayerColor* bg;
 
-        InputNode* levelName;
+        TextInput* levelName;
 
         void loadLevel(GJGameLevel* _lvl);
 

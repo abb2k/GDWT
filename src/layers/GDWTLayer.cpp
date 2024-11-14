@@ -347,8 +347,14 @@ void GDWTLayer::keyBackClicked(){
 
 void GDWTLayer::refreshMatchesList(int amountPerPage){
     matchListener.bind([amountPerPage, this] (MatchesTask::Event* event){
-        if (auto matchesP = event->getValue()){
-            auto matches = *matchesP;
+        if (auto matchesPRes = event->getValue()){
+            auto matches = matchesPRes->unwrapOrDefault();
+
+            if (!matches.size()){
+                if (matchesPRes->isErr())
+                    data::sendError(matchesPRes->unwrapErr());
+                return;
+            }
 
             //get page thing
 
@@ -422,7 +428,13 @@ void GDWTLayer::MatchesListArrowRight(CCObject*){
 void GDWTLayer::refreshTeamsList(int amountPerPage){
     teamListener.bind([amountPerPage, this] (TeamsTask::Event* event){
         if (auto teamsP = event->getValue()){
-            auto teams = *teamsP;
+            auto teams = teamsP->unwrapOrDefault();
+
+            if (!teams.size()){
+                if (teamsP->isErr())
+                    data::sendError(teamsP->unwrapErr());
+                return;
+            }
 
             teamsScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
             //get page thing
@@ -480,7 +492,13 @@ void GDWTLayer::TeamsListArrowRight(CCObject*){
 void GDWTLayer::refreshMatchGroupsList(int amountPerPage){
     MGListener.bind([amountPerPage, this] (MatchGroupsDataTask::Event* event){
         if (auto MGsP = event->getValue()){
-            auto MatchGroups = *MGsP;
+            auto MatchGroups = MGsP->unwrapOrDefault();
+
+            if (!MatchGroups.size()){
+                if (MGsP->isErr())
+                    data::sendError(MGsP->unwrapErr());
+                return;
+            }
 
             matchGroupsScrollLayer->m_contentLayer->removeAllChildrenWithCleanup(true);
             //get page thing
