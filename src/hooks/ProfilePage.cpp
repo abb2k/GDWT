@@ -39,10 +39,11 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
         }
     }
 
-    std::array<int, 3> organizerIDs{
+    std::array<int, 4> organizerIDs{
         11582651,
         9074168,
-        1380770
+        1380770,
+        19729991
     };
 
     for (int i = 0; i < organizerIDs.size(); i++)
