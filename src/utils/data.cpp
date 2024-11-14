@@ -1413,7 +1413,6 @@ void data::disable2point1Percent(GJGameLevel* level){
             return;
         }
     }
-    
 }
 
 void data::sendError(std::string err){
