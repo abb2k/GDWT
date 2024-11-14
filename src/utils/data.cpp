@@ -210,6 +210,8 @@ TeamsTask data::getTeamsData(){
         if (pDataRes != nullptr){
             auto players = pDataRes->unwrapOrDefault();
 
+            log::info("{}", players.size());
+
             if (!players.size()){
                 if (pDataRes->isErr())
                     data::sendError(pDataRes->unwrapErr());
@@ -220,6 +222,8 @@ TeamsTask data::getTeamsData(){
 
             for (int p = 0; p < players.size(); p++)
             {
+                if (players[p].countryCode == "N/A") continue;
+
                 bool doesnMyTeamExist = false;
 
                 for (int i = 0; i < teams.size(); i++)
@@ -237,10 +241,34 @@ TeamsTask data::getTeamsData(){
                 else{
                     Team team;
                     team.countryCode = players[p].countryCode;
+                    team.regionCode = players[p].regionCode;
                     team.accounts.push_back(players[p]);
                     teams.push_back(team);
                 }
             }
+
+            std::ranges::sort(teams, [](const Team& a, const Team& b) {
+                if (a.regionCode == b.regionCode) {
+                    return a.countryCode < b.countryCode; 
+                }
+
+                if (a.regionCode == "A") return true;
+                if (b.regionCode == "A") return false;
+
+                if (a.regionCode == "EU") return true;
+                if (b.regionCode == "EU") return false;
+
+                return a.regionCode < b.regionCode;
+            });
+
+
+            log::info("-----------");
+            for (int i = 0; i < teams.size(); i++)
+            {
+                log::info("team {} r = {}", teams[i].countryCode, teams[i].regionCode);
+            }
+            log::info("-----------");
+            
 
             loadTeams(teams);
             
@@ -583,28 +611,25 @@ PlayerDataTask data::getPlayersData(){
 
         auto players = std::vector<PlayerData>{};
 
-        log::info("getting p");
-
         if (resString.empty()){
             return Err("failed to get players");
         }
-
-        log::info("lol p");
 
         std::vector<std::vector<std::string>> values = convertRawData(resString, true);
         
         for (int r = 0; r < values.size(); r++)
         {
-            if (values[r].size() - 1 != 5) continue;
+            if (values[r].size() - 1 != 7) continue;
 
             PlayerData currPlayer;
 
             currPlayer.countryCode = values[r][0];
+            currPlayer.regionCode = values[r][1];
 
-            currPlayer.accountID = geode::utils::numFromString<int>(values[r][1]).unwrapOr(-1);
-            currPlayer.displayName = values[r][2];
+            currPlayer.accountID = geode::utils::numFromString<int>(values[r][2]).unwrapOr(-1);
+            currPlayer.displayName = values[r][3];
 
-            auto iconInfo = splitStr(values[r][3], ",");
+            auto iconInfo = splitStr(values[r][4], ",");
             
             if (iconInfo.size() == 5){
                 currPlayer.iconID = geode::utils::numFromString<int>(iconInfo[0]).unwrapOr(-1);
@@ -614,7 +639,7 @@ PlayerDataTask data::getPlayersData(){
                 currPlayer.glowColorID = geode::utils::numFromString<int>(iconInfo[4]).unwrapOr(-1);
             }
             
-            currPlayer.isActive = values[r][4] != "1";
+            currPlayer.isActive = values[r][5] != "1";
 
             players.push_back(currPlayer);
         }

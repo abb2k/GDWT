@@ -25,11 +25,13 @@ typedef struct {
     bool glowEnabled;
     std::string displayName;
     std::string countryCode;
+    std::string regionCode;
     bool isActive;
 } PlayerData;
 
 typedef struct {
     std::string countryCode;
+    std::string regionCode;
     std::vector<PlayerData> accounts;
 } Team;
 
