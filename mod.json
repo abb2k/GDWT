@@ -1,5 +1,5 @@
 {
-	"geode": "4.0.0-alpha.1",
+	"geode": "4.0.0-beta.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -8,7 +8,7 @@
 	},
 	"id": "abb2k.gdwt",
 	"name": "GD World Tournament",
-	"version": "v1.2.8",
+	"version": "v1.2.9",
 	"developer": "abb2k",
 	"description": "",
 	"links": {

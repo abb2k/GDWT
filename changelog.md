@@ -1,6 +1,9 @@
+# 1.2.9
+- updated for geode v4.0.0-beta.1
+
 # 1.2.8
 - some code rework
-- updated for geode v4.0.0
+- updated for geode v4.0.0-alpha.1
 
 # 1.2.7
 - added the option for match organizers to change the sheet the match data is directed to
