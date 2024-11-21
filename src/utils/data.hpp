@@ -27,6 +27,8 @@ typedef struct {
     std::string countryCode;
     std::string regionCode;
     bool isActive;
+    std::set<std::string> staffIDs;
+    std::set<std::string> achievementIDs;
 } PlayerData;
 
 typedef struct {
@@ -445,7 +447,6 @@ class data {
         static std::string matchesPageID;
         static std::string playersPageID;
         static std::string matchGroupsPageID;
-        static std::string currentMatchPageID;
 
         static std::vector<Match> loadedMatches;
 

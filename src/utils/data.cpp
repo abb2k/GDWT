@@ -11,8 +11,6 @@ std::string data::playersPageID = "Player%20Raw%20Data";
 
 std::string data::matchGroupsPageID = "Match%20Groups%20Data";
 
-std::string data::currentMatchPageID = "CurrentMatch";
-
 std::vector<Match> data::loadedMatches{};
 
 std::vector<UserInfo> data::loadedUsersInfo{};
@@ -122,7 +120,7 @@ MatchesTask data::getMatchesData(){
             currMatch.teams = splitStr(values[r][3], ",");
             auto splittedLevels = splitStr(values[r][4], ";");
             
-            if (values[r][4] == "NA" || values[r][4] == "")
+            if (values[r][4] == "NA" || values[r][4].empty())
                 splittedLevels.clear();
 
             for (int i = 0; i < splittedLevels.size(); i++)
@@ -210,8 +208,6 @@ TeamsTask data::getTeamsData(){
         if (pDataRes != nullptr){
             auto players = pDataRes->unwrapOrDefault();
 
-            log::info("{}", players.size());
-
             if (!players.size()){
                 if (pDataRes->isErr())
                     data::sendError(pDataRes->unwrapErr());
@@ -260,16 +256,7 @@ TeamsTask data::getTeamsData(){
 
                 return a.regionCode < b.regionCode;
             });
-
-
-            log::info("-----------");
-            for (int i = 0; i < teams.size(); i++)
-            {
-                log::info("team {} r = {}", teams[i].countryCode, teams[i].regionCode);
-            }
-            log::info("-----------");
             
-
             loadTeams(teams);
             
             return Ok(teams);
@@ -317,7 +304,7 @@ std::vector<std::string> data::splitStr(std::string str, std::string delim) {
 std::vector<std::string> data::eraseEmptys(std::vector<std::string> array){
     for (int i = 0; i < array.size(); i++)
     {
-        if (array[i] == ""){
+        if (array[i].empty()){
             array.erase(std::next(array.begin(), i));
             i--;
         }
@@ -641,6 +628,20 @@ PlayerDataTask data::getPlayersData(){
             
             currPlayer.isActive = values[r][5] != "1";
 
+            auto staffIDs = splitStr(values[r][6], ",");
+
+            for (const auto& ID : staffIDs)
+            {
+                currPlayer.staffIDs.emplace(ID);
+            }
+
+            auto AchievementIDs = splitStr(values[r][7], ",");
+
+            for (const auto& ID : AchievementIDs)
+            {
+                currPlayer.achievementIDs.emplace(ID);
+            }
+
             players.push_back(currPlayer);
         }
         
@@ -954,7 +955,7 @@ CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
 
     req.header("Authorization", "Bearer " + accessToken);
 
-    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?majorDimension=COLUMNS", SheetID, currentMatchPageID)).map(
+    return req.get(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}?majorDimension=COLUMNS", matchSheetID, matchSheetName)).map(
     [] (web::WebResponse* res) -> Result<std::map<std::string, std::pair<std::string, std::vector<std::string>>>> {
 
         GEODE_UNWRAP_INTO(auto json, res->json());
@@ -963,7 +964,7 @@ CurrentMatchTask data::getCurrentMatchData(std::string accessToken){
 
         GEODE_UNWRAP_INTO(auto vals, json.as<sheetValues>());
 
-        if (vals.range == "")
+        if (vals.range.empty())
             return Err("Failed to fetch sheet data!");
 
         std::vector<std::vector<std::string>> values = vals.values;
@@ -1277,7 +1278,7 @@ Task<Result<std::string>> data::refreshAccessToken(std::string clientId, std::st
         
         GEODE_UNWRAP_INTO(sheetRefreshedToken t, json.as<sheetRefreshedToken>());
 
-        if (t.access_token == "") return Err("Failed getting access token!");
+        if (t.access_token.empty()) return Err("Failed getting access token!");
 
         return Ok(t.access_token);
     },
@@ -1307,7 +1308,7 @@ Task<Result<>> data::writeToGoogleSheet(std::string spreadsheetId, std::string r
 
         GEODE_UNWRAP_INTO(sheetWriteReport r, json.as<sheetWriteReport>());
         
-        if (r.spreadsheetId == "") return Err("failed writing to the sheet!");
+        if (r.spreadsheetId.empty()) return Err("failed writing to the sheet!");
 
         return Ok();
     },

@@ -7,11 +7,11 @@ using namespace geode::prelude;
 
 class GDWTMatchGroupLayer : public Popup<const MatchGroup&> {
     protected:
-        bool setup(const MatchGroup& _group);
+        bool setup(const MatchGroup& _group) override;
     public:
         static GDWTMatchGroupLayer* create(const MatchGroup& _group);
 
-        void show();
+        void show() override;
 
         MatchGroup group;
 

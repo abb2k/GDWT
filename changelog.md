@@ -1,3 +1,8 @@
+# 1.2.10
+- updated for geode v4.0.1
+- fixed a match sheet bug
+- added new badges
+
 # 1.2.9
 - updated for geode v4.0.0-beta.1
 

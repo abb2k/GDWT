@@ -9,13 +9,13 @@ using namespace geode::prelude;
 
 class GDWTMatchLayer : public Popup<const Match&>, public LevelManagerDelegate {
     protected:
-        bool setup(const Match& _matchs);
+        bool setup(const Match& _matchs) override;
 
         void onClose(cocos2d::CCObject*);
     public:
         static GDWTMatchLayer* create(const Match& _match);
 
-        void show();
+        void show() override;
 
         void update(float delta);
 
@@ -29,11 +29,11 @@ class GDWTMatchLayer : public Popup<const Match&>, public LevelManagerDelegate {
         ScrollLayer* levelsListLayer;
         int scrollSwitch;
 
-        void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1);
-        void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2);
+        void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1) override;
+        void loadLevelsFinished(cocos2d::CCArray* p0, char const* p1, int p2) override;
 
-        void loadLevelsFailed(char const* p0);
-        void loadLevelsFailed(char const* p0, int p1);
+        void loadLevelsFailed(char const* p0) override;
+        void loadLevelsFailed(char const* p0, int p1) override;
 
         std::vector<GDWTMatchLevelCell*> levelCells;
 

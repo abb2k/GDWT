@@ -188,7 +188,7 @@ void UserDisplay::onDInfoReceved(UserInfoTask::Event* event) {
 
                 player->m_outlineSprite->setColor(GameManager::get()->colorForIdx(users[0]->glowColor));
 
-                if (displayName == "" && nameLabel){
+                if (displayName.empty() && nameLabel){
                     nameLabel->setString(users[0]->userName.c_str());
                     updateNameLength();
                 }
