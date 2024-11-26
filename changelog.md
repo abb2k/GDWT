@@ -1,3 +1,7 @@
+# 1.2.12
+- added badges for more national champions
+- added a badge for the winner of the GD Open Cup
+
 # 1.2.11
 - added badges for more national champions
 - added a badge for the winner of the GD Open Cup
