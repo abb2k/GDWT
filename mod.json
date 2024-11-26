@@ -8,7 +8,7 @@
 	},
 	"id": "abb2k.gdwt",
 	"name": "GD World Tournament",
-	"version": "v1.2.10",
+	"version": "v1.2.11",
 	"developer": "abb2k",
 	"description": "",
 	"links": {
@@ -26,17 +26,17 @@
 	"dependencies": [
         {
             "id": "jouca.badgesapi",
-            "version": ">=v1.0.6",
+            "version": ">=v1.2.0",
             "importance": "required"
         },
 		{
             "id": "geode.node-ids",
-            "version": "v1.10.0",
+            "version": "v1.17.0",
             "importance": "required"
         },
 		{
             "id": "cdc.level_thumbnails",
-            "version": "v1.0.6",
+            "version": "v1.0.8",
             "importance": "suggested"
         }
     ]

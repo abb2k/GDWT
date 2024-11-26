@@ -6,60 +6,6 @@ void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     m_fields->playerDataListener.bind(this, &GDWTProfilePage::playersDataRecieved);
 
     m_fields->playerDataListener.setFilter(data::getPlayersData());
-    
-    // auto layer = m_mainLayer;
-        
-    // CCMenu* username_menu = typeinfo_cast<CCMenu*>(layer->getChildByIDRecursive("username-menu"));
-
-    // std::array<int, 3> managmentIDs{
-    //     11684904,
-    //     9074168,
-    //     1380770
-    // };
-
-    // for (int i = 0; i < managmentIDs.size(); i++)
-    // {
-    //     if (managmentIDs[i] == user->m_accountID){
-    //         addManagmentBadge(username_menu);
-    //         break;
-    //     }
-    // }
-
-    // std::array<int, 8> tourneyWinners2024IDs{
-    //     8303773,
-    //     6801276,
-    //     11860237,
-    //     5682434,
-    //     7664649,
-    //     4955259,
-    //     26556060,
-    //     2932785
-    // };
-
-    // for (int i = 0; i < tourneyWinners2024IDs.size(); i++)
-    // {
-    //     if (tourneyWinners2024IDs[i] == user->m_accountID){
-    //         addTourneyWinners2024Badge(username_menu);
-    //         break;
-    //     }
-    // }
-
-    // std::array<int, 4> organizerIDs{
-    //     11582651,
-    //     9074168,
-    //     1380770,
-    //     19729991
-    // };
-
-    // for (int i = 0; i < organizerIDs.size(); i++)
-    // {
-    //     if (organizerIDs[i] == user->m_accountID){
-    //         addOrganizerBadge(username_menu);
-    //         break;
-    //     }
-    // }
-
-    // username_menu->updateLayout();
 }
 
 void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
@@ -101,7 +47,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "WT-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "2024 GD World Champion",
+                    "2024 GDWT Champion",
                     "This player was a member of the South Korea team for the <cl>2024 GD World Tournament</c>. After battling to get out of their group in the group stage, they defeated <cr>Canada</c>, <cb>France</c>, and finally <cg>Mexico</c> to become champions of the inaugural <cl>GD World Tournament</c>.\n\nThe team consisted of <cy>Baeru</c>, <cy>Clutter</c>, <cy>Laniakea</c>, <cy>PoCle</c>, <cy>Guraud</c>, <cy>hanni</c>, <cy>IcaroX</c>, and <cy>Knicide</c>",
                     0
                 );
@@ -116,11 +62,20 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
-            if (badgeID == "PT-24"){
+            if (badgeID == "OC-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "NA",
-                    "No description available for this badge yet...",
+                    "Open Cup S1 Champion",
+                    "This user won the first <cl>GD Open Cup</c>, a 192 person single elimination tournament where the first to complete the level wins.\n\nThey defeated <cg>Remy202</c> in the final.",
+                    -1
+                );
+            }
+
+            if (badgeID == "CO-24"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "Copa GD Colombia 2024",
+                    "Santhor won the <cy>Copa GD Colombia 2024</c>, defeating <cc>Leven</c> in the final.\n\nThe tournament had <cr>40 participants</c>, and was determined by the players' ability to beat a level as fast as possible given practice.",
                     0
                 );
             }
@@ -128,7 +83,25 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "US-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "NA",
+                    "Battle of the States S1",
+                    "No description available for this badge yet...",
+                    0
+                );
+            }
+
+            if (badgeID == "NL-S1"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GDNL Tournament S1",
+                    "No description available for this badge yet...",
+                    0
+                );
+            }
+
+            if (badgeID == "PT-24"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "2024 GDPT Champion",
                     "No description available for this badge yet...",
                     0
                 );
@@ -137,8 +110,8 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "KR-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "NA",
-                    "No description available for this badge yet...",
+                    "GDKF S1 Champion",
+                    "<cg>Xylitol</c> won the first <cr>GMD Korea Forum</c> championship, with <cg>Kowoo</c> being the runner-up",
                     0
                 );
             }
@@ -146,8 +119,8 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "KR-S2"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "NA",
-                    "No description available for this badge yet...",
+                    "GDKF S2 Champion",
+                    "<cj>TherZ</c> won the second <cr>GMD Korea Forum</c> championship, with <cg>Plasmalust</c> being the runner-up",
                     0
                 );
             }
@@ -155,8 +128,44 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "KR-S3"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "NA",
-                    "No description available for this badge yet...",
+                    "GDKF S3 Champion",
+                    "<cy>DNM121</c> won the third <cr>GMD Korea Forum</c> championship, with <cd>Baeru</c> being the runner-up",
+                    0
+                );
+            }
+
+            if (badgeID == "MY-S1"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "1st GDMY Tournament",
+                    "<cg>Anglified</c> won the first <cb>GD Malaysia Tournament</c>, with <cb>Koba</c> being the runner-up",
+                    0
+                );
+            }
+
+            if (badgeID == "MY-S2"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "2022 GDMY Tournament",
+                    "<cr>MADxSG</c> won the <cb>2022 GD Malaysia Tournament</c>, with <cg>FarAwayLand</c> being the runner-up",
+                    0
+                );
+            }
+
+            if (badgeID == "MY-S3"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "Malaysian Independance Tournament",
+                    "<cj>Fastboi</c> won the <cb>2023 GD Malaysian Independance Day Tournament</c>, with <cr>Zakuya</c> being the runner-up",
+                    0
+                );
+            }
+
+            if (badgeID == "MY-S4"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "2023 GDMY Tournament",
+                    "<cl>Ryanrolanddd</c> won the <cb>2023 GD Malaysian Tournament</c>, with <cg>partyt</c> being the runner-up",
                     0
                 );
             }
