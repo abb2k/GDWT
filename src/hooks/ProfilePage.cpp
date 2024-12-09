@@ -175,7 +175,6 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
 
 void GDWTProfilePage::createBadge(const std::string& ID, const std::string& name, const std::string& description, const int& orderPrio){
     auto username_menu = typeinfo_cast<CCMenu*>(m_mainLayer->getChildByIDRecursive("username-menu"));
-    log::info("{}", fmt::format("{}"_spr, ID));
     auto yourBadge = CCSprite::create(fmt::format("{}.png"_spr, ID).c_str());
     auto bButton = CCMenuItemSpriteExtra::create(
         yourBadge,

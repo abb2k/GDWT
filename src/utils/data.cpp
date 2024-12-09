@@ -603,6 +603,7 @@ PlayerDataTask data::getPlayersData(){
         }
 
         std::vector<std::vector<std::string>> values = convertRawData(resString, true);
+        clipboard::write(resString);
         
         for (int r = 0; r < values.size(); r++)
         {
@@ -1150,11 +1151,11 @@ Result<> data::joinMatch(std::string joinCode){
 
         data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}:{}", matchSheetName, connectCheckCell, connectCheckCell), ":D", res->unwrap()).listen([](Result<>* didWrite){
             if (didWrite == nullptr){
-                data::checkConnectionComplete("Connection Failed!");
+                data::checkConnectionComplete("Connection Failed! (sheet result is null)");
                 return;
             } 
-            if (!didWrite->isOk()){
-                data::checkConnectionComplete("Connection Failed!");
+            if (didWrite->isErr()){
+                data::checkConnectionComplete("Connection Failed! " + didWrite->unwrapErr());
                 return;
             }
 
@@ -1165,15 +1166,16 @@ Result<> data::joinMatch(std::string joinCode){
 
     req.post(discordWebhookLink + val).listen(
     [val] (web::WebResponse* res){
-        if (!res->ok()){
-            data::checkConnectionComplete("Connection Failed!");
-        }
+        if (!res)
+            data::checkConnectionComplete("Connection Failed! (discord response is null)");
+
+        if (!res->ok())
+            data::checkConnectionComplete("Connection Failed! (discord response is error)");
 
         auto json = res->json();
 
-        if (json.isOk()){
-            data::checkConnectionComplete("Incorrect code! (might be expired)");
-        }
+        if (json.isErr())
+            data::checkConnectionComplete("Incorrect code! " + json.unwrapErr());
 
         discordWebhookSecret = val;
         discordConnectionCheck = true;

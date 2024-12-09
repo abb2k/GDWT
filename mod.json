@@ -17,7 +17,8 @@
 	"tags": ["interface", "utility"],
 	"resources": {
 		"sprites": [
-			"resources/*.png"
+			"resources/*.png",
+			"resources/badges/*.png"
 		],
         "spritesheets": {
             "countries": ["resources/countries/*.png"]
