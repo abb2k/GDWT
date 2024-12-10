@@ -82,6 +82,8 @@ MatchesTask data::getMatchesData(){
             if (values[r].size() - 1 != 9) continue;
             
             Match currMatch;
+
+            currMatch.matchName = values[r][7];
             
             auto hosts = splitStr(values[r][0], ";");
             
@@ -158,6 +160,9 @@ MatchesTask data::getMatchesData(){
                             if (pdata.size() > 2){
                                 std::get<2>(toAdd) = geode::utils::numFromString<int>(pdata[2]).unwrapOr(-1);
                             }
+
+                            if (pdata[0].find(' ') != std::string::npos)
+                                log::warn("Account ID for player {} in match \"{}\" contains a space!", pdata[0], currMatch.matchName);
                             
                             level.displayNames.push_back(toAdd);
                         }
@@ -169,8 +174,7 @@ MatchesTask data::getMatchesData(){
 
             currMatch.liveLink = values[r][5];
             currMatch.vodLink = values[r][6];
-            currMatch.matchName = values[r][7];
-
+            
             currMatch.scoreType = static_cast<ScoreSystemType>(geode::utils::numFromString<int>(values[r][8]).unwrapOr(0));
             currMatch.groupID = geode::utils::numFromString<int>(values[r][9]).unwrapOr(-1);
 
@@ -603,7 +607,6 @@ PlayerDataTask data::getPlayersData(){
         }
 
         std::vector<std::vector<std::string>> values = convertRawData(resString, true);
-        clipboard::write(resString);
         
         for (int r = 0; r < values.size(); r++)
         {

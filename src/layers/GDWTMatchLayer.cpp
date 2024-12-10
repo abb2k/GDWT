@@ -142,32 +142,22 @@ bool GDWTMatchLayer::setup(const Match& _match){
 
     auto infoCont = CCNode::create();
     infoCont->setID("info-container");
-    infoCont->setPositionY(15);
+    infoCont->setPositionY(20);
     alignmentNode->addChild(infoCont);
-
-    auto infoLabel = CCLabelBMFont::create("Info", "gjFont17.fnt");
-    infoLabel->setScale(0.5f);
-    infoLabel->setPositionY(36);
-    infoCont->addChild(infoLabel);
 
     auto infoBG = CCScale9Sprite::create("square02b_small.png", {0, 0, 40, 40});
     infoBG->setColor({0, 0 ,0});
     infoBG->setOpacity(75);
     infoBG->setPositionY(-5);
-    infoBG->setContentSize({130, 65});
+    infoBG->setContentSize({130, 80});
     infoCont->addChild(infoBG);
 
     auto infoMenu = CCMenu::create();
     infoMenu->setPosition({0, 0});
     infoCont->addChild(infoMenu);
 
-    auto dateLabel = CCLabelBMFont::create("Date", "gjFont17.fnt");
-    dateLabel->setPosition({-25, 14});
-    dateLabel->setScale(0.55f);
-    infoCont->addChild(dateLabel);
-
     auto dateText = TextInput::create(80, "date", "gjFont17.fnt");
-    dateText->setPosition({-25, -9});
+    dateText->setPosition({0, -8});
     dateText->setScale(0.8f);
     dateText->setString(match.date);
     dateText->setEnabled(false);
@@ -181,7 +171,7 @@ bool GDWTMatchLayer::setup(const Match& _match){
 		this,
 		menu_selector(GDWTMatchLayer::twitchClicked)
 	);
-    LiveButton->setPosition({50, 0});
+    LiveButton->setPosition({23, 20});
     infoMenu->addChild(LiveButton);
 
     auto VodButtonSprite = CCSprite::createWithSpriteFrameName("gj_ytIcon_001.png");
@@ -191,16 +181,16 @@ bool GDWTMatchLayer::setup(const Match& _match){
 		this,
 		menu_selector(GDWTMatchLayer::ytClicked)
 	);
-    VodButton->setPosition({23, 0});
+    VodButton->setPosition({-23, 20});
     infoMenu->addChild(VodButton);
 
     auto STypeLabel = CCLabelBMFont::create("Score type:", "gjFont17.fnt");
-    STypeLabel->setPosition({-25, -28});
+    STypeLabel->setPosition({-25, -32});
     STypeLabel->setScale(0.325f);
     infoCont->addChild(STypeLabel);
 
     auto STypeLabelText = TextInput::create(160, "", "gjFont17.fnt");
-    STypeLabelText->setPosition({33, -28});
+    STypeLabelText->setPosition({33, -32});
     STypeLabelText->setScale(0.325f);
     STypeLabelText->getBGSprite()->setOpacity(0);
     STypeLabelText->setEnabled(false);
