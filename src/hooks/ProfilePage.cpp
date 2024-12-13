@@ -1,4 +1,5 @@
 #include "../hooks/ProfilePage.hpp"
+#include "../utils/MDAlertLayer.hpp"
 
 void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     ProfilePage::loadPageFromUserInfo(user);
@@ -192,7 +193,7 @@ void GDWTProfilePage::createBadge(const std::string& ID, const std::string& name
 
 void GDWTProfilePage::onBadgeClicked(CCObject* sender){
     if (m_fields->allBadges.contains(sender)){
-        auto alert = FLAlertLayer::create(m_fields->allBadges[sender].first.c_str(), m_fields->allBadges[sender].second.c_str(), "OK");
+        auto alert = MDAlertLayer::create(m_fields->allBadges[sender].first.c_str(), m_fields->allBadges[sender].second.c_str());
         alert->show();
     }   
 }
