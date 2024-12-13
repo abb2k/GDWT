@@ -1,3 +1,7 @@
+# 1.2.13
+- updated textures for the new GDWT logo
+- added badges for GD Lucky Tournament along with one for the Polish tournament
+
 # 1.2.12
 - added badges for more national champions
 - added a badge for the winner of the GD Open Cup
