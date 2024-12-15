@@ -48,7 +48,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "WT-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "2024 GDWT Champion",
+                    "2024 GD World Champion",
                     "This player was a member of the South Korea team for the <cl>2024 GD World Tournament</c>. After battling to get out of their group in the group stage, they defeated <cr>Canada</c>, <cb>France</c>, and finally <cg>Mexico</c> to become champions of the inaugural <cl>GD World Tournament</c>.\n\nThe team consisted of <cy>Baeru</c>, <cy>Clutter</c>, <cy>Laniakea</c>, <cy>PoCle</c>, <cy>Guraud</c>, <cy>hanni</c>, <cy>IcaroX</c>, and <cy>Knicide</c>",
                     1
                 );
@@ -66,7 +66,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "OC-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "Open Cup S1 Champion",
+                    "GD Open Cup S1 Champion",
                     "This user won the first <cl>GD Open Cup</c>, a 192 person single elimination tournament where the first to complete the level wins.\n\nThey defeated <cg>Remy202</c> in the final.",
                     -1
                 );
@@ -74,7 +74,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-21"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDLT 2021 Champion",
+                    "GD Lucky Tournament Champion",
                     "LOS COSTARAMA won the first <<cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons",
                     0
                 );
@@ -83,7 +83,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-22"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDLT 2022 Champion",
+                    "GD Lucky Tournament Champion",
                     "INFALIBLES won the 2022 <<cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons",
                     0
                 );
@@ -92,7 +92,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-23"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDLT 2023 Champion",
+                    "GD Lucky Tournament 2023 Champion",
                     "LOS CULOS HELADOS won the 2023 <<cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons",
                     0
                 );
@@ -101,7 +101,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDLT 2024 Champion",
+                    "GD Lucky Tournament Champion",
                     "No description available for this badge yet...",
                     0
                 );

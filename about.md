@@ -1,6 +1,6 @@
 # GD World Tournament
 
-The Geometry Dash World Tournament mod consists of information from all international matches held by the GD World Tournament team. You can view national team rosters, scores for the competitors of each event, and look at tournament results.
+The Geometry Dash World Tournament mod consists of information from all international matches held by the GD World Tournament team. You can view national team rosters, scores for the competitors of each event, and look at tournament results. Players can use the mod to play in live matches as well.
 
 
 ## credits

@@ -1,3 +1,7 @@
+# 1.2.14
+- fixed issue with new logo
+- added a new textbox
+
 # 1.2.13
 - updated textures for the new GDWT logo
 - added badges for GD Lucky Tournament along with one for the Polish tournament
