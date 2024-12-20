@@ -58,7 +58,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GDWT Event Organizer",
-                    "This user is an <cj>Event Organizer</c> for the <cl>GD Wolrd Tournament</c>.\n\nThey are responsible for <cg>preparing and setting up</c> various <cl>GD Wolrd Tournament</c> events.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
+                    "This user is an <cj>Event Organizer</c> for the <cl>GD World Tournament</c>.\n\nThey are responsible for <cg>preparing and setting up</c> various <cl>GD World Tournament</c> events.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
                     2
                 );
             }
@@ -173,7 +173,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "KR-S3"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDKF S3 Champion",
+                    "GD Korea Forum S3 Champion",
                     "<cy>DNM121</c> won the third <c-CD2E3A>GMD Korea Forum championship</c>, with <cd>Baeru</c> being the runner-up",
                     0
                 );
@@ -210,7 +210,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "2023 GD Malaysia Tournament",
-                    "<cl>Ryanrolanddd</c> won the <c-0032A0>2023 GD Malaysian Tournament</c>, with <cg>partyt</c> being the runner-up",
+                    "<cl>Ryanrolanddd</c> won the <c-0032A0>2023 GD Malaysia Tournament</c>, with <cg>partyt</c> being the runner-up\n\nThe VOD for the final can be found [here](https://www.youtube.com/live/IWp402jOjAw?si=c9Zna0dgn5bIweml)",
                     0
                 );
             }
