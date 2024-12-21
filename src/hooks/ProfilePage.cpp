@@ -40,7 +40,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GDWT Managment",
-                    "This user is a member of the <cy>GD World Tournament management team</c>.\n\nThey are responsible for <cg>overseeing and creating</c> various GD World Tournament Hub events, along with <co>developing systems</c> to further help the project as a whole.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
+                    "This user is a member of the <cy>GD World Tournament Hub management team</c>.\n\nThey are responsible for <cg>overseeing and creating</c> various GD World Tournament Hub events, along with <co>developing systems</c> to further help the project as a whole.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
                     3
                 );
             }
@@ -74,7 +74,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-21"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GD Lucky Tournament Champion",
+                    "GD Lucky Tournament 2021 Champion",
                     "LOS COSTARAMA won the first <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     0
                 );
@@ -83,7 +83,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-22"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GD Lucky Tournament Champion",
+                    "GD Lucky Tournament 2022 Champion",
                     "INFALIBLES won the 2022 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     0
                 );
@@ -101,7 +101,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "LT-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GD Lucky Tournament Champion",
+                    "GD Lucky Tournament 2024Champion",
                     "\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     0
                 );
@@ -119,7 +119,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "US-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "Battle of the States S1",
+                    "Battle of the States Champion",
                     "No description available for this badge yet...",
                     0
                 );
@@ -128,7 +128,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "NL-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDNL Tournament S1",
+                    "GDNL Tournament Champion",
                     "No description available for this badge yet...",
                     0
                 );
@@ -183,7 +183,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "Inaugural GD Malaysia Tournament",
-                    "<cg>Anglified</c> won the first <c-0032A0>GD Malaysia Tournament</c>, with <cb>Koba</c> being the runner-up",
+                    "<cg>Anglified</c> won the first <c-0032A0>GD Malaysia Tournament</c>, with <cb>Koba</c> being the runner-up\n\nThe tournament consisted of sixteen Malaysian players racing on various levels\n\nThe bracket can be found [here](https://challonge.com/edj2myy7)",
                     0
                 );
             }
@@ -192,7 +192,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "2022 GD Malaysia Tournament",
-                    "<cr>MADxSG</c> won the <c-0032A0>2022 GD Malaysia Tournament</c>, with <cg>FarAwayLand</c> being the runner-up",
+                    "<cr>MADxSG</c> won the <c-0032A0>2022 GD Malaysia Tournament</c>, with <cg>FarAwayLand</c> being the runner-up\n\nThe tournament consisted of sixteen Malaysian players racing on various levels\n\nThe bracket can be found [here](https://challonge.com/17fd9xn4)\n\nThe video of the final day of the tournament can be found [here](https://www.youtube.com/watch?v=yEokGB-wxqY)",
                     0
                 );
             }
@@ -201,7 +201,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "2023 Malaysia Independence Tournament",
-                    "<cj>Fastboi</c> won the <c-0032A0>2023 GD Malaysian Independance Day Tournament</c>, with <cr>Zakuya</c> being the runner-up",
+                    "<cj>Fastboi</c> won the <c-0032A0>2023 GD Malaysian Independance Day Tournament</c>, with <cr>Zakuya</c> being the runner-up\n\nThe tournament consisted of fourteen Malaysian players racing on various levels\n\nThe VOD for the final day can be found [here](https://www.youtube.com/live/4JWSBAQ7BNk)",
                     0
                 );
             }
@@ -210,7 +210,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "2023 GD Malaysia Tournament",
-                    "<cl>Ryanrolanddd</c> won the <c-0032A0>2023 GD Malaysia Tournament</c>, with <cg>partyt</c> being the runner-up\n\nThe VOD for the final can be found [here](https://www.youtube.com/live/IWp402jOjAw?si=c9Zna0dgn5bIweml)",
+                    "<cl>Ryanrolanddd</c> won the <c-0032A0>2023 GD Malaysia Tournament</c>, with <cg>partyt</c> being the runner-up\n\nThe tournament consisted of fourteen Malaysian players racing on various levels\n\nThe VOD for the final can be found [here](https://www.youtube.com/live/IWp402jOjAw?si=c9Zna0dgn5bIweml)",
                     0
                 );
             }
