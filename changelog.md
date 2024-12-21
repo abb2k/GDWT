@@ -1,3 +1,7 @@
+# 1.2.15
+- enhanced descriptions for badges
+- formatted descriptions to be centered and take up a bit less of the screen
+
 # 1.2.14
 - fixed issue with new logo
 - added a new textbox style, allowing for further customization
