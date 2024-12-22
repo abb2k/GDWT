@@ -1177,8 +1177,8 @@ Result<> data::joinMatch(std::string joinCode){
 
         auto json = res->json();
 
-        if (json.isErr())
-            data::checkConnectionComplete("Incorrect code! " + json.unwrapErr());
+        if (json.isOk())
+            data::checkConnectionComplete("Incorrect code! " + json.unwrap().dump());
 
         discordWebhookSecret = val;
         discordConnectionCheck = true;
