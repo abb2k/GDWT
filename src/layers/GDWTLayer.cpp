@@ -37,17 +37,17 @@ bool GDWTLayer::init(){
     this->addChild(sideArt);
 
     auto mainScroll = ScrollLayer::create(CCSize(winSize.width / 1.75f, winSize.height / 1.25f));
-    mainScroll->m_contentLayer->setLayout(ColumnLayout::create()
+    mainScroll->m_contentLayer->setLayout(RowLayout::create()
         ->setGrowCrossAxis(true)
         ->setAutoScale(false)
-        ->setAxisAlignment(AxisAlignment::End)
-        ->setGap(2)
+        ->setCrossAxisAlignment(AxisAlignment::End)
+        ->setGap(20)
         ->setCrossAxisOverflow(false)
     );
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
     {
-        auto cell = GeneralGDWTCell::create();
+        auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs", i + 1);
         mainScroll->m_contentLayer->addChild(cell);
     }
     
