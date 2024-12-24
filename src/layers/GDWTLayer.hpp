@@ -17,6 +17,8 @@ class GDWTLayer : public CCLayer {
 
         void OnBackButton(CCObject*);
 
+        ScrollLayer* mainScroll;
+
         //
 
         void openJoinMatchMenu(CCObject*);

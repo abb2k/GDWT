@@ -2,10 +2,14 @@
 
 #include <Geode/Geode.hpp>
 #include "../utils/data.hpp"
+#include <Geode/utils/web.hpp>
+#include "../layers/UserDisplay.hpp"
+
+using boolTask = Task<bool>;
 
 using namespace geode::prelude;
 
-class GeneralGDWTCell : public CCMenuItemSpriteExtra {
+class GeneralGDWTCell : public CCMenu {
     protected:
         bool init(const std::string& title, int enterIndex);
     public:
@@ -15,12 +19,21 @@ class GeneralGDWTCell : public CCMenuItemSpriteExtra {
 
         CCNode* mainContainer;
 
-        CCNode* content;
+        CCMenuItemSpriteExtra* overallBtn;
+
+        CCLayer* content;
 
         geode::SimpleTextArea* titleLabel;
         CCScale9Sprite* BG;
 
+        void OnClick(CCObject*);
+
         void setCentralContent(const Match& match);
+
+        void loadMatchImage(Ref<CCImage> image, CCNode* alignImageTo);
+
+        boolTask loadMatchThumbnail(std::string matchName, CCNode* alignImageTo);
+        EventListener<boolTask> thumbnailListener;
 
         void setCentralContent(const Team& team);
 

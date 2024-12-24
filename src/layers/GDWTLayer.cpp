@@ -36,7 +36,7 @@ bool GDWTLayer::init(){
     sideArt->setID("side-art");
     this->addChild(sideArt);
 
-    auto mainScroll = ScrollLayer::create(CCSize(winSize.width / 1.75f, winSize.height / 1.25f));
+    mainScroll = ScrollLayer::create(CCSize(winSize.width / 1.75f, winSize.height / 1.25f));
     mainScroll->m_contentLayer->setLayout(RowLayout::create()
         ->setGrowCrossAxis(true)
         ->setAutoScale(false)
@@ -44,14 +44,46 @@ bool GDWTLayer::init(){
         ->setGap(20)
         ->setCrossAxisOverflow(false)
     );
-
-    for (int i = 0; i < 5; i++)
-    {
-        auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs", i + 1);
-        mainScroll->m_contentLayer->addChild(cell);
-    }
     
-    mainScroll->m_contentLayer->updateLayout();
+    data::getMatchesData().listen([this] (Result<std::vector<Match>>* res){
+        if (res == nullptr) return;
+        if (res->isErr()) return;
+        if (!res->unwrap().size()) return;
+
+        float cellHight = 0;
+
+        for (int i = 0; i < res->unwrap().size(); i++)
+        {
+            auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs", i + 1);
+            cellHight = cell->getContentHeight();
+            cell->setCentralContent(res->unwrap()[i]);
+            mainScroll->m_contentLayer->addChild(cell);
+        }
+        mainScroll->m_contentLayer->updateLayout();
+
+        int amountPerRow = 0;
+        float startHight = -1;
+        for (auto& child : CCArrayExt<CCNode*>(mainScroll->m_contentLayer->getChildren()))
+        {
+            if (startHight == -1)
+                startHight = child->getPositionY();
+
+            if (child->getPositionY() == startHight)
+                amountPerRow++;
+            else break;
+        }
+
+        auto layout = static_cast<RowLayout*>(mainScroll->m_contentLayer->getLayout());
+
+        log::info("{} | {} | {} | {}", res->unwrap().size(), amountPerRow, cellHight, layout->getGap());
+    
+        float newContentHeight = res->unwrap().size() / amountPerRow * (cellHight + layout->getGap());
+
+        mainScroll->m_contentLayer->setContentHeight(newContentHeight);
+        mainScroll->m_contentLayer->updateLayout();
+        mainScroll->moveToTop();
+    });
+
     mainScroll->setPosition(winSize / 2 - mainScroll->getContentSize() / 2);
     this->addChild(mainScroll);
 
