@@ -125,6 +125,24 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
+            if (badgeID == "ES-24"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "LaLiga Dasher 2024 Champion",
+                    "<cg>Cuatrocientos</c> won the 2024 edition of LaLiga Dasher.\n\nHe claimed the 1 seed in the league phase, where 18 players matched up against each other exactly once\n\nThe top eight performers would advance to the playoffs consisting of a best of three quarterfinal and semifinal, along with a best of five final\n\n<cg>Cuatrocientos</c> only lost a single set during their playoff, dropping one in the final against <c-af004b>Davine007</c>, but still winning the series 3 to 1 to win the first completed LaLiga Dasher\n\nTo read more, check out [here](https://laligadasher.fandom.com/es/wiki/LaLiga_Dasher_2024)",
+                    0
+                );
+            }
+
+            if (badgeID == "ES-25"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "LaLiga Dasher 2025 Champion",
+                    "No description available for this badge yet...",
+                    0
+                );
+            }
+
             if (badgeID == "NL-S1"){
                 GDWTProfilePage::createBadge(
                     badgeID,
