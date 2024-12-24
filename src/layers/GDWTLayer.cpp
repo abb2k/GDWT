@@ -57,6 +57,18 @@ bool GDWTLayer::init(){
             auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs", i + 1);
             cellHight = cell->getContentHeight();
             cell->setCentralContent(res->unwrap()[i]);
+            Tag tag1;
+            tag1.color = { 72, 255, 0 };
+            tag1.name = "GDWT";
+            cell->addTag(tag1);
+            Tag tag3;
+            Tag tag2;
+            tag2.color = { 255, 0, 0 };
+            tag2.name = "2024\n";
+            cell->addTag(tag2);
+            tag3.color = { 255, 0, 0 };
+            tag3.name = "silly\n";
+            cell->addTag(tag3);
             mainScroll->m_contentLayer->addChild(cell);
         }
         mainScroll->m_contentLayer->updateLayout();
@@ -74,8 +86,6 @@ bool GDWTLayer::init(){
         }
 
         auto layout = static_cast<RowLayout*>(mainScroll->m_contentLayer->getLayout());
-
-        log::info("{} | {} | {} | {}", res->unwrap().size(), amountPerRow, cellHight, layout->getGap());
     
         float newContentHeight = res->unwrap().size() / amountPerRow * (cellHight + layout->getGap());
 

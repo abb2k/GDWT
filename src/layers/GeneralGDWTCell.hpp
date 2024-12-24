@@ -44,4 +44,11 @@ class GeneralGDWTCell : public CCMenu {
         void playEnterTransition(float baseDuration, int enterIndex = 0);
 
         void setTitle(const std::string& title);
+
+        CCNode* tagsContainer;
+        void addTag(const Tag& tag);
+        void removeAllTags();
+        void updateTagsDisplay();
+
+        std::set<Tag> tags{};
 };

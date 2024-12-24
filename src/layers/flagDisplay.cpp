@@ -1,5 +1,4 @@
 #include "../layers/flagDisplay.hpp"
-#include "../layers/GDWTTeamLayer.hpp"
 
 flagDisplay* flagDisplay::create(int accountID) {
     auto ret = new flagDisplay();
@@ -66,7 +65,7 @@ bool flagDisplay::init(int accountID, std::string countryCode){
 }
 
 void flagDisplay::flagClicked(CCObject*){
-    GDWTTeamLayer::create(myTeam)->show();
+    //GDWTTeamLayer::create(myTeam)->show();
 }
 
 void flagDisplay::onTeamsInfo(TeamsTask::Event* event){

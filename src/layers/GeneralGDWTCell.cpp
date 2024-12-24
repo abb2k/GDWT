@@ -12,7 +12,7 @@ GeneralGDWTCell* GeneralGDWTCell::create(const std::string& title, int enterInde
 
 bool GeneralGDWTCell::init(const std::string& title, int enterIndex){
     if (!CCMenu::init()) return false;
-    size = CCSize(90, 90);
+    size = CCSize(90, 110);
 
     this->setContentSize(size);
     this->setAnchorPoint(ccp(0, 0));
@@ -42,11 +42,21 @@ bool GeneralGDWTCell::init(const std::string& title, int enterIndex){
     titleLabel->setAnchorPoint({.5f, 1});
     titleLabel->setAlignment(CCTextAlignment::kCCTextAlignmentCenter);
     titleLabel->setWrappingMode(WrappingMode::SPACE_WRAP);
-    titleLabel->setPosition(ccp(size.width / 2, 86));
+    titleLabel->setPosition(ccp(size.width / 2, 107));
     mainContainer->addChild(titleLabel);
 
     content = CCLayer::create();
+    content->setPositionY(20);
     mainContainer->addChild(content);
+
+    auto tagsLabel = CCLabelBMFont::create("tags:", "bigFont.fnt");
+    tagsLabel->setPosition(ccp(20, 19));
+    tagsLabel->setScale(.25f);
+    mainContainer->addChild(tagsLabel);
+
+    tagsContainer = CCNode::create();
+    tagsContainer->setPosition(ccp(9, 8));
+    mainContainer->addChild(tagsContainer);
 
     GeneralGDWTCell::clearContent(true);
 
@@ -90,7 +100,7 @@ void GeneralGDWTCell::setCentralContent(const Match& match){
             content->addChild(NAText);
         }
     });
-    //dis laggs nned to fix
+    
     thumbnailListener.setFilter(GeneralGDWTCell::loadMatchThumbnail(match.matchName, ImageOutline));
 
     auto hostIcon = UserDisplay::create(match.hosts[0]);
@@ -115,9 +125,10 @@ void GeneralGDWTCell::setCentralContent(const Match& match){
 
     /*
     - first host Y
-    - countries vs / thumbnail M
-    - date X
+    - thumbnail Y
+    - date Y
     - name Y
+    - tags display X
     */
 }
 
@@ -227,17 +238,23 @@ void GeneralGDWTCell::playEnterTransition(float baseDuration, int enterIndex){
                 action->setTag(1);
                 line->runAction(action);
             }
-            break;
         }
 
-        GLbyte fadeTo = 255;
+        if (auto label = typeinfo_cast<CCLabelBMFont*>(child)){
+            auto action = CCSequence::create(CCDelayTime::create(waitTime), CCFadeIn::create(baseDuration), nullptr);
+            action->setTag(1);
+            label->runAction(action);
+        }
+        else{
+            GLbyte fadeTo = 255;
 
-        if (BG == child)
-            fadeTo = 200;
+            if (BG == child)
+                fadeTo = 200;
 
-        auto action = CCSequence::create(CCDelayTime::create(waitTime), CCFadeTo::create(baseDuration, fadeTo), nullptr);
-        action->setTag(1);
-        child->runAction(action);
+            auto action = CCSequence::create(CCDelayTime::create(waitTime), CCFadeTo::create(baseDuration, fadeTo), nullptr);
+            action->setTag(1);
+            child->runAction(action);
+        }
     }
 
     overallBtn->runAction(CCSequence::create(
@@ -260,6 +277,60 @@ void GeneralGDWTCell::setTitle(const std::string& title){
     {
         auto myAction = static_cast<CCAction*>(currAction->copy());
         line->runAction(myAction);
+    }
+    
+}
+
+void GeneralGDWTCell::addTag(const Tag& tag){
+    log::info("adding tag {}", tag.name);
+    if (tags.contains(tag)) return;
+    log::info("added the tag {}", tag.name);
+    tags.insert(tag);
+
+    GeneralGDWTCell::updateTagsDisplay();
+}
+
+void GeneralGDWTCell::removeAllTags(){
+    tags.clear();
+
+    GeneralGDWTCell::updateTagsDisplay();
+}
+
+void GeneralGDWTCell::updateTagsDisplay(){
+    float padding = 1;
+
+    //62.5 limit
+    float tagsWidth = 0;
+
+    tagsContainer->removeAllChildrenWithCleanup(true);
+
+    for (const Tag& tag : tags)
+    {
+        log::info("---");
+        log::info("1");
+        auto currTag = ButtonSprite::create(tag.name.c_str(), "bigFont.fnt", "GJ_button_04.png");
+        currTag->setScale(.25f);
+        currTag->setAnchorPoint(ccp(0, .5f));
+        currTag->m_BGSprite->setColor(tag.color);
+        currTag->setPositionX(tagsWidth + padding);
+        tagsWidth += currTag->getScaledContentWidth() + padding;
+
+        if (tagsWidth >= 62.5f){
+            tagsWidth -= currTag->getScaledContentWidth() + padding;
+            auto plusSign = CCLabelBMFont::create("+", "bigFont.fnt");
+            plusSign->setAnchorPoint(ccp(0, .5f));
+            plusSign->setPosition(ccp(tagsWidth + 1, 1));
+            plusSign->setScale(0.45f);
+            tagsContainer->addChild(plusSign);
+            log::info("3");
+            log::info("---");
+            break;
+        }
+
+        log::info("2");
+        log::info("---");
+
+        tagsContainer->addChild(currTag);
     }
     
 }

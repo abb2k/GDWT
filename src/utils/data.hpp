@@ -380,6 +380,16 @@ struct matjson::Serialize<std::vector<ZSAToggleSaveData>> {
     }
 };
 
+struct Tag {
+    std::string name;
+    ccColor3B color;
+
+    bool operator<(const Tag& otherTag) const noexcept
+    {
+        return this->name.length() < otherTag.name.length();
+    }
+};
+
 class data {
     public:
         static MatchesTask getMatchesData();
