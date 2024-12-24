@@ -1,3 +1,7 @@
+# 1.2.16
+- added badges for LaLiga Dasher
+- fixed the priority of badges for those who have multiple, favoring more recent events
+
 # 1.2.15
 - enhanced descriptions for badges
 - formatted descriptions to be centered and take up a bit less of the screen

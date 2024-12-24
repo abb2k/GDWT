@@ -41,7 +41,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GDWT Managment",
                     "This user is a member of the <cy>GD World Tournament Hub management team</c>.\n\nThey are responsible for <cg>overseeing and creating</c> various GD World Tournament Hub events, along with <co>developing systems</c> to further help the project as a whole.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
-                    3
+                    104
                 );
             }
 
@@ -50,7 +50,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2024 GD World Champion",
                     "This player was a member of the South Korea team for the <cl>2024 GD World Tournament</c>. After battling to get out of their group in the group stage, they defeated <cr>Canada</c>, <cb>France</c>, and finally <cg>Mexico</c> to become champions of the inaugural <cl>GD World Tournament</c>.\n\nThe team consisted of <cy>Baeru</c>, <cy>Clutter</c>, <cy>Laniakea</c>, <cy>PoCle</c>, <cy>Guraud</c>, <cy>hanni</c>, <cy>IcaroX</c>, and <cy>Knicide</c>\n\nA full wiki page on the tournament can be found [here](https://geometry-dash-fan.fandom.com/wiki/2024_GD_World_Tournament), which includes info on every match played.\n\nTo watch the final, you can do that [here](https://www.youtube.com/watch?v=XD0UqeRaYCE)",
-                    1
+                    100
                 );
             }
 
@@ -59,7 +59,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GDWT Event Organizer",
                     "This user is an <cj>Event Organizer</c> for the <cl>GD World Tournament</c>.\n\nThey are responsible for <cg>preparing and setting up</c> various <cl>GD World Tournament</c> events.\n\nTo find out more about the GD World Tournament Hub, click [here](https://geometry-dash-fan.fandom.com/wiki/GD_World_Tournament_Hub).",
-                    2
+                    103
                 );
             }
 
@@ -71,12 +71,15 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     -1
                 );
             }
+
+
+            
             if (badgeID == "LT-21"){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2021 Champion",
-                    "LOS COSTARAMA won the first <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
-                    0
+                    "<c-afafaf>LOS COSTARAMA</c> won the first <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-404040>PORRO</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    1
                 );
             }
 
@@ -84,8 +87,8 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2022 Champion",
-                    "INFALIBLES won the 2022 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
-                    0
+                    "<cy>INFALIBLES</c> won the 2022 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-00ffff>LOS DANONINOS</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    2
                 );
             }
 
@@ -93,17 +96,17 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2023 Champion",
-                    "LOS CULOS HELADOS won the 2023 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
-                    0
+                    "<c-007d7dc>LOS CULOS HELADOS</c> won the 2023 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>LOS SIGMAS</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    3
                 );
             }
 
             if (badgeID == "LT-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GD Lucky Tournament 2024Champion",
-                    "\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
-                    0
+                    "GD Lucky Tournament 2024 Champion",
+                    "<c-3d068c>LAS DONITAS</c> won the 2024 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>TORTUGA</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    4
                 );
             }
 
@@ -112,7 +115,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "Copa GD Colombia 2024",
                     "Santhor won the <c-FFCD00>Copa GD Colombia 2024</c>, defeating <cc>Leven</c> in the final\n\nThe tournament had <cr>40 participants</c>, and was determined by the players' ability to beat a level as fast as possible given practice\n\nThe bracket can be found [here](https://challonge.com/copagdcolombia2024)",
-                    0
+                    5
                 );
             }
 
@@ -121,7 +124,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "Battle of the States Champion",
                     "No description available for this badge yet...",
-                    0
+                    5
                 );
             }
 
@@ -130,7 +133,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "LaLiga Dasher 2024 Champion",
                     "<cg>Cuatrocientos</c> won the 2024 edition of LaLiga Dasher.\n\nHe claimed the 1 seed in the league phase, where 18 players matched up against each other exactly once\n\nThe top eight performers would advance to the playoffs consisting of a best of three quarterfinal and semifinal, along with a best of five final\n\n<cg>Cuatrocientos</c> only lost a single set during their playoff, dropping one in the final against <c-af004b>Davine007</c>, but still winning the series 3 to 1 to win the first completed LaLiga Dasher\n\nTo read more, check out [here](https://laligadasher.fandom.com/es/wiki/LaLiga_Dasher_2024)",
-                    0
+                    5
                 );
             }
 
@@ -139,7 +142,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "LaLiga Dasher 2025 Champion",
                     "No description available for this badge yet...",
-                    0
+                    5
                 );
             }
 
@@ -148,7 +151,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GDNL Tournament Champion",
                     "No description available for this badge yet...",
-                    0
+                    5
                 );
             }
 
@@ -157,7 +160,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2024 GDPL Champion",
                     "No description available for this badge yet...",
-                    0
+                    5
                 );
             }
 
@@ -166,7 +169,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2024 GDPT Champion",
                     "No description available for this badge yet...",
-                    0
+                    5
                 );
             }
 
@@ -175,7 +178,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GDKF S1 Champion",
                     "<cg>Xylitol</c> won the first <c-CD2E3A>GMD Korea Forum championship</c>, with <cg>Kowoo</c> being the runner-up",
-                    0
+                    5
                 );
             }
 
@@ -184,7 +187,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GDKF S2 Champion",
                     "<cj>TherZ</c> won the second <c-CD2E3A>GMD Korea Forum championship</c>, with <cg>Plasmalust</c> being the runner-up",
-                    0
+                    6
                 );
             }
 
@@ -193,7 +196,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "GD Korea Forum S3 Champion",
                     "<cy>DNM121</c> won the third <c-CD2E3A>GMD Korea Forum championship</c>, with <cd>Baeru</c> being the runner-up",
-                    0
+                    7
                 );
             }
 
@@ -202,7 +205,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "Inaugural GD Malaysia Tournament",
                     "<cg>Anglified</c> won the first <c-0032A0>GD Malaysia Tournament</c>, with <cb>Koba</c> being the runner-up\n\nThe tournament consisted of sixteen Malaysian players racing on various levels\n\nThe bracket can be found [here](https://challonge.com/edj2myy7)",
-                    0
+                    5
                 );
             }
 
@@ -211,7 +214,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2022 GD Malaysia Tournament",
                     "<cr>MADxSG</c> won the <c-0032A0>2022 GD Malaysia Tournament</c>, with <cg>FarAwayLand</c> being the runner-up\n\nThe tournament consisted of sixteen Malaysian players racing on various levels\n\nThe bracket can be found [here](https://challonge.com/17fd9xn4)\n\nThe video of the final day of the tournament can be found [here](https://www.youtube.com/watch?v=yEokGB-wxqY)",
-                    0
+                    6
                 );
             }
 
@@ -220,7 +223,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2023 Malaysia Independence Tournament",
                     "<cj>Fastboi</c> won the <c-0032A0>2023 GD Malaysian Independance Day Tournament</c>, with <cr>Zakuya</c> being the runner-up\n\nThe tournament consisted of fourteen Malaysian players racing on various levels\n\nThe VOD for the final day can be found [here](https://www.youtube.com/live/4JWSBAQ7BNk)",
-                    0
+                    7
                 );
             }
 
@@ -229,7 +232,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2023 GD Malaysia Tournament",
                     "<cl>Ryanrolanddd</c> won the <c-0032A0>2023 GD Malaysia Tournament</c>, with <cg>partyt</c> being the runner-up\n\nThe tournament consisted of fourteen Malaysian players racing on various levels\n\nThe VOD for the final can be found [here](https://www.youtube.com/live/IWp402jOjAw?si=c9Zna0dgn5bIweml)",
-                    0
+                    8
                 );
             }
         }
