@@ -306,12 +306,11 @@ void GeneralGDWTCell::updateTagsDisplay(){
 
     for (const Tag& tag : tags)
     {
-        log::info("---");
-        log::info("1");
         auto currTag = ButtonSprite::create(tag.name.c_str(), "bigFont.fnt", "GJ_button_04.png");
         currTag->setScale(.25f);
         currTag->setAnchorPoint(ccp(0, .5f));
         currTag->m_BGSprite->setColor(tag.color);
+        currTag->setOpacity(200);
         currTag->setPositionX(tagsWidth + padding);
         tagsWidth += currTag->getScaledContentWidth() + padding;
 
@@ -322,13 +321,8 @@ void GeneralGDWTCell::updateTagsDisplay(){
             plusSign->setPosition(ccp(tagsWidth + 1, 1));
             plusSign->setScale(0.45f);
             tagsContainer->addChild(plusSign);
-            log::info("3");
-            log::info("---");
             break;
         }
-
-        log::info("2");
-        log::info("---");
 
         tagsContainer->addChild(currTag);
     }
