@@ -100,6 +100,8 @@ bool GDWTLayer::init(){
 
 
     //
+    auto menu = CCMenu::create();
+    this->addChild(menu);
 
     auto joinMatchButtonS = CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png");
     joinMatchButtonS->setScale(0.35f);
@@ -111,6 +113,30 @@ bool GDWTLayer::init(){
     );
     joinMatchButton->setPosition({0, -137.5f});
     //menu->addChild(joinMatchButton);
+
+    auto btnTest = CCMenuItemSpriteExtra::create(
+        CCLabelBMFont::create("meowmoew", "bigFont.fnt"),
+        nullptr,
+        this,
+        menu_selector(GDWTLayer::test)
+    );
+    menu->addChild(btnTest);
+
+    auto btnTest2 = CCMenuItemSpriteExtra::create(
+        CCLabelBMFont::create("hi", "bigFont.fnt"),
+        nullptr,
+        this,
+        menu_selector(GDWTLayer::test)
+    );
+    btnTest2->setPositionY(-30);
+    menu->addChild(btnTest2);
+
+    myCursor = GDWTSelectionCursor::create();
+    this->addChild(myCursor);
+    myCursor->SetAnimationSpeed(2);
+    myCursor->SetOffset(ccp(0, -3));
+    myCursor->AddOption(btnTest);
+    myCursor->AddOption(btnTest2);
     
     this->setTouchEnabled(true);
     this->setKeyboardEnabled(true);
@@ -119,6 +145,10 @@ bool GDWTLayer::init(){
     scheduleUpdate();
 
     return true;
+}
+
+void GDWTLayer::test(CCObject* s){
+    myCursor->MoveOptionTo(static_cast<CCNode*>(s));
 }
 
 void GDWTLayer::open(){
