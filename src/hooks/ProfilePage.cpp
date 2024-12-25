@@ -78,7 +78,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2021 Champion",
-                    "<c-afafaf>LOS COSTARAMA</c> won the first <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-404040>PORRO</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    "<c-afafaf>LOS COSTARAMA</c> won the first <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-404040>PORRO</c> in the final\n\nThe official website can be found [here](https://sites.google.com/view/gdluckytournament/inicio)\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     1
                 );
             }
@@ -87,7 +87,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2022 Champion",
-                    "<cy>INFALIBLES</c> won the 2022 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-00ffff>LOS DANONINOS</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    "<cy>INFALIBLES</c> won the 2022 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <c-00ffff>LOS DANONINOS</c> in the final\n\nThe official website can be found [here](https://sites.google.com/view/gdluckytournament/inicio)\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     2
                 );
             }
@@ -96,7 +96,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2023 Champion",
-                    "<c-007d7dc>LOS CULOS HELADOS</c> won the 2023 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>LOS SIGMAS</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    "<c-007d7dc>LOS CULOS HELADOS</c> won the 2023 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>LOS SIGMAS</c> in the final\n\nThe official website can be found [here](https://sites.google.com/view/gdluckytournament/inicio)\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     3
                 );
             }
@@ -105,7 +105,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Lucky Tournament 2024 Champion",
-                    "<c-3d068c>LAS DONITAS</c> won the 2024 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>TORTUGA</c> in the final\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
+                    "<c-3d068c>LAS DONITAS</c> won the 2024 <cr>GD Lucky Tournament</c>, a single elimination team tournament that involves getting as far as possible on randomly selected demons\n\nThey defeated <cg>TORTUGA</c> in the final\n\nThe official website can be found [here](https://sites.google.com/view/gdluckytournament/inicio)\n\nThe wiki page that contains info on all <cr>GD Lucky Tournament</c> events can be found [here](https://geometry-dash-fan.fandom.com/wiki/GD_Lucky_Tournament)",
                     4
                 );
             }
@@ -132,7 +132,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "LaLiga Dasher 2024 Champion",
-                    "<cg>Cuatrocientos</c> won the 2024 edition of LaLiga Dasher.\n\nHe claimed the 1 seed in the league phase, where 18 players matched up against each other exactly once\n\nThe top eight performers would advance to the playoffs consisting of a best of three quarterfinal and semifinal, along with a best of five final\n\n<cg>Cuatrocientos</c> only lost a single set during their playoff, dropping one in the final against <c-af004b>Davine007</c>, but still winning the series 3 to 1 to win the first completed LaLiga Dasher\n\nTo read more, check out [here](https://laligadasher.fandom.com/es/wiki/LaLiga_Dasher_2024)",
+                    "<cg>Cuatrocientos</c> won the 2024 edition of LaLiga Dasher.\n\nHe claimed the 1 seed in the league phase, where 18 players matched up against each other exactly once\n\nThe top eight performers would advance to the playoffs consisting of a best of three quarterfinal and semifinal, along with a best of five final\n\n<cg>Cuatrocientos</c> only lost a single set during their playoff, dropping one in the final against <c-af004b>Davine007</c>, but still winning the series 3 to 1 to win the first completed LaLiga Dasher\n\nThe official website can be found [here](https://sites.google.com/view/laligadasher/)\n\nTo read the wiki on this tournament, check out [here](https://laligadasher.fandom.com/es/wiki/LaLiga_Dasher_2024)",
                     5
                 );
             }
