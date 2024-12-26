@@ -13,7 +13,6 @@ void GDWTLevelInfoLayer::onPlay(cocos2d::CCObject* sender){
 void GDWTLevelInfoLayer::FLAlert_Clicked(FLAlertLayer* p0, bool p1){
 
     if (auto title = static_cast<CCLabelBMFont*>(p0->m_mainLayer->getChildByID("title")) && p1 && m_isBusy && data::getIsInMatch()){
-        log::info("ran");
         data::disable2point1Percent(m_level);
     }
 

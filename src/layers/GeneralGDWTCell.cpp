@@ -282,9 +282,8 @@ void GeneralGDWTCell::setTitle(const std::string& title){
 }
 
 void GeneralGDWTCell::addTag(const Tag& tag){
-    log::info("adding tag {}", tag.name);
     if (tags.contains(tag)) return;
-    log::info("added the tag {}", tag.name);
+
     tags.insert(tag);
 
     GeneralGDWTCell::updateTagsDisplay();

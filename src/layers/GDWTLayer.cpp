@@ -133,6 +133,7 @@ bool GDWTLayer::init(){
 
     myCursor = GDWTSelectionCursor::create();
     this->addChild(myCursor);
+    myCursor->setScale(.5f);
     myCursor->SetAnimationSpeed(2);
     myCursor->SetOffset(ccp(0, -3));
     myCursor->AddOption(btnTest);
@@ -142,7 +143,7 @@ bool GDWTLayer::init(){
     this->setKeyboardEnabled(true);
 	this->setKeypadEnabled(true);
 
-    scheduleUpdate();
+    this->scheduleUpdate();
 
     return true;
 }
