@@ -14,14 +14,28 @@ class GDWTLayer : public CCLayer {
 
         void open();
 
+    private:
+
         void keyBackClicked();
 
         void OnBackButton(CCObject*);
 
         ScrollLayer* mainScroll;
+        void updateMainScrollSize();
+        void eraseListforRefresh();
+        LoadingCircle* refreshLoadingCircle;
 
         GDWTSelectionCursor* myCursor;
-        void test(CCObject* s);
+        void SideButtonClicked(CCObject* sender);
+        void onOptionSwitched(CCNode* const option);
+
+        CCMenuItemSpriteExtra* addSideMenuButton(const std::string& name);
+        CCMenu* sideMenu;
+
+        CCMenuItemSpriteExtra* matchesBtn;
+        CCMenuItemSpriteExtra* teamsBtn;
+        CCMenuItemSpriteExtra* matchGroupsBtn;
+        CCMenuItemSpriteExtra* playerBtn;
 
         //
 

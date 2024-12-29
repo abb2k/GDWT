@@ -10,30 +10,38 @@ class GDWTSelectionCursor : public CCNode {
     public:
         static GDWTSelectionCursor* create();
 
-        void AddOption(CCNode* const option);
-        void RemoveOption(CCNode* const option);
-        void RemoveOption(const int optionIndex);
-        void EraseAllOptions();
+        void addOption(CCNode* const option);
+        void removeOption(CCNode* const option);
+        void removeOption(const int optionIndex);
+        void eraseAllOptions();
 
-        void MoveOptionBy(int amount = 1);
-        void MoveOptionTo(int optionIndex);
-        void MoveOptionTo(CCNode* const option);
+        void moveOptionBy(int amount = 1);
+        void moveOptionTo(int optionIndex);
+        void moveOptionTo(CCNode* const optionIndex);
 
-        void SetAnimationSpeed(float speed);
-        void SetOffset(const CCPoint& offset);
+        void setAnimationSpeed(float speed);
+        void setOffset(const CCPoint& offset);
+        void setWrapOffset(float offset);
+        void setIdleMoveDistance(float dictance);
+
+        void setCallback(const std::function<void(CCNode* const)>& callback);
+
+        void realign();
 
     private:
-        void MoveMeTo(CCNode* const option);
+        void MoveMeTo(const int optionIndex, bool realign = false);
 
         void startIdleAnim();
 
-        int currentOption;
+        int currentOption = -1;
 
         float animSpeed = 1;
 
         std::vector<CCNode*> options{};
 
         CCPoint offset;
+        float wrapOffset;
+        float idleMoveDist = 5;
 
         float topOrigen;
         float bottomOrigen;
@@ -42,4 +50,6 @@ class GDWTSelectionCursor : public CCNode {
         CCScale9Sprite* bottomRight;
         CCScale9Sprite* topLeft;
         CCScale9Sprite* topRight;
+
+        std::function<void(CCNode* const)> callback = NULL;
 };

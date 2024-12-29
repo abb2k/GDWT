@@ -51,4 +51,6 @@ class GeneralGDWTCell : public CCMenu {
         void updateTagsDisplay();
 
         std::set<Tag> tags{};
+
+        void cleanRemoveWithAnimation();
 };

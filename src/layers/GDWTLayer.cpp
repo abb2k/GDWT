@@ -36,7 +36,7 @@ bool GDWTLayer::init(){
     sideArt->setID("side-art");
     this->addChild(sideArt);
 
-    mainScroll = ScrollLayer::create(CCSize(winSize.width / 1.75f, winSize.height / 1.25f));
+    mainScroll = ScrollLayer::create(CCSize(winSize.width / 1.75f, winSize.height / 1.5f));
     mainScroll->m_contentLayer->setLayout(RowLayout::create()
         ->setGrowCrossAxis(true)
         ->setAutoScale(false)
@@ -44,19 +44,23 @@ bool GDWTLayer::init(){
         ->setGap(20)
         ->setCrossAxisOverflow(false)
     );
+    mainScroll->setPosition(winSize / 2 - mainScroll->getContentSize() / 2);
+    this->addChild(mainScroll);
+
+    refreshLoadingCircle = LoadingCircle::create();
+    refreshLoadingCircle->setParentLayer(this);
+    refreshLoadingCircle->show();
+    refreshLoadingCircle->setVisible(false);
     
     data::getMatchesData().listen([this] (Result<std::vector<Match>>* res){
         if (res == nullptr) return;
         if (res->isErr()) return;
         if (!res->unwrap().size()) return;
 
-        float cellHight = 0;
-
         for (int i = 0; i < res->unwrap().size(); i++)
         {
             auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs");
             cell->playEnterTransition(.5f, i + 1);
-            cellHight = cell->getContentHeight();
             cell->setCentralContent(res->unwrap()[i]);
             Tag tag1;
             tag1.color = { 72, 255, 0 };
@@ -72,33 +76,9 @@ bool GDWTLayer::init(){
             cell->addTag(tag3);
             mainScroll->m_contentLayer->addChild(cell);
         }
-        mainScroll->m_contentLayer->updateLayout();
 
-        int amountPerRow = 0;
-        float startHight = -1;
-        for (auto& child : CCArrayExt<CCNode*>(mainScroll->m_contentLayer->getChildren()))
-        {
-            if (startHight == -1)
-                startHight = child->getPositionY();
-
-            if (child->getPositionY() == startHight)
-                amountPerRow++;
-            else break;
-        }
-
-        auto layout = static_cast<RowLayout*>(mainScroll->m_contentLayer->getLayout());
-    
-        float newContentHeight = res->unwrap().size() / amountPerRow * (cellHight + layout->getGap());
-
-        mainScroll->m_contentLayer->setContentHeight(newContentHeight);
-        mainScroll->m_contentLayer->updateLayout();
-        mainScroll->moveToTop();
+        updateMainScrollSize();
     });
-
-    mainScroll->setPosition(winSize / 2 - mainScroll->getContentSize() / 2);
-    this->addChild(mainScroll);
-
-
 
     //
     auto menu = CCMenu::create();
@@ -113,33 +93,46 @@ bool GDWTLayer::init(){
         menu_selector(GDWTLayer::openJoinMatchMenu)
     );
     joinMatchButton->setPosition({0, -137.5f});
-    //menu->addChild(joinMatchButton);
+    menu->addChild(joinMatchButton);
 
-    auto btnTest = CCMenuItemSpriteExtra::create(
-        CCLabelBMFont::create("meowmoew", "bigFont.fnt"),
-        nullptr,
-        this,
-        menu_selector(GDWTLayer::test)
-    );
-    menu->addChild(btnTest);
+    // side menu
 
-    auto btnTest2 = CCMenuItemSpriteExtra::create(
-        CCLabelBMFont::create("hi", "bigFont.fnt"),
-        nullptr,
-        this,
-        menu_selector(GDWTLayer::test)
-    );
-    btnTest2->setPositionY(-30);
-    menu->addChild(btnTest2);
+    auto sideMenuBG = CCScale9Sprite::create("square02_small.png");
+    sideMenuBG->setContentSize({80, 200});
+    sideMenuBG->setPosition(ccp(484, winSize.height / 2));
+    sideMenuBG->setID("right-menu");
+    sideMenuBG->setOpacity(200);
+    this->addChild(sideMenuBG);
+
+    sideMenu = CCMenu::create();
+    sideMenu->setPosition(sideMenuBG->getContentSize() / 2);
+    sideMenu->setAnchorPoint(ccp(.5f, .5f));
+    sideMenu->setContentSize(sideMenuBG->getContentSize());
+    sideMenuBG->addChild(sideMenu);
 
     myCursor = GDWTSelectionCursor::create();
     this->addChild(myCursor);
+    myCursor->setPositionX(sideMenuBG->getPositionX());
     myCursor->setScale(.5f);
-    myCursor->SetAnimationSpeed(2);
-    myCursor->SetOffset(ccp(0, -3));
-    myCursor->AddOption(btnTest);
-    myCursor->AddOption(btnTest2);
-    
+    myCursor->setAnimationSpeed(2);
+    myCursor->setIdleMoveDistance(2);
+    myCursor->setWrapOffset(1);
+    myCursor->setCallback(std::bind(&GDWTLayer::onOptionSwitched, this, std::placeholders::_1));
+
+    matchesBtn = GDWTLayer::addSideMenuButton("Match");
+    matchesBtn->setPositionY(80);
+
+    teamsBtn = GDWTLayer::addSideMenuButton("Team");
+    teamsBtn->setPositionY(55);
+
+    matchGroupsBtn = GDWTLayer::addSideMenuButton("Match\nGroup");
+    matchGroupsBtn->setPositionY(20);
+
+    playerBtn = GDWTLayer::addSideMenuButton("Player");
+    playerBtn->setPositionY(-80);
+
+    myCursor->realign();
+
     this->setTouchEnabled(true);
     this->setKeyboardEnabled(true);
 	this->setKeypadEnabled(true);
@@ -149,8 +142,97 @@ bool GDWTLayer::init(){
     return true;
 }
 
-void GDWTLayer::test(CCObject* s){
-    myCursor->MoveOptionTo(static_cast<CCNode*>(s));
+void GDWTLayer::updateMainScrollSize(){
+    mainScroll->m_contentLayer->updateLayout();
+
+    int amountPerRow = 0;
+    float startHight = -1;
+
+    int overallAmount = mainScroll->m_contentLayer->getChildren()->count();
+    float cellHight = 0;
+
+    for (auto& child : CCArrayExt<CCNode*>(mainScroll->m_contentLayer->getChildren()))
+    {
+        if (startHight == -1){
+            startHight = child->getPositionY();
+            cellHight = child->getContentHeight();
+        }
+
+        if (child->getPositionY() == startHight)
+            amountPerRow++;
+        else break;
+    }
+
+    auto layout = static_cast<RowLayout*>(mainScroll->m_contentLayer->getLayout());
+
+    float newContentHeight = overallAmount / amountPerRow * (cellHight + layout->getGap());
+
+    mainScroll->m_contentLayer->setContentHeight(newContentHeight);
+    mainScroll->m_contentLayer->updateLayout();
+    mainScroll->moveToTop();
+}
+
+void GDWTLayer::eraseListforRefresh(){
+    auto eraseNode = CCNode::create();
+    eraseNode->setPosition(mainScroll->m_contentLayer->getPosition());
+    eraseNode->setAnchorPoint(mainScroll->m_contentLayer->getAnchorPoint());
+    eraseNode->setScale(mainScroll->m_contentLayer->getScale());
+    mainScroll->addChild(eraseNode);
+
+    CCArray* children = mainScroll->m_contentLayer->getChildren()->shallowCopy();
+
+    for (auto& child : CCArrayExt<CCNode*>(children))
+    {
+        //todo: move to cleanup node thats seperate from main list
+
+        child->retain();
+        child->removeFromParent();
+        eraseNode->addChild(child);
+        child->release();
+
+        if (auto cell = typeinfo_cast<GeneralGDWTCell*>(child)){
+            cell->cleanRemoveWithAnimation();
+            continue;
+        }
+
+        child->runAction(CCFadeOut::create(.5f));
+    }
+}
+
+void GDWTLayer::SideButtonClicked(CCObject* sender){
+    myCursor->moveOptionTo(static_cast<CCNode*>(sender));
+}
+
+void GDWTLayer::onOptionSwitched(CCNode* const option){
+    GDWTLayer::eraseListforRefresh();
+
+    if (option == matchesBtn){
+        //matches clicked
+    }
+    else if (option == teamsBtn){
+        //teams clicked
+    }
+    else if (option == matchGroupsBtn){
+        //match groups clicked
+    }
+    else if (option == playerBtn){
+        //player area clicked
+    }
+}
+
+CCMenuItemSpriteExtra* GDWTLayer::addSideMenuButton(const std::string& name){
+    auto s = CCLabelBMFont::create(name.c_str(), "gjFont17.fnt");
+    s->setScale(.5f);
+    auto toReturn = CCMenuItemSpriteExtra::create(
+        s,
+        nullptr,
+        this,
+        menu_selector(GDWTLayer::SideButtonClicked)
+    );
+    sideMenu->addChild(toReturn);
+    myCursor->addOption(toReturn);
+
+    return toReturn;
 }
 
 void GDWTLayer::open(){

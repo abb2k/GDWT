@@ -325,3 +325,7 @@ void GeneralGDWTCell::updateTagsDisplay(){
     }
     
 }
+
+void GeneralGDWTCell::cleanRemoveWithAnimation(){
+
+}

@@ -35,66 +35,88 @@ bool GDWTSelectionCursor::init(){
     return true;
 };
 
-void GDWTSelectionCursor::AddOption(CCNode* const option){
+void GDWTSelectionCursor::addOption(CCNode* const option){
     if (std::find(options.begin(), options.end(), option) != options.end()) return;
     options.push_back(option);
 
     if (options.size() == 1)
-        GDWTSelectionCursor::MoveMeTo(option);
+        GDWTSelectionCursor::MoveMeTo(0, true);
 }
 
-void GDWTSelectionCursor::RemoveOption(CCNode* const option){
+void GDWTSelectionCursor::removeOption(CCNode* const option){
     if (std::find(options.begin(), options.end(), option) != options.end() || !options.size()) return;
 
     options.erase(std::remove(options.begin(), options.end(), option), options.end());
 }
 
-void GDWTSelectionCursor::RemoveOption(const int optionIndex){
+void GDWTSelectionCursor::removeOption(const int optionIndex){
     if (options.size() - 1 > optionIndex || optionIndex < 0) return;
 
     options.erase(options.begin() + optionIndex);
 }
 
-void GDWTSelectionCursor::EraseAllOptions(){
+void GDWTSelectionCursor::eraseAllOptions(){
     options.clear();
 }
 
 
-void GDWTSelectionCursor::MoveOptionBy(int amount){
+void GDWTSelectionCursor::moveOptionBy(int amount){
     if (!options.size()) return;
 
-    currentOption = abs(currentOption + amount) % options.size();
+    int newOption = abs(currentOption + amount) % options.size();
 
-    GDWTSelectionCursor::MoveMeTo(options[currentOption]);
+    GDWTSelectionCursor::MoveMeTo(newOption);
 }
 
-void GDWTSelectionCursor::MoveOptionTo(int optionIndex){
+void GDWTSelectionCursor::moveOptionTo(int optionIndex){
     if (options.size() - 1 > optionIndex || optionIndex < 0) return;
 
-    currentOption = optionIndex;
-    GDWTSelectionCursor::MoveMeTo(options[optionIndex]);
+    GDWTSelectionCursor::MoveMeTo(optionIndex);
 }
 
-void GDWTSelectionCursor::MoveOptionTo(CCNode* const option){
+void GDWTSelectionCursor::moveOptionTo(CCNode* const option){
     auto position = std::find(options.begin(), options.end(), option);
 
     if (position == options.end() || !options.size()) return;
 
-    currentOption = std::distance(options.begin(), position);
+    int newOption = std::distance(options.begin(), position);
 
-    GDWTSelectionCursor::MoveMeTo(options[currentOption]);
+    GDWTSelectionCursor::MoveMeTo(newOption);
 }
 
-void GDWTSelectionCursor::SetAnimationSpeed(float speed){
+void GDWTSelectionCursor::setAnimationSpeed(float speed){
     animSpeed = speed;
 }
 
-void GDWTSelectionCursor::SetOffset(const CCPoint& offset){
+void GDWTSelectionCursor::setOffset(const CCPoint& offset){
     this->offset = offset;
 }
 
-void GDWTSelectionCursor::MoveMeTo(CCNode* const option){
-    if (animSpeed == 0) return;
+void GDWTSelectionCursor::setWrapOffset(float offset){
+    wrapOffset = offset;
+}
+
+void GDWTSelectionCursor::setIdleMoveDistance(float dictance){
+    idleMoveDist = dictance;
+}
+
+
+void GDWTSelectionCursor::setCallback(const std::function<void(CCNode* const)>& callback){
+    this->callback = callback;
+}
+
+void GDWTSelectionCursor::realign(){
+    GDWTSelectionCursor::MoveMeTo(currentOption, true);
+}
+
+void GDWTSelectionCursor::MoveMeTo(const int optionIndex, bool realign){
+    if ((animSpeed == 0 || optionIndex == currentOption) && !realign) return;
+
+    currentOption = optionIndex;
+    CCNode* option = options[optionIndex];
+
+    if (callback != NULL && !realign)
+        callback(option);
 
     float lineLength = option->getContentWidth() / 2 / this->getScaleX();
 
@@ -111,8 +133,8 @@ void GDWTSelectionCursor::MoveMeTo(CCNode* const option){
 
     this->runAction(CCEaseInOut::create(CCMoveTo::create(1 / animSpeed, this->getParent()->convertToNodeSpace(option->getParent()->convertToWorldSpace(option->getPosition())) + offset), 2));
 
-    topOrigen = option->getContentHeight() / 2 / this->getScaleY();
-    bottomOrigen = -option->getContentHeight() / 2 / this->getScaleY();
+    topOrigen = option->getContentHeight() / 2 / this->getScaleY() + wrapOffset;
+    bottomOrigen = -option->getContentHeight() / 2 / this->getScaleY() - wrapOffset;
 
     topLeft->runAction(CCEaseInOut::create(CCMoveTo::create(1 / animSpeed, ccp(0, topOrigen)), 2));
     topRight->runAction(CCEaseInOut::create(CCMoveTo::create(1 / animSpeed, ccp(0, topOrigen)), 2));
@@ -121,7 +143,7 @@ void GDWTSelectionCursor::MoveMeTo(CCNode* const option){
 }
 
 void GDWTSelectionCursor::startIdleAnim(){
-    float extra = 5 / this->getScaleY();
+    float extra = idleMoveDist / this->getScaleY();
 
     topLeft->runAction(CCRepeatForever::create(
         CCSequence::create(
