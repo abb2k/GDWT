@@ -54,7 +54,8 @@ bool GDWTLayer::init(){
 
         for (int i = 0; i < res->unwrap().size(); i++)
         {
-            auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs", i + 1);
+            auto cell = GeneralGDWTCell::create("2024 GD World Tournament Playoffs");
+            cell->playEnterTransition(.5f, i + 1);
             cellHight = cell->getContentHeight();
             cell->setCentralContent(res->unwrap()[i]);
             Tag tag1;

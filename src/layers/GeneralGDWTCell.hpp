@@ -11,9 +11,9 @@ using namespace geode::prelude;
 
 class GeneralGDWTCell : public CCMenu {
     protected:
-        bool init(const std::string& title, int enterIndex);
+        bool init(const std::string& title);
     public:
-        static GeneralGDWTCell* create(const std::string& title, int enterIndex = 0);
+        static GeneralGDWTCell* create(const std::string& title);
 
         CCSize size;
 

@@ -1,8 +1,8 @@
 #include "../layers/GeneralGDWTCell.hpp"
 
-GeneralGDWTCell* GeneralGDWTCell::create(const std::string& title, int enterIndex) {
+GeneralGDWTCell* GeneralGDWTCell::create(const std::string& title) {
     auto ret = new GeneralGDWTCell();
-    if (ret && ret->init(title, enterIndex)) {
+    if (ret && ret->init(title)) {
         ret->autorelease();
         return ret;
     }
@@ -10,7 +10,7 @@ GeneralGDWTCell* GeneralGDWTCell::create(const std::string& title, int enterInde
     return nullptr;
 }
 
-bool GeneralGDWTCell::init(const std::string& title, int enterIndex){
+bool GeneralGDWTCell::init(const std::string& title){
     if (!CCMenu::init()) return false;
     size = CCSize(90, 110);
 
@@ -59,8 +59,6 @@ bool GeneralGDWTCell::init(const std::string& title, int enterIndex){
     mainContainer->addChild(tagsContainer);
 
     GeneralGDWTCell::clearContent(true);
-
-    GeneralGDWTCell::playEnterTransition(.5f, enterIndex);
 
     return true;
 }
