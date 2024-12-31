@@ -4,6 +4,21 @@
 
 using namespace geode::prelude;
 
+struct Tag {
+    std::string name;
+    ccColor3B color;
+
+    bool operator<(const Tag& otherTag) const noexcept
+    {
+        return this->name.length() < otherTag.name.length();
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Tag& tag ) {
+        os << tag.name;
+        return os;
+    }
+};
+
 typedef struct {
     int levelID;
     int playTime;
@@ -56,6 +71,7 @@ struct Match_s {
     std::string vodLink;
     std::string matchName;
     ScoreSystemType scoreType;
+    std::set<Tag> tags{};
     int groupID;
 };
 typedef struct Match_s Match;
@@ -377,16 +393,6 @@ struct matjson::Serialize<std::vector<ZSAToggleSaveData>> {
 
     static bool is_json(matjson::Value const& value) {
         return value.isArray();
-    }
-};
-
-struct Tag {
-    std::string name;
-    ccColor3B color;
-
-    bool operator<(const Tag& otherTag) const noexcept
-    {
-        return this->name.length() < otherTag.name.length();
     }
 };
 

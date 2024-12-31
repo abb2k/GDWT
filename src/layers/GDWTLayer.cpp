@@ -133,6 +133,8 @@ bool GDWTLayer::init(){
 
     myCursor->realign();
 
+    //
+
     this->setTouchEnabled(true);
     this->setKeyboardEnabled(true);
 	this->setKeypadEnabled(true);
@@ -178,6 +180,7 @@ void GDWTLayer::eraseListforRefresh(){
     eraseNode->setAnchorPoint(mainScroll->m_contentLayer->getAnchorPoint());
     eraseNode->setScale(mainScroll->m_contentLayer->getScale());
     mainScroll->addChild(eraseNode);
+    refreshLoadingCircle->setVisible(true);
 
     CCArray* children = mainScroll->m_contentLayer->getChildren()->shallowCopy();
 
@@ -208,6 +211,8 @@ void GDWTLayer::onOptionSwitched(CCNode* const option){
 
     if (option == matchesBtn){
         //matches clicked
+        loadMatchPageListener.bind(this, &GDWTLayer::createMatchesPage);
+        loadMatchPageListener.setFilter(GDWTLayer::loadMatchesPage());
     }
     else if (option == teamsBtn){
         //teams clicked
@@ -250,6 +255,41 @@ void GDWTLayer::keyBackClicked(){
 void GDWTLayer::OnBackButton(CCObject*){
 	CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
 }
+
+Task<Result<>> GDWTLayer::loadMatchesPage(){
+    if (matchesPage.size()) return Task<Result<>>::immediate(Ok());
+
+    return data::getMatchesData().map(
+        [this] (MatchesTask::Value* matchesRes) -> Result<> {
+            if (!matchesRes) return Err("Failed getting matches!");
+            if (matchesRes->isErr()) return Err("Failed getting matches! - {}", matchesRes->unwrapErr());
+
+            auto matches = matchesRes->unwrap();
+
+            for (const auto& match : matches)
+            {
+                std::ostringstream stream;
+                std::copy(match.tags.begin(), match.tags.end(), std::ostream_iterator<Tag>(stream, ","));
+                std::string tagString = stream.str();
+
+                if (matchesPage.contains(tagString))
+                    matchesPage[tagString].push_back(match);
+                else
+                    matchesPage.emplace(tagString, std::vector<Match>{match});
+            }
+            
+            return Ok();
+        },
+        [](auto) -> std::monostate {
+            return std::monostate();
+        }
+    );
+}
+
+void GDWTLayer::createMatchesPage(Task<Result<>>::Event* e){
+
+}
+
 
 void GDWTLayer::openJoinMatchMenu(CCObject*){
     joinMatchLayer::create()->show();

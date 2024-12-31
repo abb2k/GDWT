@@ -37,7 +37,13 @@ class GDWTLayer : public CCLayer {
         CCMenuItemSpriteExtra* matchGroupsBtn;
         CCMenuItemSpriteExtra* playerBtn;
 
-        //
+        std::unordered_map<std::string, std::vector<Match>> matchesPage{};
+        std::unordered_map<std::string, std::vector<Team>> teamsPage{};
+        std::unordered_map<std::string, std::vector<MatchGroup>> matchGroupsPage{};
+
+        Task<Result<>> loadMatchesPage();
+        EventListener<Task<Result<>>> loadMatchPageListener;
+        void createMatchesPage(Task<Result<>>::Event* e);
 
         void openJoinMatchMenu(CCObject*);
 };
