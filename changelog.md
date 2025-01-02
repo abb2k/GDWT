@@ -1,3 +1,6 @@
+# 1.2.17
+- updated the credits to acknowledge more people who contributed to the mod
+
 # 1.2.16
 - added badges for LaLiga Dasher
 - fixed the priority of badges for those who have multiple, favoring more recent events
