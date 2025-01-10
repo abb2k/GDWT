@@ -1,3 +1,6 @@
+# 1.2.18
+- added a match connection indicator in the level menu and the pause menu
+
 # 1.2.17
 - updated the credits to acknowledge more people who contributed to the mod
 

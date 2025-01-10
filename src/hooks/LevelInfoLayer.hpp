@@ -8,4 +8,6 @@ class $modify(GDWTLevelInfoLayer, LevelInfoLayer) {
         void onPlay(cocos2d::CCObject* sender);
 
         void FLAlert_Clicked(FLAlertLayer* p0, bool p1);
+
+        bool init(GJGameLevel* level, bool challenge);
 };

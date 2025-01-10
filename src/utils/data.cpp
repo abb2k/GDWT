@@ -1103,8 +1103,9 @@ Result<> data::joinMatch(std::string joinCode){
 
     auto secrets = splitStr(decrypt, "|");
 
-    if (secrets.size() != 11)
+    if (secrets.size() != 11){
         return Err("Invalid code!");
+    }
 
     std::string val = fmt::format("{}/{}", secrets[0], secrets[1]);
 
