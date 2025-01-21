@@ -1,3 +1,6 @@
+# 1.2.19
+- added champion badges for the Netherlands and Israel
+
 # 1.2.18
 - added a match connection indicator in the level menu and the pause menu
 

@@ -146,11 +146,20 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
-            if (badgeID == "NL-S1"){
+            if (badgeID == "NL-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "GDNL Tournament Champion",
-                    "No description available for this badge yet...",
+                    "2024 GDNL Tournament Champion",
+                    "<cj>JannisTE</c> has won the first edition of the <c-C8102E>G</c>DN<c-003DA5>L</c> Tournament, defeating <cl>DeltaPhantom1</c> in the final to become the first champion of the Netherlands.\n\nThis tournament consisted of a qualifier round followed by a 16 player, double elimination knockout stage.\n\nThe bracket can be found [here](https://challonge.com/8jr654h).\n\nTo watch the VOD of the final, click [here](https://www.twitch.tv/videos/2357744681).",
+                    5
+                );
+            }
+
+            if (badgeID == "NL-25"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "2025 GDNL Tournament Champion",
+                    "TBD has won the second edition of the <c-C8102E>G</c>DN<c-003DA5>L</c> Tournament, defeating TBD in the final to become champion of the Netherlands.",
                     5
                 );
             }
@@ -169,6 +178,24 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                     badgeID,
                     "2024 GDPT Champion",
                     "No description available for this badge yet...",
+                    5
+                );
+            }
+
+            if (badgeID == "IL-S1"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GD Israel Champion",
+                    "<ca>BarGames</c> won the first <cj>GD Israel Tournament</c>, with <cr>DanielTMOG</c> being the runner-up.\n\nThe tournament consisted of four groups of four players each followed by a eight player knockout stage.",
+                    5
+                );
+            }
+
+            if (badgeID == "IL-S2"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GD Israel Champion",
+                    "TBD won the second <cj>GD Israel Tournament</c>, with TBD being the runner-up.\n\nThe tournament consisted of TBD groups of TBD players each followed by a TBD player knockout stage.",
                     5
                 );
             }
