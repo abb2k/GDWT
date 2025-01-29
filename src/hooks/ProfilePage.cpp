@@ -167,8 +167,8 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             if (badgeID == "PL-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
-                    "2024 GDPL Champion",
-                    "No description available for this badge yet...",
+                    "GDMP 2024 Champion",
+                    "kakol won the <c-FF0000>GDMP 2024</c>, deafeating <cg>ItzMimo</c> in the final\n\nThe tournament had 56 participants racing to complete levels for the first time as fast as possible\n\nThe tournament started with a group stage followed by a playoff round to give some players a second change. Finally, a knockout stage of 16 participants decided who won the tournament.\n\nThe bracket can be found [here](https://docs.google.com/spreadsheets/d/1VLYkgAoqBrlx4QcyWQ8e41CAHN_7w6Rsm5jnczVsGdE/edit?usp=sharing)",
                     5
                 );
             }
