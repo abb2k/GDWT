@@ -4,9 +4,9 @@
 void GDWTPlayLayer::destroyPlayer(PlayerObject* player, GameObject* p1){
     PlayLayer::destroyPlayer(player, p1);
 
-    if (!data::getIsInMatch()) return;
-
     if (!player->m_isDead) return;
+
+    if (!data::getIsInMatch()) return;
 
     if (!m_fields->hasRespawned) return;
     m_fields->hasRespawned = false;

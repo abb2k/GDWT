@@ -14,6 +14,14 @@
 	"links": {
 		"community": "https://discord.gg/qxaBVVds6e"
 	},
+	"dependencies": {
+		"jouca.badgesapi": "1.2.0",
+		"geode.node-ids": "1.19.0",
+		"cdc.level_thumbnails": {
+            "version": "1.0.8",
+            "importance": "suggested"
+        }
+    },
 	"tags": ["interface", "utility"],
 	"resources": {
 		"sprites": [
@@ -23,22 +31,5 @@
         "spritesheets": {
             "countries": ["resources/countries/*.png"]
         }
-	},
-	"dependencies": [
-        {
-            "id": "jouca.badgesapi",
-            "version": ">=v1.2.0",
-            "importance": "required"
-        },
-		{
-            "id": "geode.node-ids",
-            "version": "v1.19.0",
-            "importance": "required"
-        },
-		{
-            "id": "cdc.level_thumbnails",
-            "version": "v1.0.8",
-            "importance": "suggested"
-        }
-    ]
+	}
 }
