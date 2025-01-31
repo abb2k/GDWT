@@ -1,6 +1,6 @@
 # 1.2.19
 - added champion badges for the Netherlands and Israel
-- updated Poland champion description
+- updated Poland champion description, and added past editions of the GDMP tournament
 
 # 1.2.18
 - added a match connection indicator in the level menu and the pause menu

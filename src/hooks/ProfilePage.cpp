@@ -146,6 +146,15 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
+            if (badgeID == "NL-25"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "2025 GDNL Tournament Champion",
+                    "TBD has won the second edition of the <c-C8102E>G</c>DN<c-003DA5>L</c> Tournament, defeating TBD in the final to become champion of the Netherlands.",
+                    5
+                );
+            }
+            
             if (badgeID == "NL-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
@@ -155,20 +164,30 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
-            if (badgeID == "NL-25"){
-                GDWTProfilePage::createBadge(
-                    badgeID,
-                    "2025 GDNL Tournament Champion",
-                    "TBD has won the second edition of the <c-C8102E>G</c>DN<c-003DA5>L</c> Tournament, defeating TBD in the final to become champion of the Netherlands.",
-                    5
-                );
-            }
 
             if (badgeID == "PL-24"){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GDMP 2024 Champion",
-                    "kakol won the <c-FF0000>GDMP 2024</c>, deafeating <cg>ItzMimo</c> in the final\n\nThe tournament had 56 participants racing to complete levels for the first time as fast as possible\n\nThe tournament started with a group stage followed by a playoff round to give some players a second change. Finally, a knockout stage of 16 participants decided who won the tournament.\n\nThe bracket can be found [here](https://docs.google.com/spreadsheets/d/1VLYkgAoqBrlx4QcyWQ8e41CAHN_7w6Rsm5jnczVsGdE/edit?usp=sharing)",
+                    "kakol won <cr>GDMP 2024</c>, a tournament made to crown a champion of <cr>Poland</c>.\n\nThey deafeated <cg>ItzMimo</c> in the final\n\nThe tournament had 56 participants racing to complete levels for the first time as fast as possible\n\nThe tournament started with a group stage followed by a playoff round to give some players a second chance\n\nFinally, a knockout stage of 16 participants decided who won the tournament.\n\nThe bracket can be found [here](https://docs.google.com/spreadsheets/d/1VLYkgAoqBrlx4QcyWQ8e41CAHN_7w6Rsm5jnczVsGdE/edit?usp=sharing)",
+                    5
+                );
+            }
+
+            if (badgeID == "PL-23"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GDMP 2023 Champion",
+                    "<cy>Byleom</c> won <cr>GDMP 2023</c>, a tournament made to crown a champion of <cr>Poland</c>.\n\nThey deafeated Owlyy in the final\n\nThe tournament had 48 participants racing to complete levels for the first time as fast as possible\n\nThis tournament was entirely single elimination, with the 16 highest ranked players given a first round bye\n\nThe bracket can be found [here](https://docs.google.com/spreadsheets/d/14cMpsolR6d7D1VqvRQ7Bym-7sUap-JLntkHTk0VPTQQ/edit?usp=sharing)",
+                    5
+                );
+            }
+
+            if (badgeID == "PL-22"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GDMP 2022 Champion",
+                    "<cr>Supron</c> won <cr>GDMP 2022</c>, a tournament made to crown a champion of <cr>Poland</c>.\n\nThey deafeated <ca>Mando</c> in the final\n\nThe tournament had 48 participants racing to complete levels for the first time as fast as possible\n\nThis tournament was entirely single elimination, with the 16 highest ranked players given a first round bye\n\nThe bracket can be found [here](https://docs.google.com/spreadsheets/d/1KOOsvKgP0V-zRji6JMzfn3G4hah0BkhbGBzBbohOGEY/edit?usp=sharing)",
                     5
                 );
             }
@@ -182,20 +201,20 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
 
-            if (badgeID == "IL-S1"){
-                GDWTProfilePage::createBadge(
-                    badgeID,
-                    "GD Israel Champion",
-                    "<ca>BarGames</c> won the first <cj>GD Israel Tournament</c>, with <cr>DanielTMOG</c> being the runner-up.\n\nThe tournament consisted of four groups of four players each followed by a eight player knockout stage.",
-                    5
-                );
-            }
-
             if (badgeID == "IL-S2"){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "GD Israel Champion",
                     "TBD won the second <cj>GD Israel Tournament</c>, with TBD being the runner-up.\n\nThe tournament consisted of TBD groups of TBD players each followed by a TBD player knockout stage.",
+                    5
+                );
+            }
+            
+            if (badgeID == "IL-S1"){
+                GDWTProfilePage::createBadge(
+                    badgeID,
+                    "GD Israel Champion",
+                    "<ca>BarGames</c> won the first <cj>GD Israel Tournament</c>, with <cr>DanielTMOG</c> being the runner-up.\n\nThe tournament consisted of four groups of four players each followed by a eight player knockout stage.",
                     5
                 );
             }
