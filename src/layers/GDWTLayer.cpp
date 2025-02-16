@@ -323,12 +323,21 @@ bool GDWTLayer::init(){
     );
     joinMatchButton->setPosition({0, -137.5f});
     menu->addChild(joinMatchButton);
-    
-    this->setTouchEnabled(true);
-    this->setKeyboardEnabled(true);
-	this->setKeypadEnabled(true);
+
+    indecator = CCLabelBMFont::create(".", "bigFont.fnt");
+    indecator->setColor({ 0, 255, 0 });
+    indecator->setPositionY(12);
+    indecator->setAlignment(CCTextAlignment::kCCTextAlignmentCenter);
+    indecator->setPosition({18, -137.5f});
+    indecator->setZOrder(-1);
+    indecator->setVisible(data::getIsInMatch());
+    menu->addChild(indecator);
 
     scheduleUpdate();
+
+    this->setKeyboardEnabled(true);
+    this->setTouchEnabled(true);
+    this->setKeypadEnabled(true);
 
     return true;
 }
@@ -553,6 +562,8 @@ void GDWTLayer::MatchGroupsListArrowRight(CCObject*){
 
 void GDWTLayer::update(float delta){
     auto scene = CCDirector::get()->getRunningScene();
+    indecator->setVisible(data::getIsInMatch());
+
     if (scene->getChildByID("gdwt-match-layer") || scene->getChildByID("gdwt-team-layer") || scene->getChildByID("gdwt-match-group-layer")) return;
 
     CCRect LevelsListRect = {matchesScrollLayer->getPositionX(), matchesScrollLayer->getPositionY(), matchesScrollLayer->getScaledContentSize().width, matchesScrollLayer->getScaledContentSize().height};
@@ -596,7 +607,7 @@ void GDWTLayer::update(float delta){
 }
 
 void GDWTLayer::OnBackButton(CCObject*){
-	CCDirector::sharedDirector()->popSceneWithTransition(0.5f, PopTransition::kPopTransitionFade);
+	GDWTLayer::keyBackClicked();
 }
 
 void GDWTLayer::openJoinMatchMenu(CCObject*){

@@ -64,4 +64,6 @@ class GDWTLayer : public CCLayer {
         //
 
         void openJoinMatchMenu(CCObject*);
+
+        CCLabelBMFont* indecator;
 };

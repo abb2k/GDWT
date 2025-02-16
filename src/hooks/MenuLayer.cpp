@@ -22,6 +22,15 @@ bool GDWTMenuLayer::init() {
 		menu_selector(GDWTMenuLayer::onGDWTButton)
 	);
 
+	auto indecator = CCLabelBMFont::create(".", "bigFont.fnt");
+    indecator->setColor({ 0, 255, 0 });
+    indecator->setPositionY(12);
+    indecator->setAlignment(CCTextAlignment::kCCTextAlignmentCenter);
+    indecator->setVisible(data::getIsInMatch());
+	indecator->setPosition({41, 56});
+	indecator->setScale(1.5f);
+    GDWTButton->addChild(indecator);
+
 	BMenu->addChild(GDWTButton);
 
 	GDWTButton->setID("gdwt-button");
