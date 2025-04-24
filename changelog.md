@@ -1,3 +1,6 @@
+# 1.2.20
+- iOS support
+
 # 1.2.19
 - added champion badges for the Netherlands and Israel
 - updated Poland champion description, and added past editions of the GDMP tournament
