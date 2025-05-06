@@ -123,7 +123,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 GDWTProfilePage::createBadge(
                     badgeID,
                     "Battle of the States Champion",
-                    "No description available for this badge yet...",
+                    "California has won the first Battle of the States tournament, deafating New Jersey in the final",
                     5
                 );
             }
