@@ -29,7 +29,7 @@ bool GDWTMatchLayer::setup(const Match& _match){
     nameLabel->setString(match.matchName.c_str());
     nameLabel->setEnabled(false);
     nameLabel->setPositionY(110);
-    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    nameLabel->getInputNode()->getTextLabel()->setOpacity(255);
     alignmentNode->addChild(nameLabel);
 
     auto cText = CountyTextDisplay::create(match.teams, {300, 40}, false);
@@ -161,7 +161,7 @@ bool GDWTMatchLayer::setup(const Match& _match){
     dateText->setScale(0.8f);
     dateText->setString(match.date);
     dateText->setEnabled(false);
-    dateText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    dateText->getInputNode()->getTextLabel()->setOpacity(255);
     infoCont->addChild(dateText);
 
     auto LiveButtonSprite = CCSprite::createWithSpriteFrameName("gj_twitchIcon_001.png");
@@ -195,7 +195,7 @@ bool GDWTMatchLayer::setup(const Match& _match){
     STypeLabelText->getBGSprite()->setOpacity(0);
     STypeLabelText->setEnabled(false);
     STypeLabelText->setString(data::ScoreSystemTypeToString(match.scoreType));
-    STypeLabelText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    STypeLabelText->getInputNode()->getTextLabel()->setOpacity(255);
     infoCont->addChild(STypeLabelText);
 
     //

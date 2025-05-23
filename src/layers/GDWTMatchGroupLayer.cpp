@@ -32,7 +32,7 @@ bool GDWTMatchGroupLayer::setup(const MatchGroup& _group){
     nameLabel->getBGSprite()->setScale(0.25f);
     nameLabel->getBGSprite()->setContentWidth(630);
     nameLabel->setString(group.groupName);
-    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    nameLabel->getInputNode()->getTextLabel()->setOpacity(255);
     alignmentNode->addChild(nameLabel);
 
     auto matchesListCont = CCNode::create();

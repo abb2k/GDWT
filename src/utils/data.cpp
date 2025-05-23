@@ -1379,6 +1379,9 @@ bool data::getCBF(){
         if (cbf->getSettingValue<bool>("soft-toggle"))
             return false;
 
+        if (cbf->getSettingValue<bool>("click-on-steps"))
+            return false;            
+
         return true;
     }
 

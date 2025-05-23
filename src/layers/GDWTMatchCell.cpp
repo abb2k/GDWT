@@ -45,7 +45,7 @@ bool GDWTMatchCell::init(const Match& _match, CCSize size, bool s){
     dateText->setScale(0.6f);
     dateText->setPosition({dateLabel->getPositionX() + dateLabel->getScaledContentWidth() / 2 + dateText->getScaledContentWidth() / 2, dateLabel->getPositionY()});
     dateText->setEnabled(false);
-    dateText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    dateText->getInputNode()->getTextLabel()->setOpacity(255);
     this->addChild(dateText);
 
     //hlabel
@@ -71,7 +71,7 @@ bool GDWTMatchCell::init(const Match& _match, CCSize size, bool s){
     hostText->setScale(0.6f);
     hostText->setPosition({hostLabel->getPositionX() + hostLabel->getScaledContentWidth() / 2 + hostText->getScaledContentWidth() / 2, hostLabel->getPositionY()});
     hostText->setEnabled(false);
-    hostText->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    hostText->getInputNode()->getTextLabel()->setOpacity(255);
     this->addChild(hostText);
 
     //buttons

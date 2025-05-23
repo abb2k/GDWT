@@ -152,7 +152,7 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         levelName->setString("Unknown Level");
         levelName->setPosition({size.width / 2, 36});
         levelName->setScale(0.85f);
-        levelName->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+        levelName->getInputNode()->getTextLabel()->setOpacity(255);
         c->addChild(levelName);
     }
     else if (levelPlayers.size() > 2){
@@ -260,7 +260,7 @@ bool GDWTMatchLevelCell::init(Level _level, CCSize size, bool s){
         levelName->setString("Unknown Level");
         levelName->setPosition({258, 28});
         levelName->setScale(0.7f);
-        levelName->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+        levelName->getInputNode()->getTextLabel()->setOpacity(255);
         c->addChild(levelName);
     }
 
@@ -315,18 +315,18 @@ void GDWTMatchLevelCell::loadLevel(GJGameLevel* _lvl){
     levelMenu->setPosition(levelName->getPosition());
     this->addChild(levelMenu);
 
-    float oldScale = levelName->getInputNode()->getPlaceholderLabel()->getScale();
-    levelName->getInputNode()->getPlaceholderLabel()->retain();
-    levelName->getInputNode()->getPlaceholderLabel()->removeFromParent();
-    levelName->getInputNode()->getPlaceholderLabel()->setScale(oldScale * levelName->getScale());
+    float oldScale = levelName->getInputNode()->getTextLabel()->getScale();
+    levelName->getInputNode()->getTextLabel()->retain();
+    levelName->getInputNode()->getTextLabel()->removeFromParent();
+    levelName->getInputNode()->getTextLabel()->setScale(oldScale * levelName->getScale());
     auto b = CCMenuItemSpriteExtra::create(
-        levelName->getInputNode()->getPlaceholderLabel(),
+        levelName->getInputNode()->getTextLabel(),
         nullptr,
         this,
         menu_selector(GDWTMatchLevelCell::onLevelClicked)
     );
     levelMenu->addChild(b);
-    levelName->getInputNode()->getPlaceholderLabel()->release();
+    levelName->getInputNode()->getTextLabel()->release();
     
 }
 

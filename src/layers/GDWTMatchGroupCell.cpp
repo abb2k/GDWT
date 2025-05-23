@@ -51,7 +51,7 @@ bool GDWTMatchGroupCell::init(const MatchGroup& _group, CCSize size, bool s){
     nameLabel->getBGSprite()->setContentWidth(305);
     nameLabel->setEnabled(false);
     nameLabel->setString(group.groupName);
-    nameLabel->getInputNode()->getPlaceholderLabel()->setOpacity(255);
+    nameLabel->getInputNode()->getTextLabel()->setOpacity(255);
     this->addChild(nameLabel);
 
     l.bind([this] (MatchesTask::Event* event){
