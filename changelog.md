@@ -1,3 +1,6 @@
+# 1.2.22
+- fixed crash on load
+
 # 1.2.21
 - allows the use of click on steps during matches regardless of if click between frames is allowed or not
 

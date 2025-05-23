@@ -1380,7 +1380,7 @@ bool data::getCBF(){
             return false;
 
         if (cbf->getSettingValue<bool>("click-on-steps"))
-            return false;            
+            return false;
 
         return true;
     }
