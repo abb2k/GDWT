@@ -1,3 +1,7 @@
+# 1.2.23
+- adapted to new Google API changes
+- added a notice regarding the discontinuation of new tournament data
+
 # 1.2.22
 - fixed crash on load
 
