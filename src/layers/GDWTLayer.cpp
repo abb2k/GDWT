@@ -335,6 +335,13 @@ bool GDWTLayer::init(){
 
     scheduleUpdate();
 
+    if (!Mod::get()->getSavedValue<bool>("did-show-data-outdated-message", false)){
+        Mod::get()->setSavedValue("did-show-data-outdated-message", true);
+        auto alert = FLAlertLayer::create("Outdated Data!", "Data only goes to December 8th, 2024 due to changes in the GDWT scoring system. It will be updated along with the release of GD Champions.", "I UNDERSTAND");
+        this->addChild(alert);
+        alert->setZOrder(1000);
+    }
+
     this->setKeyboardEnabled(true);
     this->setTouchEnabled(true);
     this->setKeypadEnabled(true);

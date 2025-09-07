@@ -1150,8 +1150,16 @@ Result<> data::joinMatch(std::string joinCode){
     connecting = true;
 
     data::refreshAccessToken(sheetsClientID, sheetsClientSecret, sheetsRefreshToken).listen([](Result<std::string>* res){
-        if (res == nullptr) data::checkConnectionComplete("Incorrect code! (might be expired)");
-        if (!res->isOk()) data::checkConnectionComplete("Incorrect code! (might be expired)");
+        if (res == nullptr)
+        {
+            data::checkConnectionComplete("Incorrect code! (might be expired)");
+            return;
+        }
+        if (!res->isOk())
+        {
+            data::checkConnectionComplete("Incorrect code! (might be expired)");
+            return;
+        }
 
         data::writeToGoogleSheet(matchSheetID, fmt::format("{}!{}:{}", matchSheetName, connectCheckCell, connectCheckCell), ":D", res->unwrap()).listen([](Result<>* didWrite){
             if (didWrite == nullptr){
@@ -1197,7 +1205,7 @@ Result<> data::joinMatch(std::string joinCode){
 }
 
 void data::checkConnectionComplete(std::string errMessage){
-    log::info("{} | {} - {}", discordConnectionCheck, sheetsConnectionCheck, errMessage);
+    //log::info("{} | {} - {}", discordConnectionCheck, sheetsConnectionCheck, errMessage);
     if (errMessage != "OK"){
         connecting = false;
         leaveMatch();
@@ -1279,10 +1287,16 @@ Task<Result<std::string>> data::refreshAccessToken(std::string clientId, std::st
 
     return req.post("https://oauth2.googleapis.com/token").map(
     [] (web::WebResponse* res) -> Result<std::string> {
+
+        auto jsonRes = res->json();
+        if (jsonRes.isErr()) return Err("(refreshing) Invalid sheet data!");
         
-        GEODE_UNWRAP_INTO(auto json, res->json());
-        
-        GEODE_UNWRAP_INTO(sheetRefreshedToken t, json.as<sheetRefreshedToken>());
+        auto json = jsonRes.unwrap();
+
+        auto sheetObjRes = json.as<sheetRefreshedToken>();
+        if (sheetObjRes.isErr()) return Err("(refreshing) Invalid sheet obj data!");
+
+        auto t = sheetObjRes.unwrap();
 
         if (t.access_token.empty()) return Err("Failed getting access token!");
 
@@ -1309,10 +1323,19 @@ Task<Result<>> data::writeToGoogleSheet(std::string spreadsheetId, std::string r
 
     return req.put(fmt::format("https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}", spreadsheetId, range)).map(
     [] (web::WebResponse* res) -> Result<> {
-        
-        GEODE_UNWRAP_INTO(auto json, res->json());
 
-        GEODE_UNWRAP_INTO(sheetWriteReport r, json.as<sheetWriteReport>());
+        auto jsonRes = res->json();
+        if (jsonRes.isErr()) return Err("(writing) Invalid sheet data!");
+        
+        auto json = jsonRes.unwrap();
+
+        auto sheetObjRes = json.as<sheetWriteReport>();
+        if (sheetObjRes.isErr()){
+            log::info("{}", json.dump());
+            return Err("(writing) Invalid sheet obj data!");
+        }
+
+        auto r = sheetObjRes.unwrap();
         
         if (r.spreadsheetId.empty()) return Err("failed writing to the sheet!");
 
