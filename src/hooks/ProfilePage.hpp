@@ -4,6 +4,8 @@ using namespace geode::prelude;
 #include "../utils/data.hpp"
 
 #include <Geode/modify/ProfilePage.hpp>
+
+#include <alphalaneous.badges_api_reimagined/include/BadgesAPI.hpp>
 class $modify(GDWTProfilePage, ProfilePage) {
     struct Fields{
         EventListener<PlayerDataTask> playerDataListener;
@@ -18,4 +20,6 @@ class $modify(GDWTProfilePage, ProfilePage) {
         void createBadge(const std::string& ID, const std::string& name, const std::string& description, const int& orderPrio);
 
         void onBadgeClicked(CCObject* sender);
+
+        static bool isUserInBadge(const std::string_view badgeID, const int& accountID);
 };
