@@ -315,9 +315,9 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
     auto playersData = data::getPlayersData();
-    if (!playersData || !playersData->getValue()) return false;
+    if (!playersData || !playersData.getValue()) return false;
 
-    auto playerData = playersData->getValue().unwrap();
+    auto playerData = playersData.getValue().unwrap();
     if (!playerData || !playerData.isOk()) return false;
 
     PlayerData myPlayer {};
