@@ -32,11 +32,11 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
 
         if (!didFindPlayer) return;
 
+        /*
         std::set<std::string> allBadgeIDs{};
 
         std::set_union(myPlayer.staffIDs.begin(), myPlayer.staffIDs.end(), myPlayer.achievementIDs.begin(), myPlayer.achievementIDs.end(), inserter(allBadgeIDs, allBadgeIDs.begin()));
 
-        /*
         for (const auto& badgeID : allBadgeIDs)
         {
             if (badgeID == "WT-MGT"){
@@ -314,8 +314,11 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 }
 
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
-    auto playerData = data::getPlayersData();
-    if (!playerData || !playerData.unwrap().isOk()) return false;
+    auto playersData = data::getPlayersData();
+    if (!playersData || !playersData->getValue()) return false;
+
+    auto playerData = playersData->getValue().unwrap();
+    if (!playerData || !playerData.isOk()) return false;
 
     PlayerData myPlayer {};
     bool didFindPlayer = false;
