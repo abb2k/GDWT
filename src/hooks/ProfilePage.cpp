@@ -316,8 +316,8 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
     bool found = false;
     data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
-        auto playerData = playersData.unwrap();
-        if (!playerData || !playerData.isOk()) {
+        auto playerData = playersData->unwrap();
+        if (playerData.empty()) {
             found = false;
             return;
         }
@@ -349,21 +349,6 @@ bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& a
 }
 
 $on_mod(Loaded) {
-    /*
-    BadgesAPI::registerBadge(
-        "cherry-member-badge-media"_spr,
-        "Cherry Team Publicist (Social Media)",
-        "This user <cj>runs cherry team's official accounts and/or channels</c> in <cy>GD</c>, <cy>Telegram</c>, and more.",
-        [] {
-            return CCSprite::create("CT_badge_01_001.png"_spr);
-        },
-        [] (const Badge& badge, const UserInfo& info) {
-            const std::vector<std::string>& media = CGlobal::members["media"];
-            if (std::ranges::find(media, geode::utils::string::toLower(info.userName)) == media.end()) return;
-            BadgesAPI::showBadge(badge);
-        }
-    );
-    */
     BadgesAPI::registerBadge(
         "gdwt-management"_spr,
         "GDWT Managment",
