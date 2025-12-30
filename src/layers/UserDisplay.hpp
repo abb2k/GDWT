@@ -30,13 +30,13 @@ class UserDisplay : public CCNode {
 
         void userClicked(CCObject*);
 
-        void onDInfoReceved(UserInfoTask::Event* event);
+        void onDInfoReceved(GDWTUserInfoTask::Event* event);
 
         void onPlayerInfoReceved(PlayerDataTask::Event* event);
 
         void updateNameLength();
 
-        EventListener<UserInfoTask> Ulistener;
+        EventListener<GDWTUserInfoTask> Ulistener;
 
         EventListener<PlayerDataTask> Plistener;
 

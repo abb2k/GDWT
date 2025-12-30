@@ -96,7 +96,7 @@ typedef struct {
     std::string demonCategories; // :55:
     std::string normalLevelCategories; // :56:
     std::string platformerLevelCategories; // :57:
-} UserInfo;
+} GDWTUserInfo;
 
 typedef struct{
     std::string range;
@@ -134,7 +134,7 @@ typedef struct{
 
 using MatchesTask = Task<Result<std::vector<Match>>>;
 using TeamsTask = Task<Result<std::vector<Team>>>;
-using UserInfoTask = Task<std::vector<UserInfo*>>;
+using GDWTUserInfoTask = Task<std::vector<GDWTUserInfo*>>;
 using PlayerDataTask = Task<Result<std::vector<PlayerData>>>;
 using scoreCalcTask = Task<Result<std::vector<std::tuple<std::string, int, int>>>>;
 using MatchGroupsDataTask = Task<Result<std::vector<MatchGroup>>>;
@@ -384,19 +384,19 @@ class data {
     public:
         static MatchesTask getMatchesData();
         static TeamsTask getTeamsData();
-        static UserInfoTask getUsersInfo(std::vector<int> userIDs);
+        static GDWTUserInfoTask getUsersInfo(std::vector<int> userIDs);
         static PlayerDataTask getPlayersData();
         static MatchGroupsDataTask getMatchGroupsData();
         static CurrentMatchTask getCurrentMatchData(std::string accessToken);
 
-        static Result<UserInfo> parseUserInfo(std::string infoRaw);
+        static Result<GDWTUserInfo> parseUserInfo(std::string infoRaw);
 
         static std::vector<std::string> splitStr(std::string str, std::string delim);
         static std::vector<std::string> eraseEmptys(std::vector<std::string> array);
         static std::vector<std::vector<std::string>> convertRawData(std::string data, bool rows);
 
         static void loadMatches(const std::vector<Match>& match);
-        static void loadUserInfo(UserInfo& user);
+        static void loadUserInfo(GDWTUserInfo& user);
         static void loadTeams(const std::vector<Team>& teams);
         static GJGameLevel* getLoadedLevelByID(int level);
         static void loadLevel(GJGameLevel* level);
@@ -450,7 +450,7 @@ class data {
 
         static std::vector<Match> loadedMatches;
 
-        static std::vector<UserInfo> loadedUsersInfo;
+        static std::vector<GDWTUserInfo> loadedUsersInfo;
 
         static std::vector<Team> loadedTeams;
 

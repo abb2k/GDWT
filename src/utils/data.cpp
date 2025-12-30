@@ -13,7 +13,7 @@ std::string data::matchGroupsPageID = "Match%20Groups%20Data";
 
 std::vector<Match> data::loadedMatches{};
 
-std::vector<UserInfo> data::loadedUsersInfo{};
+std::vector<GDWTUserInfo> data::loadedUsersInfo{};
 
 std::vector<Team> data::loadedTeams{};
 
@@ -366,13 +366,13 @@ std::vector<std::vector<std::string>> data::convertRawData(std::string data, boo
     return values;         
 }
 
-UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
+GDWTUserInfoTask data::getUsersInfo(std::vector<int> userIDs){
 
-    std::vector<UserInfo> alreadyLoadedUsers{};
+    std::vector<GDWTUserInfo> alreadyLoadedUsers{};
 
     for (int i = 0; i < userIDs.size(); i++)
     {
-        UserInfo user;
+        GDWTUserInfo user;
 
         bool doesExist = false;
         for (int u = 0; u < loadedUsersInfo.size(); u++)
@@ -390,7 +390,7 @@ UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
         }
     }
 
-    std::vector<Task<UserInfo>> tasks;
+    std::vector<Task<GDWTUserInfo>> tasks;
 
     for (int i = 0; i < userIDs.size(); i++)
     {
@@ -404,9 +404,9 @@ UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
             req.bodyString(fmt::format("secret=Wmfd2893gb7&targetAccountID={}", userIDs[i]));
 
             tasks.push_back(req.post("http://www.boomlings.com/database/getGJUserInfo20.php").map(
-            [] (web::WebResponse* res) -> UserInfo{
+            [] (web::WebResponse* res) -> GDWTUserInfo{
                 
-                UserInfo errUser{};
+                GDWTUserInfo errUser{};
                 errUser.accountID = -1;
 
                 auto userInfoString = res->string().unwrapOr("-1");
@@ -432,22 +432,22 @@ UserInfoTask data::getUsersInfo(std::vector<int> userIDs){
 
     for (int i = 0; i < alreadyLoadedUsers.size(); i++)
     {
-        UserInfo info = alreadyLoadedUsers[i];
+        GDWTUserInfo info = alreadyLoadedUsers[i];
 
-        tasks.push_back(Task<UserInfo>::run(
-        [info] (auto progress, auto hasBeenCancelled) -> Task<UserInfo>::Result{
+        tasks.push_back(Task<GDWTUserInfo>::run(
+        [info] (auto progress, auto hasBeenCancelled) -> Task<GDWTUserInfo>::Result{
             return info;
         }));
     }
     
 
-    return Task<UserInfo>::all(
+    return Task<GDWTUserInfo>::all(
         std::move(tasks)
     );
     
 }
 
-Result<UserInfo> data::parseUserInfo(std::string infoRaw){
+Result<GDWTUserInfo> data::parseUserInfo(std::string infoRaw){
     if (infoRaw == "-1")
         return Err("invalid string!");
 
@@ -494,7 +494,7 @@ Result<UserInfo> data::parseUserInfo(std::string infoRaw){
         }
     }
 
-    UserInfo info;
+    GDWTUserInfo info;
     
     info.userName = infoMap[1];
     GEODE_UNWRAP_INTO(info.userID, geode::utils::numFromString<int>(infoMap[2]));
@@ -541,7 +541,7 @@ void data::loadMatches(const std::vector<Match>& match){
     loadedMatches = match;
 }
 
-void data::loadUserInfo(UserInfo& user){
+void data::loadUserInfo(GDWTUserInfo& user){
     bool doesExist = false;
     for (int u = 0; u < loadedUsersInfo.size(); u++)
     {
