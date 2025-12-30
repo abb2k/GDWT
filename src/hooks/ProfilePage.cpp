@@ -5,13 +5,15 @@
 
 void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     ProfilePage::loadPageFromUserInfo(user);
-
+/*
     m_fields->playerDataListener.bind(this, &GDWTProfilePage::playersDataRecieved);
 
     m_fields->playerDataListener.setFilter(data::getPlayersData());
+*/
 }
 
 void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
+    /*
     if (auto* playerDataRes = e->getValue()){
         if (!playerDataRes) return;
         if (playerDataRes->isErr()) return;
@@ -32,7 +34,6 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
 
         if (!didFindPlayer) return;
 
-        /*
         std::set<std::string> allBadgeIDs{};
 
         std::set_union(myPlayer.staffIDs.begin(), myPlayer.staffIDs.end(), myPlayer.achievementIDs.begin(), myPlayer.achievementIDs.end(), inserter(allBadgeIDs, allBadgeIDs.begin()));
@@ -285,8 +286,8 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
                 );
             }
         }
-        */
     }
+    */
 }
 
 void GDWTProfilePage::createBadge(const std::string& ID, const std::string& name, const std::string& description, const int& orderPrio){
