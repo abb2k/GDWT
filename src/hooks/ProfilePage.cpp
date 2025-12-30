@@ -314,27 +314,35 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 }
 
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
-    auto playersData = data::getPlayersData();
-    if (!playersData || !playersData.getValue()) return false;
+    bool found = false;
+    data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
+        auto playerData = playersData.unwrap();
+        if (!playerData || !playerData.isOk()) return false;
 
-    auto playerData = playersData.getValue().unwrap();
-    if (!playerData || !playerData.isOk()) return false;
+        PlayerData myPlayer {};
+        bool didFindPlayer = false;
 
-    PlayerData myPlayer {};
-    bool didFindPlayer = false;
-
-    for (const auto& player : playerData) {
-        if (player.accountID == accountID) {
-            myPlayer = player;
-            didFindPlayer = true;
-            break;
+        for (const auto& player : playerData) {
+            if (player.accountID == accountID) {
+                myPlayer = player;
+                didFindPlayer = true;
+                break;
+            }
         }
-    }
 
-    if (!didFindPlayer) return false;
-    if (std::ranges::find(myPlayer.staffIDs, badgeID) == myPlayer.staffIDs.end() && std::ranges::find(myPlayer.achievementIDs, badgeID) == myPlayer.achievementIDs.end()) return false;
+        if (!didFindPlayer) {
+            found = false;
+            return;
+        }
 
-    return true;
+        if (std::ranges::find(myPlayer.staffIDs, badgeID) == myPlayer.staffIDs.end() && std::ranges::find(myPlayer.achievementIDs, badgeID) == myPlayer.achievementIDs.end()) {
+            found = false;
+            return;
+        }
+
+        found = true;
+    });
+    return found;
 }
 
 $on_mod(Loaded) {
