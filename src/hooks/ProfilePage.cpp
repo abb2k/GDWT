@@ -316,7 +316,7 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
     bool found = false;
     data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
-        auto playerData = playersData->unwrap();
+        auto playerData = playersData->unwrapOrDefault();
         if (playerData.empty()) {
             found = false;
             return;
