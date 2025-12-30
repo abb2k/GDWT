@@ -1,19 +1,17 @@
 #include "../hooks/ProfilePage.hpp"
-#include "../utils/MDAlertLayer.hpp"
+// #include "../utils/MDAlertLayer.hpp"
 
 #define NO_DESC_YET "No description available for this badge yet...\nWait, how did you get here again?"
 
+/*
 void GDWTProfilePage::loadPageFromUserInfo(GJUserScore* user) {
     ProfilePage::loadPageFromUserInfo(user);
-/*
     m_fields->playerDataListener.bind(this, &GDWTProfilePage::playersDataRecieved);
 
     m_fields->playerDataListener.setFilter(data::getPlayersData());
-*/
 }
 
 void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
-    /*
     if (auto* playerDataRes = e->getValue()){
         if (!playerDataRes) return;
         if (playerDataRes->isErr()) return;
@@ -287,7 +285,6 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
             }
         }
     }
-    */
 }
 
 void GDWTProfilePage::createBadge(const std::string& ID, const std::string& name, const std::string& description, const int& orderPrio){
@@ -313,20 +310,16 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
         alert->show();
     }   
 }
+*/
 
 void GDWTProfilePage::isUserInBadge(const std::string& badgeID, const int& accountID, const Badge& badge) {
     bool found = false;
-    log::info("badgeID: {}", badgeID);
-    log::info("DJ, play a Christmas song");
     data::getPlayersData().listen([&found, badgeID, accountID, badge] (Result<std::vector<PlayerData>>* playersData) {
-        log::info("badgeID: {}", badgeID);
-        log::info("I wanna be dancing all night long");
         auto playerData = playersData->unwrapOrDefault();
         if (playerData.empty()) {
-            log::info("lol no the array's empty");
             return;
         }
-        log::info("It's cold outside, but it's warm in here");
+
         PlayerData myPlayer {};
         bool didFindPlayer = false;
 
@@ -339,15 +332,13 @@ void GDWTProfilePage::isUserInBadge(const std::string& badgeID, const int& accou
         }
 
         if (!didFindPlayer) {
-            log::info("lol didFindPlayer is false");
             return;
         }
-        log::info("And that's the only thing I want this year");
+
         if (std::ranges::find(myPlayer.staffIDs, badgeID) == myPlayer.staffIDs.end() && std::ranges::find(myPlayer.achievementIDs, badgeID) == myPlayer.achievementIDs.end()) {
-            log::info("lol staffIDs and achievementIDs is a nogo");
             return;
         }
-        log::info("DJ, play a Christmas song I wanna be dancing all night long It's tough outside, but it's love in here And that's the only thing I want this year");
+
         BadgesAPI::showBadge(badge);
     });
 }
