@@ -1,3 +1,6 @@
+# 1.2.24
+- switched to using a new badges api (ty ery :D)
+
 # 1.2.23
 - adapted to new Google API changes
 - added a notice regarding the discontinuation of new tournament data
