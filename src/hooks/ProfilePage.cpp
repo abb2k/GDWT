@@ -315,13 +315,16 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
     bool found = false;
+    log::info("DJ, play a Christmas song");
     data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
+        log::info("I wanna be dancing all night long");
         auto playerData = playersData->unwrapOrDefault();
         if (playerData.empty()) {
+            log::info("lol no the array's empty");
             found = false;
             return;
         }
-
+        log::info("It's cold outside, but it's warm in here");
         PlayerData myPlayer {};
         bool didFindPlayer = false;
 
@@ -334,17 +337,20 @@ bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& a
         }
 
         if (!didFindPlayer) {
+            log::info("lol didFindPlayer is false");
             found = false;
             return;
         }
-
+        log::info("And that's the only thing I want this year");
         if (std::ranges::find(myPlayer.staffIDs, badgeID) == myPlayer.staffIDs.end() && std::ranges::find(myPlayer.achievementIDs, badgeID) == myPlayer.achievementIDs.end()) {
+            log::info("lol staffIDs and achievementIDs is a nogo");
             found = false;
             return;
         }
-
+        log::info("DJ, play a Christmas song I wanna be dancing all night long It's tough outside, but it's love in here And that's the only thing I want this year");
         found = true;
     });
+    log::info("cher");
     return found;
 }
 
