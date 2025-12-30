@@ -317,7 +317,10 @@ bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& a
     bool found = false;
     data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
         auto playerData = playersData.unwrap();
-        if (!playerData || !playerData.isOk()) return false;
+        if (!playerData || !playerData.isOk()) {
+            found = false;
+            return;
+        }
 
         PlayerData myPlayer {};
         bool didFindPlayer = false;
