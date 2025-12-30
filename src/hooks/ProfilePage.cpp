@@ -315,8 +315,10 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
 
 bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
     bool found = false;
+    log::info("badgeID: {}", badgeID);
     log::info("DJ, play a Christmas song");
     data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
+        log::info("badgeID: {}", badgeID);
         log::info("I wanna be dancing all night long");
         auto playerData = playersData->unwrapOrDefault();
         if (playerData.empty()) {
