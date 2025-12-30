@@ -16,7 +16,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
     /*
     if (auto* playerDataRes = e->getValue()){
         if (!playerDataRes) return;
-        if (playerDataRes->isErr();
+        if (playerDataRes->isErr()) return;
 
         auto playerData = playerDataRes->unwrap();
 
