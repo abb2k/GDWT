@@ -16,7 +16,7 @@ void GDWTProfilePage::playersDataRecieved(PlayerDataTask::Event* e){
     /*
     if (auto* playerDataRes = e->getValue()){
         if (!playerDataRes) return;
-        if (playerDataRes->isErr()) return;
+        if (playerDataRes->isErr();
 
         auto playerData = playerDataRes->unwrap();
 
@@ -314,17 +314,16 @@ void GDWTProfilePage::onBadgeClicked(CCObject* sender){
     }   
 }
 
-bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& accountID) {
+void GDWTProfilePage::isUserInBadge(const std::string& badgeID, const int& accountID, const Badge& badge) {
     bool found = false;
     log::info("badgeID: {}", badgeID);
     log::info("DJ, play a Christmas song");
-    data::getPlayersData().listen([&found, badgeID, accountID] (Result<std::vector<PlayerData>>* playersData) {
+    data::getPlayersData().listen([&found, badgeID, accountID, badge] (Result<std::vector<PlayerData>>* playersData) {
         log::info("badgeID: {}", badgeID);
         log::info("I wanna be dancing all night long");
         auto playerData = playersData->unwrapOrDefault();
         if (playerData.empty()) {
             log::info("lol no the array's empty");
-            found = false;
             return;
         }
         log::info("It's cold outside, but it's warm in here");
@@ -341,20 +340,16 @@ bool GDWTProfilePage::isUserInBadge(const std::string_view badgeID, const int& a
 
         if (!didFindPlayer) {
             log::info("lol didFindPlayer is false");
-            found = false;
             return;
         }
         log::info("And that's the only thing I want this year");
         if (std::ranges::find(myPlayer.staffIDs, badgeID) == myPlayer.staffIDs.end() && std::ranges::find(myPlayer.achievementIDs, badgeID) == myPlayer.achievementIDs.end()) {
             log::info("lol staffIDs and achievementIDs is a nogo");
-            found = false;
             return;
         }
         log::info("DJ, play a Christmas song I wanna be dancing all night long It's tough outside, but it's love in here And that's the only thing I want this year");
-        found = true;
+        BadgesAPI::showBadge(badge);
     });
-    log::info("cher");
-    return found;
 }
 
 $on_mod(Loaded) {
@@ -366,8 +361,7 @@ $on_mod(Loaded) {
             return CCSprite::create("WT-MGT.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("WT-MGT", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("WT-MGT", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -378,8 +372,7 @@ $on_mod(Loaded) {
             return CCSprite::create("WT-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("WT-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("WT-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -390,8 +383,7 @@ $on_mod(Loaded) {
             return CCSprite::create("WT-EO.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("WT-EO", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("WT-EO", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -402,8 +394,7 @@ $on_mod(Loaded) {
             return CCSprite::create("OC-S1.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("OC-S1", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("OC-S1", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -414,8 +405,7 @@ $on_mod(Loaded) {
             return CCSprite::create("LT-21.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("LT-21", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("LT-21", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -426,8 +416,7 @@ $on_mod(Loaded) {
             return CCSprite::create("LT-22.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("LT-22", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("LT-22", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -438,8 +427,7 @@ $on_mod(Loaded) {
             return CCSprite::create("LT-23.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("LT-23", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("LT-23", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -450,8 +438,7 @@ $on_mod(Loaded) {
             return CCSprite::create("LT-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("LT-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("LT-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -462,8 +449,7 @@ $on_mod(Loaded) {
             return CCSprite::create("CO-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("CO-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("CO-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -474,8 +460,7 @@ $on_mod(Loaded) {
             return CCSprite::create("US-S1.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("US-S1", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("US-S1", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -486,8 +471,7 @@ $on_mod(Loaded) {
             return CCSprite::create("ES-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("ES-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("ES-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -498,8 +482,7 @@ $on_mod(Loaded) {
             return CCSprite::create("ES-25.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("ES-25", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("ES-25", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -510,8 +493,7 @@ $on_mod(Loaded) {
             return CCSprite::create("NL-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("NL-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("NL-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -522,8 +504,7 @@ $on_mod(Loaded) {
             return CCSprite::create("NL-25.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("NL-25", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("NL-25", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -534,8 +515,7 @@ $on_mod(Loaded) {
             return CCSprite::create("PL-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("PL-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("PL-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -546,8 +526,7 @@ $on_mod(Loaded) {
             return CCSprite::create("PL-23.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("PL-23", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("PL-23", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -558,8 +537,7 @@ $on_mod(Loaded) {
             return CCSprite::create("PL-22.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("PL-22", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("PL-22", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -570,8 +548,7 @@ $on_mod(Loaded) {
             return CCSprite::create("PT-24.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("PT-24", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("PT-24", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -582,8 +559,7 @@ $on_mod(Loaded) {
             return CCSprite::create("IL-S2.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("IL-S2", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("IL-S2", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -594,8 +570,7 @@ $on_mod(Loaded) {
             return CCSprite::create("IL-S1.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("IL-S1", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("IL-S1", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -606,8 +581,7 @@ $on_mod(Loaded) {
             return CCSprite::create("KR-S1.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("KR-S1", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("KR-S1", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -618,8 +592,7 @@ $on_mod(Loaded) {
             return CCSprite::create("KR-S2.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("KR-S2", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("KR-S2", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -630,8 +603,7 @@ $on_mod(Loaded) {
             return CCSprite::create("KR-S3.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("KR-S3", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("KR-S3", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -642,8 +614,7 @@ $on_mod(Loaded) {
             return CCSprite::create("MY-S1.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("MY-S1", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("MY-S1", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -654,8 +625,7 @@ $on_mod(Loaded) {
             return CCSprite::create("MY-S2.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("MY-S2", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("MY-S2", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -666,8 +636,7 @@ $on_mod(Loaded) {
             return CCSprite::create("MY-S3.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("MY-S3", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("MY-S3", info.accountID, badge);
         }
     );
     BadgesAPI::registerBadge(
@@ -678,8 +647,7 @@ $on_mod(Loaded) {
             return CCSprite::create("MY-S4.png"_spr);
         },
         [] (const Badge& badge, const UserInfo& info) {
-            if (!GDWTProfilePage::isUserInBadge("MY-S4", info.accountID)) return;
-            BadgesAPI::showBadge(badge);
+            GDWTProfilePage::isUserInBadge("MY-S4", info.accountID, badge);
         }
     );
 }
