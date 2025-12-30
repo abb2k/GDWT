@@ -168,7 +168,7 @@ void UserDisplay::onPlayerInfoReceved(PlayerDataTask::Event* event){
     }
 }
 
-void UserDisplay::onDInfoReceved(UserInfoTask::Event* event) {
+void UserDisplay::onDInfoReceved(GDWTUserInfoTask::Event* event) {
     if (auto _users = event->getValue()){
         auto users = *_users;
         if (users.size()){
