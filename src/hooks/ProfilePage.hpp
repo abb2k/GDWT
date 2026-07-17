@@ -5,13 +5,16 @@ using namespace geode::prelude;
 
 #include <Geode/modify/ProfilePage.hpp>
 
+#include <alphalaneous.badgify/include/Badgify.hpp>
+
 class $modify(GDWTProfilePage, ProfilePage) {
     struct Fields{
         async::TaskHolder<PlayerDataFuture::Output> playerDataListener;
-        std::unordered_map<CCObject*, std::pair<std::string, std::string>> allBadges;
+        // std::unordered_map<CCObject*, std::pair<std::string, std::string>> allBadges;
     };
 
     public:
+        /*
         void playersDataRecieved(PlayerDataFuture::Output out);
 
         void loadPageFromUserInfo(GJUserScore* a2);
@@ -19,6 +22,7 @@ class $modify(GDWTProfilePage, ProfilePage) {
         void createBadge(const std::string& ID, const std::string& name, const std::string& description, const int& orderPrio);
 
         void onBadgeClicked(CCObject* sender);
+        */
 
-        //static void isUserInBadge(const std::string& badgeID, const int& accountID, const Badge& badge);
+        static void isUserInBadge(std::string badgeID, int accountID, alpha::badgify::Badge badge, CCSprite* sprite);
 };
